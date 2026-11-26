@@ -3,7 +3,7 @@
  <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <meta content="经过筛选的第一人称触觉数据集。比较已发布规模、采集设备、触觉分辨率与视频样本。" name="description"/>
+  <meta content="人手、手持夹爪与机器人触觉数据集总览。比较发布规模、相机位置、触觉和动作字段、下载格式与视频样本。" name="description"/>
   <title>
    AwesomeTouchDataset · 第一人称触觉数据集
   </title>
@@ -20,12 +20,12 @@
      AwesomeTouchDataset
     </a>
     <nav aria-label="网站导航">
-     <a href="#datasets">
-      数据集
-     </a>
+     <a href="#overview">数据总览</a>
+     <a href="#datasets">视频与详情</a>
      <a href="#tachintech">
       TachinTech
      </a>
+     <a href="#citations">引用线索</a>
      <a href="#scope">
       统计口径
      </a>
@@ -37,63 +37,20 @@
   </header>
   <main class="wrap" id="top">
    <section aria-labelledby="page-title" class="intro">
-    <p class="kicker">
-     视觉 × 触觉 × 人类操作
-    </p>
     <h1 id="page-title">
      第一人称触觉数据集
     </h1>
     <p class="intro-text">
-     比较 17 套通过硬筛的数据集，另附 TachinTech 混合采集专题。每套标明采集方式、发布规模、设备和视频样本。
+     对比人手手套、手持夹爪和机器人触觉数据。这里收录 18 套通过筛选的数据集，以及 10 套扩展参考数据。
     </p>
-    <ul aria-label="按数据集数统计采集方式" class="composition">
-     <li>
-      <strong>
-       10
-      </strong>
-      <span>
-       人手戴手套
-      </span>
-     </li>
-     <li>
-      <strong>
-       5
-      </strong>
-      <span>
-       人操控夹爪
-      </span>
-     </li>
-     <li>
-      <strong>
-       1
-      </strong>
-      <span>
-       固定压力平板
-      </span>
-     </li>
-     <li>
-      <strong>
-       1
-      </strong>
-      <span>
-       混合采集
-      </span>
-     </li>
-    </ul>
    </section>
-   <section aria-labelledby="catalog-title" id="datasets">
+   <section aria-labelledby="overview-title" class="overview" id="overview">
     <div class="section-heading">
      <div>
-      <h2 id="catalog-title">
-       数据集目录
-      </h2>
-      <p>
-       点数据入口查看文件与许可，点视频查看接触画面。
-      </p>
+      <h2 id="overview-title">数据集总览</h2>
+      <p>点击数据集名称查看视频、设备规格和下载入口。规模按各行注明的发布版本登记。</p>
      </div>
-     <a class="secondary-link" href="data/datasets.csv">
-      下载筛选 CSV
-     </a>
+     <a class="secondary-link" href="#datasets">浏览视频与详情</a>
     </div>
     <div class="catalog-tools" hidden="" id="catalog-tools">
      <div aria-label="按采集方式筛选" class="filters" id="filters">
@@ -109,22 +66,181 @@
       <button aria-pressed="false" data-mode="surface" type="button">
        压力平板
       </button>
+      <button aria-pressed="false" data-mode="robot" type="button">机器人</button>
       <button aria-pressed="false" data-mode="mixed" type="button">
        混合
       </button>
      </div>
      <div class="search-box">
       <label for="search">
-       查找数据集或设备
+       查找数据集、设备或字段
       </label>
       <input autocomplete="off" id="search" placeholder="例如 EgoForce、Wuji、视触觉" type="search"/>
      </div>
     </div>
-    <p aria-live="polite" class="result-count" id="catalog-count">
-     17 套数据集，另有 1 个专题
-    </p>
+    <p aria-live="polite" class="result-count" id="catalog-count">28 套数据 · 18 套通过筛选 · 10 套扩展参考</p>
+    <div class="overview-scroll" role="region" aria-label="可滚动的数据集总览表" tabindex="0">
+     <table class="overview-table" id="overview-table" aria-labelledby="overview-title">
+      <thead><tr>
+       <th scope="col">数据集与格式</th>
+       <th scope="col">发布规模</th>
+       <th scope="col">相机位置</th>
+       <th scope="col">直接提供</th>
+       <th scope="col">可计算或需补齐</th>
+      </tr></thead>
+      <tbody>
+       <tr data-target="ego_force" data-mode="glove" data-scope="screened">
+        <th scope="row"><a href="#ego_force">EgoForce</a><span class="overview-label">人手手套</span><span class="overview-format">MP4 · NPZ · JSON</span></th>
+        <td class="overview-size">735.61 小时 · 18,311 段</td><td>头戴双目＋双腕</td>
+        <td>每手 5×12 指尖力（N）、每指弯曲、手套朝向</td><td>逐指法向力总值、接触时序。手部骨架可用官方视频工具估计。</td>
+       </tr>
+       <tr data-target="twintouch" data-mode="glove" data-scope="screened">
+        <th scope="row"><a href="#twintouch">HumanTouch</a><span class="overview-label">人手手套</span><span class="overview-format">MP4 · Parquet</span></th>
+        <td class="overview-size">132.29 小时 · 17,575 段</td><td>头戴＋双腕</td>
+        <td>每手 360 个有效压力点、25 点骨架、头与双腕位姿</td><td>分区接触、骨架与腕部轨迹。压力值为相对响应。</td>
+       </tr>
+       <tr data-target="touchscale" data-mode="glove" data-scope="screened">
+        <th scope="row"><a href="#touchscale">TouchScale</a><span class="overview-label">人手手套</span><span class="overview-format">TAR · MP4 · MKV · NPZ · HDF5</span></th>
+        <td class="overview-size">100 小时 · 15,324 段</td><td>头戴 RGB-D＋双腕 RGB</td>
+        <td>每手 880 点法向力（N）、切向字段、头部 IMU、任务</td><td>接触分布、力和持续时间。可用头戴深度和标定生成点云。</td>
+       </tr>
+       <tr data-target="egoexplorer" data-mode="glove" data-scope="screened">
+        <th scope="row"><a href="#egoexplorer">EgoExplorer</a><span class="overview-label">人手手套</span><span class="overview-format">OXT Zarr · LeRobot 迷你版</span></th>
+        <td class="overview-size">57.3 小时 · 1,513 段（OXT）</td><td>头戴</td>
+        <td>每手 17 区触觉、21 点骨架与关节角、头与双腕位姿、子任务</td><td>区域接触时序、手腕轨迹。迷你版另有双踝追踪。</td>
+       </tr>
+       <tr data-target="egotac_sc" data-mode="glove" data-scope="screened">
+        <th scope="row"><a href="#egotac_sc">EgoTac-SC</a><span class="overview-label">人手手套</span><span class="overview-format">Zarr ZIP</span></th>
+        <td class="overview-size">36.08 小时 · 857 段</td><td>头戴</td>
+        <td>每手 132 个有效压力点、21 个关节值、头与双腕位姿</td><td>手指与掌区接触时序、腕部轨迹。压力物理单位未公开。</td>
+       </tr>
+       <tr data-target="ace_data0" data-mode="glove" data-scope="screened">
+        <th scope="row"><a href="#ace_data0">ACE-Data-0 桌面触觉版</a><span class="overview-label">人手手套</span><span class="overview-format">MP4 · Parquet</span></th>
+        <td class="overview-size">20.73 小时 · 541 段</td><td>头戴四鱼眼＋外部固定相机</td>
+        <td>每手 460 个原始槽位、各路时间戳、IMU、标定、文字</td><td>看触觉变化与视频对齐。有效触点数、单位和本子集手姿待核。</td>
+       </tr>
+       <tr data-target="vtdexmanip" data-mode="glove" data-scope="screened">
+        <th scope="row"><a href="#vtdexmanip">VTDexManip</a><span class="overview-label">人手手套</span><span class="overview-format">TAR · PNG · JSON</span></th>
+        <td class="overview-size">5.23 小时 · 2,032 段</td><td>头戴</td>
+        <td>逐帧图像、右手 4×5 压力片电压、任务类别</td><td>按帧比较触点响应。未见独立腕部轨迹。</td>
+       </tr>
+       <tr data-target="egotactile" data-mode="glove" data-scope="screened">
+        <th scope="row"><a href="#egotactile">EgoTactile</a><span class="overview-label">人手手套</span><span class="overview-format">MP4 · JSON</span></th>
+        <td class="overview-size">5.21 小时 · 692 段</td><td>头戴或颈挂</td>
+        <td>右手 132 个压力点、5 个弯曲值、各路时间戳</td><td>压力图、接触时序。可从视频估计手姿。</td>
+       </tr>
+       <tr data-target="opentouch" data-mode="glove" data-scope="screened">
+        <th scope="row"><a href="#opentouch">OpenTouch</a><span class="overview-label">人手手套</span><span class="overview-format">HDF5（内含 JPEG）</span></th>
+        <td class="overview-size">3.03 小时 · 2,958 段</td><td>头戴</td>
+        <td>右手 16×16 压力图（169 个有效点）、21 点骨架、掌心与腕部位置</td><td>相对热力图、接触时序、右手运动轨迹。</td>
+       </tr>
+       <tr data-target="uvta" data-mode="glove" data-scope="screened">
+        <th scope="row"><a href="#uvta">UVTA 人手版</a><span class="overview-label">人手手套</span><span class="overview-format">TAR · Zarr</span></th>
+        <td class="overview-size">5,000 段 · 时长未核实</td><td>右腕鱼眼</td>
+        <td>右手 20 区指尖触觉、22 维手关节、腕部位姿</td><td>接触区域变化、腕部轨迹。包内另有下一帧动作标签。</td>
+       </tr>
+       <tr data-target="tacverse" data-mode="gripper" data-scope="screened">
+        <th scope="row"><a href="#tacverse">TacVerse</a><span class="overview-label">手持夹爪</span><span class="overview-format">MP4 · Parquet</span></th>
+        <td class="overview-size">1,400+ 小时 · 75,000+ 段</td><td>双夹爪腕端，部分另有头戴双目</td>
+        <td>4 路夹指光学图、双爪位姿与开口，部分有头姿</td><td>夹爪轨迹、胶面变化。图像数值可用于相对接触显示。</td>
+       </tr>
+       <tr data-target="aetherock" data-mode="gripper" data-scope="screened">
+        <th scope="row"><a href="#aetherock">AetheRock</a><span class="overview-label">手持夹爪</span><span class="overview-format">Zarr ZIP</span></th>
+        <td class="overview-size">8.53 小时 · 3,760 段</td><td>夹爪腕端</td>
+        <td>2 路夹指光学图、操作者捏手柄的力、夹爪位姿与开口</td><td>夹爪轨迹、操作者用力变化、胶面图相对变化。</td>
+       </tr>
+       <tr data-target="vitamin_b" data-mode="gripper" data-scope="screened">
+        <th scope="row"><a href="#vitamin_b">ViTaMIn-B</a><span class="overview-label">手持夹爪</span><span class="overview-format">Zarr ZIP</span></th>
+        <td class="overview-size">2.19 小时 · 1,077 段</td><td>双夹爪腕端</td>
+        <td>4 路夹指光学图、每指 256 个胶面三维点、双爪位姿与开口</td><td>胶面形变、双爪轨迹，接触时序。</td>
+       </tr>
+       <tr data-target="freetacman" data-mode="gripper" data-scope="screened">
+        <th scope="row"><a href="#freetacman">FreeTacMan</a><span class="overview-label">手持夹爪</span><span class="overview-format">MP4 · 轨迹 CSV</span></th>
+        <td class="overview-size">6,427 段 · 时长未核实</td><td>夹爪腕端鱼眼</td>
+        <td>1 至 2 路夹指光学图、夹爪位姿与开口</td><td>夹爪轨迹、相对空载的胶面变化。</td>
+       </tr>
+       <tr data-target="touch_in_the_wild" data-mode="gripper" data-scope="screened">
+        <th scope="row"><a href="#touch_in_the_wild">Touch in the Wild</a><span class="overview-label">手持夹爪</span><span class="overview-format">Zarr ZIP · 原始 MP4</span></th>
+        <td class="overview-size">约 2,700 段 · 时长未核实</td><td>夹爪腕端鱼眼</td>
+        <td>两夹指拼成 12×64 相对压力图，抽查任务另有位姿与开口</td><td>两侧压力分布、接触时序；轨迹取自含位姿的任务包。</td>
+       </tr>
+       <tr data-target="exumi" data-mode="gripper" data-scope="screened">
+        <th scope="row"><a href="#exumi">exUMI</a><span class="overview-label">手持夹爪</span><span class="overview-format">Zarr ZIP · 原始 MP4</span></th>
+        <td class="overview-size">3.32 小时 · 1,660 段</td><td>夹爪腕端 GoPro</td>
+        <td>两夹指拼合的光学图、夹爪位置与方向、开口</td><td>夹爪轨迹、相对胶面变化。抽样有局部触觉帧缺失。</td>
+       </tr>
+       <tr data-target="egopressure" data-mode="surface" data-scope="screened">
+        <th scope="row"><a href="#egopressure">EgoPressure</a><span class="overview-label">压力平板</span><span class="overview-format">Parquet · 标定 JSON</span></th>
+        <td class="overview-size">1,344 段 · 时长未核实</td><td>头戴＋7 路固定 RGB-D</td>
+        <td>105×185 实测台面压力、手表面压力图、21 点拟合骨架与手部网格</td><td>原值可换算牛顿。可计算台面接触面积、位置及与手部的对应。</td>
+       </tr>
+       <tr data-target="tacclaw" data-mode="mixed" data-scope="screened">
+        <th scope="row"><a href="#tacclaw">TacClaw-Infinity</a><span class="overview-label">混合采集</span><span class="overview-format">MP4 · 16 位 MOV · Parquet</span></th>
+        <td class="overview-size">首批约 1,000 小时 · 段数未核实</td><td>夹爪腕端；外骨骼版另有头戴与外部相机</td>
+        <td>夹指光学图、胶面深度／形变／剪切；按设备发布夹爪或手部动作</td><td>逐设备读取运动轨迹和触觉变化，统一动作表有占位维度。</td>
+       </tr>
+       <tr data-target="tachin-pro-e" data-mode="glove" data-scope="reference">
+        <th scope="row"><a href="#tachin-pro-e">TachinGlove Pro-E</a><span class="overview-label">人手手套 · 参考</span><span class="overview-format">MP4 · NPZ · CSV / LeRobot</span></th>
+        <td class="overview-size">3.64 小时 · 369 段原始录制</td><td>头戴双目</td>
+        <td>每手 15 个压力垫、5 指尖位姿及 25 点电磁骨架、头部 IMU</td><td>手形热力图、腕局部骨架运动。另有重建的每手 21 点视觉手姿。</td>
+       </tr>
+       <tr data-target="tachin-tacrich" data-mode="mixed" data-scope="reference">
+        <th scope="row"><a href="#tachin-tacrich">TacRich-Manip</a><span class="overview-label">混合采集 · 参考</span><span class="overview-format">MP4 · Parquet</span></th>
+        <td class="overview-size">约 9.14 小时 · 823 段</td><td>前视、侧视、夹爪鱼眼</td>
+        <td>双指 2×32×58 触觉、深度、夹爪位姿与开口、遥操关节</td><td>夹爪轨迹。98 段手持和 725 段机器人使用不同的动作定义。</td>
+       </tr>
+       <tr data-target="april-glove" data-mode="glove" data-scope="reference">
+        <th scope="row"><a href="#april-glove">April Glove</a><span class="overview-label">人手手套 · 参考</span><span class="overview-format">MCAP</span></th>
+        <td class="overview-size">约 52 小时 · 44 次录制</td><td>头戴双目＋双腕</td>
+        <td>每手 122 点原始压力、21 个三维关节点、双腕位姿、手套 IMU</td><td>用腕部位姿生成世界坐标下的手部轨迹。完整包待授权抽样。</td>
+       </tr>
+       <tr data-target="egotouch" data-mode="glove" data-scope="reference">
+        <th scope="row"><a href="#egotouch">EgoTouch</a><span class="overview-label">人手手套 · 参考</span><span class="overview-format">MP4 · JSONL · NPZ</span></th>
+        <td class="overview-size">1,933 组 · 时长未核实</td><td>主第一人称＋双腕</td>
+        <td>每手 256 路原值、21×21 热图、手套方向，附视觉估计手姿</td><td>压力区域与接触时序。抽查动捕和腕部定位为空，许可待核。</td>
+       </tr>
+       <tr data-target="openneodata" data-mode="mixed" data-scope="reference">
+        <th scope="row"><a href="#openneodata">N0 / OpenNeoData</a><span class="overview-label">混合采集 · 参考</span><span class="overview-format">MP4 · Parquet / OXT Zarr</span></th>
+        <td class="overview-size">混合库 5,000+ 小时 · 20 万+ 段</td><td>手持版在夹爪腕端；固定机械臂另有第三视角</td>
+        <td>手持每爪 2 路光学触觉、10 维位姿和开口；机器人版有机器人关节和动作</td><td>按子库提取轨迹。手持总量待授权核对。</td>
+       </tr>
+       <tr data-target="t-rex" data-mode="robot" data-scope="reference">
+        <th scope="row"><a href="#t-rex">T-Rex</a><span class="overview-label">机器人 · 参考</span><span class="overview-format">MP4 · Parquet</span></th>
+        <td class="overview-size">50.68 小时 · 5,464 段</td><td>机器人头部＋双腕</td>
+        <td>10 指原始触觉与形变视频、60 维估计力／力矩、58 维机器人关节与目标</td><td>逐指接触和力／力矩时序、机器人运动轨迹。</td>
+       </tr>
+       <tr data-target="sharpadex" data-mode="robot" data-scope="reference">
+        <th scope="row"><a href="#sharpadex">SharpaDex</a><span class="overview-label">机器人 · 参考</span><span class="overview-format">MP4 · Parquet</span></th>
+        <td class="overview-size">约 300 小时 · 28,993 段</td><td>机器人头部双目＋双腕</td>
+        <td>十指拼合触觉视频、60 维力／力矩、机器人状态与动作、子任务</td><td>分离十指触觉、构造接触时序和机器人运动轨迹。</td>
+       </tr>
+       <tr data-target="ftp1-sharpa" data-mode="robot" data-scope="reference">
+        <th scope="row"><a href="#ftp1-sharpa">FTP-1-Sharpa</a><span class="overview-label">机器人 · 参考</span><span class="overview-format">分卷 TAR · OXT Zarr</span></th>
+        <td class="overview-size">9,328 段（OXT）· 时长未核实</td><td>机器人视角</td>
+        <td>Sharpa Wave 指尖光学触觉、机器人关节索引和手部姿态</td><td>按录制和手指组织触觉。机器人关节索引为 22 维。</td>
+       </tr>
+       <tr data-target="tipdex" data-mode="robot" data-scope="reference">
+        <th scope="row"><a href="#tipdex">TipDex-Data</a><span class="overview-label">机器人 · 参考</span><span class="overview-format">Parquet（内含图像）</span></th>
+        <td class="overview-size">约 26.16 分钟 · 50 段原始录制</td><td>俯视＋机器人双腕</td>
+        <td>机器人动作和指尖触觉，另有同源光照扰动版</td><td>可做同一动作在不同光照下的比较，两版按同源录制计。</td>
+       </tr>
+       <tr data-target="xp-teleop" data-mode="robot" data-scope="reference">
+        <th scope="row"><a href="#xp-teleop">Xp-Teleop</a><span class="overview-label">机器人 · 参考</span><span class="overview-format">MP4 · NPZ · JSONL · CSV</span></th>
+        <td class="overview-size">约 53.37 分钟 · 27 次录制</td><td>机器人头部</td>
+        <td>机器人视频、独立时间戳的手部触觉、543 个动作子段</td><td>用各自时间戳对齐触觉与画面，按动作子段切分。</td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <p hidden="" id="catalog-empty">没有匹配的数据集。</p>
+   </section>
+   <section aria-labelledby="catalog-title" id="datasets">
+    <div class="section-heading catalog-heading">
+     <div><h2 id="catalog-title">视频与数据详情</h2></div>
+     <a class="secondary-link" href="data/datasets.csv">下载筛选 CSV</a>
+    </div>
     <div id="catalog">
-     <article class="dataset" data-mode="glove" id="ego_force">
+     <article class="dataset" data-mode="glove" id="ego_force" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -265,7 +381,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="glove" id="twintouch">
+     <article class="dataset" data-mode="glove" id="twintouch" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -411,7 +527,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="glove" id="touchscale">
+     <article class="dataset" data-mode="glove" id="touchscale" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -548,7 +664,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="glove" id="egoexplorer">
+     <article class="dataset" data-mode="glove" id="egoexplorer" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -705,7 +821,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="glove" id="egotac_sc">
+     <article class="dataset" data-mode="glove" id="egotac_sc" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -851,7 +967,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="glove" id="ace_data0">
+     <article class="dataset" data-mode="glove" id="ace_data0" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -998,7 +1114,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="glove" id="vtdexmanip">
+     <article class="dataset" data-mode="glove" id="vtdexmanip" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -1144,7 +1260,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="glove" id="egotactile">
+     <article class="dataset" data-mode="glove" id="egotactile" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -1290,7 +1406,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="glove" id="opentouch">
+     <article class="dataset" data-mode="glove" id="opentouch" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -1441,7 +1557,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="glove" id="uvta">
+     <article class="dataset" data-mode="glove" id="uvta" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -1592,7 +1708,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="gripper" id="tacverse">
+     <article class="dataset" data-mode="gripper" id="tacverse" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -1748,7 +1864,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="gripper" id="aetherock">
+     <article class="dataset" data-mode="gripper" id="aetherock" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -1904,7 +2020,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="gripper" id="vitamin_b">
+     <article class="dataset" data-mode="gripper" id="vitamin_b" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -2060,7 +2176,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="gripper" id="freetacman">
+     <article class="dataset" data-mode="gripper" id="freetacman" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -2211,7 +2327,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="gripper" id="touch_in_the_wild">
+     <article class="dataset" data-mode="gripper" id="touch_in_the_wild" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -2357,7 +2473,45 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="surface" id="egopressure">
+     <article class="dataset" data-mode="gripper" id="exumi" tabindex="-1">
+       <header class="dataset-header">
+         <div><h3>exUMI</h3><span class="type">人手操控夹爪</span></div>
+         <ul class="dataset-links">
+           <li><a href="https://huggingface.co/datasets/silicx/exUMI">Hugging Face</a></li>
+           <li><a href="https://arxiv.org/abs/2509.14688">论文</a></li>
+         </ul>
+       </header>
+       <p class="meta"><span class="amount">3.32 小时</span><span class="amount">1,660 段</span><span>公开</span><span>MIT</span></p>
+       <div class="dataset-content">
+         <figure class="media">
+           <video aria-label="exUMI 10 秒腕部视频与触觉对照片" controls playsinline poster="assets/exumi.webp" preload="none">
+             <source src="assets/exumi.webm" type="video/webm">
+             <source src="assets/exumi.mp4" type="video/mp4">
+           </video>
+           <figcaption><strong>10 秒并排片。</strong>插笔任务第 19 段。右侧显示两片夹指胶面相对空载画面的光学变化。</figcaption>
+           <ul class="media-links">
+             <li><a href="assets/exumi.mp4">打开 MP4</a></li>
+             <li><a href="https://huggingface.co/datasets/silicx/exUMI/tree/32aa3b956d4ac91474eca07128b547e2f906934b">样本来源</a></li>
+             <li><a href="licenses/exUMI-MIT.txt">许可 · MIT</a></li>
+           </ul>
+           <p class="video-credit">来源上海交通大学等。视频已剪辑并叠加触觉显示。</p>
+         </figure>
+         <div>
+           <dl class="fields">
+             <div><dt>视觉</dt><dd>夹爪上的 GoPro 拍腕部视角；训练包 RGB 为 224×224。</dd></div>
+             <div><dt>触觉</dt><dd>两片夹指均有光学传感器。发布图按两指拼接，抽样有 680×460 和 224×224 两种尺寸。</dd></div>
+             <div><dt>动作</dt><dd>Quest 追踪夹爪位置和旋转，各 3 个数。开口量由磁编码器记录，为 1 个数。</dd></div>
+             <div><dt>下载格式</dt><dd>8 个按任务分组的 Zarr ZIP，另有原始 GoPro MP4。按作者标称约 59.94 fps 折算时长。</dd></div>
+           </dl>
+           <details class="notes">
+             <summary>发布口径与来源</summary>
+             <p>按作者发布的轨迹索引统计。抽查三段，其中一段末尾 41 帧缺触觉图像块。</p>
+             <ul class="proof-links"><li><a href="https://huggingface.co/datasets/silicx/exUMI#data-structure">发布字段</a></li><li><a href="https://arxiv.org/html/2509.14688#S3.SS1">论文采集设备</a></li></ul>
+           </details>
+         </div>
+       </div>
+     </article>
+     <article class="dataset" data-mode="surface" id="egopressure" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -2508,7 +2662,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset" data-mode="mixed" id="tacclaw">
+     <article class="dataset" data-mode="mixed" id="tacclaw" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>
@@ -2659,7 +2813,7 @@
        </div>
       </div>
      </article>
-     <article class="dataset topic" data-mode="mixed" id="tachintech">
+     <article class="dataset topic" data-mode="mixed" id="tachintech" tabindex="-1">
       <header class="dataset-header">
        <div>
         <h3>TachinTech 采集专题</h3>
@@ -2669,9 +2823,9 @@
         <li><a href="https://huggingface.co/Tachin-TachinTech">Hugging Face 发布者</a></li>
        </ul>
       </header>
-      <p class="topic-intro">同一发布者下的两套独立数据。Pro-E 记录戴手套的人手直接接触，TacRich-Manip 记录手持夹爪与机器人遥操。主目录的 17 套按硬筛口径统计，TachinTech 在此作为专题单列。</p>
+      <p class="topic-intro">同一发布者下的两套独立数据。Pro-E 记录戴手套的人手直接接触，TacRich-Manip 记录手持夹爪与机器人遥操。两套数据都列在总览的扩展参考中。</p>
 
-      <section class="topic-part" id="tachin-pro-e" aria-labelledby="tachin-pro-e-title">
+      <section class="topic-part" id="tachin-pro-e" aria-labelledby="tachin-pro-e-title" tabindex="-1">
        <header class="dataset-header">
         <div>
          <h4 id="tachin-pro-e-title">TachinGlove Pro-E</h4>
@@ -2709,7 +2863,7 @@
        </div>
       </section>
 
-      <section class="topic-part" id="tachin-tacrich" aria-labelledby="tachin-tacrich-title">
+      <section class="topic-part" id="tachin-tacrich" aria-labelledby="tachin-tacrich-title" tabindex="-1">
        <header class="dataset-header">
         <div>
          <h4 id="tachin-tacrich-title">TacRich-Manip</h4>
@@ -2749,10 +2903,254 @@
        </div>
       </section>
      </article>
+     <article class="dataset" data-mode="glove" data-scope="reference" id="april-glove" tabindex="-1">
+       <header class="dataset-header">
+         <div><h3>April Glove</h3><span class="type">人手戴手套</span></div>
+         <ul class="dataset-links">
+           <li><a href="https://huggingface.co/datasets/aprilrobotics/april-glove">数据卡与申请</a></li>
+           <li><a href="https://aprilrobotics.ai/">采集设备</a></li>
+         </ul>
+       </header>
+       <p class="meta"><span class="amount">约 52 小时</span><span class="amount">44 次录制</span><span>人工审批</span><span>参考资料</span></p>
+       <div class="dataset-content">
+         <figure class="media">
+           <video aria-label="April Glove 官方熨烫演示" controls playsinline preload="none">
+             <source src="https://cdn-uploads.huggingface.co/production/uploads/65c552131080431ea9de910f/91vd5xp9UkqiHvi2yKXBR.mp4" type="video/mp4">
+           </video>
+           <figcaption><strong>发布者演示。</strong>真人熨烫。画面同步显示头戴视角、双腕视频、手部关节点和压力分布。</figcaption>
+           <ul class="media-links"><li><a href="https://cdn-uploads.huggingface.co/production/uploads/65c552131080431ea9de910f/91vd5xp9UkqiHvi2yKXBR.mp4">打开官方视频</a></li></ul>
+         </figure>
+         <div>
+           <dl class="fields">
+             <div><dt>视觉</dt><dd>头戴双目 1920×1080，双腕各 1120×1080，视频均为 30 fps。</dd></div>
+             <div><dt>触觉</dt><dd>每手 122 个压力点，覆盖手掌和指尖。120 Hz，发布为原始传感器计数。</dd></div>
+             <div><dt>动作</dt><dd>融合得到每手 21 个三维关节点，60 Hz；另有头、双腕的空间轨迹及手套惯性数据。</dd></div>
+             <div><dt>下载格式</dt><dd>原始录制和可视化各有 MCAP。Parquet 保存录制索引。原始文件按研究和评估条款申请。</dd></div>
+           </dl>
+           <details class="notes">
+             <summary>发布口径与来源</summary>
+             <p>数量和字段来自厂商数据卡，原始录制待授权抽样。公开的另一个 LeRobot 样本可看视频与姿态，压力数据以 MCAP 发布为准。</p>
+             <ul class="proof-links"><li><a href="https://huggingface.co/datasets/aprilrobotics/april-glove#at-a-glance">发布规格</a></li><li><a href="https://huggingface.co/datasets/aprilrobotics/sample">公开姿态样本</a></li></ul>
+           </details>
+         </div>
+       </div>
+     </article>
+     <article class="dataset" data-mode="glove" data-scope="reference" id="egotouch" tabindex="-1">
+       <header class="dataset-header">
+         <div><h3>EgoTouch / TouchAnything</h3><span class="type">人手戴手套</span></div>
+         <ul class="dataset-links">
+           <li><a href="https://huggingface.co/datasets/zhouzhoujy/EgoTouch/tree/main">Hugging Face</a></li>
+           <li><a href="https://jianyi2004.github.io/TouchAnything-Website/">项目</a></li>
+         </ul>
+       </header>
+       <p class="meta"><span class="amount">1,933 组配对文件</span><span>公开文件</span><span>数据许可待核实</span></p>
+       <div class="dataset-content">
+         <figure class="media">
+           <video aria-label="EgoTouch 枕头样本官方视频和双手压力图" controls playsinline preload="none">
+             <source src="https://huggingface.co/datasets/zhouzhoujy/EgoTouch/resolve/main/Home/arrange_pillow/20260412_101136_379/visualization.mp4" type="video/mp4">
+           </video>
+           <figcaption><strong>发布者可视化。</strong>整理枕头。上方是头戴和双腕画面，下方是双手实测压力数据生成的热图。</figcaption>
+           <ul class="media-links">
+             <li><a href="https://huggingface.co/datasets/zhouzhoujy/EgoTouch/resolve/main/Home/arrange_pillow/20260412_101136_379/visualization.mp4">打开官方视频</a></li>
+             <li><a href="https://huggingface.co/datasets/zhouzhoujy/EgoTouch/tree/main/Home/arrange_pillow/20260412_101136_379">样本文件</a></li>
+           </ul>
+         </figure>
+         <div>
+           <dl class="fields">
+             <div><dt>视觉</dt><dd>第一人称主视角和两路腕部 RGB。样本每路 640×480、30 fps。</dd></div>
+             <div><dt>触觉</dt><dd>每手 256 路原始传感器读数，含压力及弯折通道。导出的 21×21 手形图为归一化读数。</dd></div>
+             <div><dt>动作</dt><dd>手套提供方向四元数。公开样本含 WiLoR 视觉手姿；抽查三段的 Rokoko 和 Vive 字段为空。</dd></div>
+             <div><dt>下载格式</dt><dd>逐段 MP4、JSONL、NPZ。作者提供训练用 HDF5 转换脚本。</dd></div>
+           </dl>
+           <details class="notes">
+             <summary>发布口径与来源</summary>
+             <p>规模按发布目录中完整的视频与压力配对统计。论文所述动捕采集配置与公开样本中的姿态可用性分别核对。</p>
+             <ul class="proof-links"><li><a href="https://arxiv.org/html/2605.13083#S8.SS1">原始采集与字段</a></li><li><a href="https://github.com/Jianyi2004/TouchAnything#-data-format">训练格式</a></li></ul>
+           </details>
+         </div>
+       </div>
+     </article>
+     <article class="dataset" data-mode="mixed" data-scope="reference" id="openneodata" tabindex="-1">
+       <header class="dataset-header">
+         <div><h3>N0 / OpenNeoData</h3><span class="type">手持夹爪＋机器人</span></div>
+         <ul class="dataset-links">
+           <li><a href="https://huggingface.co/datasets/NeoteAIEmbodied/OpenNeoData">原版申请</a></li>
+           <li><a href="https://huggingface.co/datasets/NeoteAI/OpenNeoData_OXT">OXT 转换</a></li>
+         </ul>
+       </header>
+       <p class="meta"><span class="amount">混合发布 5,000+ 小时</span><span class="amount">20 万+ 段</span><span>手持规模待核实</span><span>CC BY-NC-SA 4.0</span></p>
+       <div class="dataset-content">
+         <figure class="media">
+           <a class="preview-link" href="https://research.neoteai.com/n0-foundation/">打开 N0 官方采集展示</a>
+           <figcaption><strong>发布者展示。</strong>项目页展示手持采集设备及机器人采集配置。</figcaption>
+         </figure>
+         <div>
+           <dl class="fields">
+             <div><dt>视觉</dt><dd>手持版使用夹爪广角腕相机。单夹爪一路腕 RGB，双夹爪两路；每路 640×360、30 fps。</dd></div>
+             <div><dt>触觉</dt><dd>每把夹爪两指各有一条凝胶视触觉视频，每路 640×360、30 fps。</dd></div>
+             <div><dt>动作</dt><dd>记录夹爪位置、旋转和开口。单夹爪 10 个数，双夹爪 20 个数。机器人版另存机械臂状态和动作。</dd></div>
+             <div><dt>下载格式</dt><dd>原版为 LeRobot v3 的 MP4＋Parquet，手持数据分 <code>umi</code> 和 <code>umi_single</code>，需人工审批。OXT 是 Zarr ZIP，文件树当前列出两段手持样本。</dd></div>
+           </dl>
+           <details class="notes">
+             <summary>发布口径与来源</summary>
+             <p>5,000+ 小时和 20 万+ 段是混合发布总量。论文中的 57% 是完整 NeoData 的手持轨迹占比。</p>
+             <ul class="proof-links"><li><a href="https://huggingface.co/datasets/NeoteAIEmbodied/OpenNeoData#embodiments-and-camera-streams">相机与发布字段</a></li><li><a href="https://huggingface.co/datasets/NeoteAI/OpenNeoData_OXT/tree/main/OpenNeoData_OXT">OXT 文件树</a></li><li><a href="https://arxiv.org/html/2608.29601#S4.SS3">论文全库比例</a></li></ul>
+           </details>
+         </div>
+       </div>
+     </article>
+     <article class="dataset" data-mode="robot" data-scope="reference" id="t-rex" tabindex="-1">
+      <header class="dataset-header">
+       <div><h3>T-Rex</h3><span class="type">机器人遥操</span></div>
+       <ul class="dataset-links">
+        <li><a href="https://huggingface.co/datasets/zekaiwang/trex_dataset">Hugging Face</a></li>
+        <li><a href="https://tactile-rex.github.io/dataset/">项目与样本</a></li>
+       </ul>
+      </header>
+      <p class="meta"><span class="amount">50.68 小时</span><span class="amount">5,464 段</span><span>公开</span><span>MIT</span></p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="T-Rex 发布者样本，机器人折叠铝箔" controls playsinline preload="none">
+         <source src="https://huggingface.co/datasets/Beakerman0101/trex-visualizer/resolve/main/videos/fold__aluminum_foil__01495.mp4" type="video/mp4">
+        </video>
+        <figcaption><strong>发布者样本。</strong>Dexmate Vega‑1 双手折叠铝箔。</figcaption>
+        <ul class="media-links"><li><a href="https://tactile-rex.github.io/dataset/">更多原始示教预览</a></li></ul>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div><dt>操作设备</dt><dd>Dexmate Vega‑1 双臂机器人，配两只 Sharpa Wave 灵巧手。操作者用 Manus 手套和 Vive 跟踪器遥控。</dd></div>
+         <div><dt>视觉</dt><dd>机器人头部一路 RGB 和双腕 RGB，发布分辨率均为 640×360。</dd></div>
+         <div><dt>触觉</dt><dd>十个机器人指尖各有 320×240 原始触觉图和 240×240 形变图。另存每指六轴估计力／力矩，合计 60 个值。</dd></div>
+         <div><dt>动作</dt><dd>逐帧保存机器人状态和关节目标各 58 个值，包含双臂和双手。</dd></div>
+         <div><dt>下载格式</dt><dd>LeRobot v3，MP4＋Parquet，30 Hz。50.68 小时是目前可下载的公开部分，论文报告约 100 小时。</dd></div>
+        </dl>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="robot" data-scope="reference" id="sharpadex" tabindex="-1">
+      <header class="dataset-header">
+       <div><h3>SharpaDex v1.0</h3><span class="type">机器人遥操</span></div>
+       <ul class="dataset-links">
+        <li><a href="https://huggingface.co/datasets/Sharpa-Robotics/SharpaDex-v1.0">Hugging Face</a></li>
+        <li><a href="https://arxiv.org/html/2611.21057#S3.SS2">WiTac 论文</a></li>
+       </ul>
+      </header>
+      <p class="meta"><span class="amount">约 300 小时</span><span class="amount">28,993 段</span><span>公开</span><span>CC BY-NC 4.0</span></p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="SharpaDex 发布者样本，发扑克牌时的右腕视角" controls playsinline preload="none">
+         <source src="https://huggingface.co/datasets/Sharpa-Robotics/SharpaDex-v1.0/resolve/main/assets/example_views/wrist_right.mp4" type="video/mp4">
+        </video>
+        <figcaption><strong>发布者样本。</strong>机器人发扑克牌的右腕视角，可打开同段触觉视频对照。</figcaption>
+        <ul class="media-links"><li><a href="https://huggingface.co/datasets/Sharpa-Robotics/SharpaDex-v1.0/resolve/main/assets/example_views/tactile_deform.mp4">同段触觉形变 MP4</a></li></ul>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div><dt>操作设备</dt><dd>机器人双臂各有 7 个关节，左右 Sharpa Wave 手各有 22 个关节。由人遥操完成任务。</dd></div>
+         <div><dt>视觉</dt><dd>机器人头部双目和左右腕共四路 RGB，均为 480×480。</dd></div>
+         <div><dt>触觉</dt><dd>十指原始触觉合成 1600×480 视频，形变合成 1200×480 视频。另存每指六轴力／力矩，合计 60 个值。</dd></div>
+         <div><dt>动作</dt><dd>机器人关节状态和动作各 65 维，其中 58 维有值。另有末端实时和目标位姿、任务与子任务标注。</dd></div>
+         <div><dt>下载格式</dt><dd>30 Hz，MP4＋Parquet。LeRobot v2.1 和 v3.0 是同一批示教的两种导出。</dd></div>
+        </dl>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="robot" data-scope="reference" id="ftp1-sharpa" tabindex="-1">
+      <header class="dataset-header">
+       <div><h3>FTP‑1‑Sharpa</h3><span class="type">机器人灵巧手</span></div>
+       <ul class="dataset-links">
+        <li><a href="https://huggingface.co/datasets/MJJJJ1064/FTP-1-Dataset/tree/main/sharpa">Hugging Face</a></li>
+        <li><a href="https://arxiv.org/abs/2606.13102">FTP‑1 论文</a></li>
+       </ul>
+      </header>
+      <p class="meta"><span class="amount">9,328 段（OXT 登记）</span><span>公开文件</span></p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="Open-X-Tactile 的 FTP‑1‑Sharpa 数据预览" controls playsinline preload="none">
+         <source src="https://open-x-tactile.github.io/sources/SharpaNorth_FTP1/video.mp4" type="video/mp4">
+        </video>
+        <figcaption><strong>项目数据预览。</strong>Sharpa North 机器人操作示教。</figcaption>
+        <ul class="media-links"><li><a href="https://github.com/open-x-tactile/open-x-tactile.github.io/blob/main/site-data.json">OXT 数据登记</a></li></ul>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div><dt>操作设备</dt><dd>Sharpa North 机器人，配 Sharpa Wave 灵巧手。</dd></div>
+         <div><dt>视觉</dt><dd>机器人视角。发布画面的分辨率待核实。</dd></div>
+         <div><dt>触觉</dt><dd>机器人指尖的 Sharpa DTC 光学触觉图。</dd></div>
+         <div><dt>动作</dt><dd>抽查首个 Zarr 可见机器人手关节索引与手部位姿数组。</dd></div>
+         <div><dt>下载格式</dt><dd>分卷 TAR 含 Zarr v2，以 episode_ends 索引切分录制。</dd></div>
+        </dl>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="robot" data-scope="reference" id="tipdex" tabindex="-1">
+      <header class="dataset-header">
+       <div><h3>TipDex‑Data</h3><span class="type">机器人灵巧手</span></div>
+       <ul class="dataset-links">
+        <li><a href="https://huggingface.co/datasets/TipDex-VTLA/TipDex-Data">Hugging Face</a></li>
+        <li><a href="https://tiplab.github.io/TipDex-VTLA/">项目与演示</a></li>
+       </ul>
+      </header>
+      <p class="meta"><span class="amount">约 26.16 分钟</span><span class="amount">50 段原始录制</span><span>公开文件</span><span>许可待核</span></p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="TipDex-VTLA 发布者演示，光照变化下转移鸡蛋" controls playsinline preload="none">
+         <source src="https://tiplab.github.io/TipDex-VTLA/assets/lighting/egg-light-drop-tactile-v2.mp4" type="video/mp4">
+        </video>
+        <figcaption><strong>发布者演示。</strong>光照变化下转移鸡蛋。</figcaption>
+        <ul class="media-links"><li><a href="https://huggingface.co/datasets/TipDex-VTLA/TipDex-Data/blob/main/meta/info.json">样例字段</a></li></ul>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div><dt>操作设备</dt><dd>RealMan RM75 双臂和 Inspire RH56F2-E2-T1 灵巧手。此发布包收录鸡蛋转移任务。</dd></div>
+         <div><dt>视觉</dt><dd>一路俯视和两路腕部 RGB，各 224×224。</dd></div>
+         <div><dt>触觉</dt><dd>右机器人手的原始触觉传输数据，每帧 364 个 16 位整数。与物理测点的对应关系待核实。</dd></div>
+         <div><dt>动作</dt><dd>状态 19 维，动作列保存右臂和右手的 13 维实测关节坐标，另有指令值。</dd></div>
+         <div><dt>下载格式</dt><dd>LeRobot v2.1 Parquet，画面存于表中，标称 30 Hz。另有 50 段同源的光照扰动版本。</dd></div>
+        </dl>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="robot" data-scope="reference" id="xp-teleop" tabindex="-1">
+      <header class="dataset-header">
+       <div><h3>Xp‑Teleop（Ropedia W0）</h3><span class="type">机器人遥操</span></div>
+       <ul class="dataset-links">
+        <li><a href="https://huggingface.co/datasets/ropedia-ai/Xp-Teleop">Hugging Face</a></li>
+        <li><a href="https://arxiv.org/abs/2610.26855">Ropedia W0 论文</a></li>
+       </ul>
+      </header>
+      <p class="meta"><span class="amount">约 53.37 分钟</span><span class="amount">27 次录制</span><span>543 个动作片段</span><span>公开 · CC BY 4.0</span></p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="Xp‑Teleop 公开片段，从机器人头部视角切豆角" controls playsinline preload="none">
+         <source src="https://huggingface.co/datasets/ropedia-ai/Xp-Teleop/resolve/main/takes/chop_vegetables_with_knife/segments/c008_press_the_blade_at_the_beans/video_rgb.mp4" type="video/mp4">
+        </video>
+        <figcaption><strong>发布片段。</strong>机器人头部视角下压刀切豆角。</figcaption>
+        <ul class="media-links"><li><a href="https://huggingface.co/datasets/ropedia-ai/Xp-Teleop#layout">下载目录说明</a></li></ul>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div><dt>操作设备</dt><dd>Unitree G1 人形机器人，配 Inspire FTP 手，由人遥操。</dd></div>
+         <div><dt>视觉</dt><dd>机器人头部 RGB，1280×720、30 fps。同一片段另有骨架叠加视频。</dd></div>
+         <div><dt>触觉</dt><dd>数据卡列每手 1,062 个触觉测点。触觉在 tactile.jsonl 中独立保存时间戳。</dd></div>
+         <div><dt>动作</dt><dd>每帧包含机器人 35 个关节角、51 个二维／三维关键点及头部相机位姿。</dd></div>
+         <div><dt>下载格式</dt><dd>按动作片段提供 MP4、动作 NPZ、触觉 JSONL、时间戳 CSV 和标注。</dd></div>
+        </dl>
+       </div>
+      </div>
+     </article>
     </div>
-    <p hidden="" id="catalog-empty">
-     没有匹配的数据集或专题。
-    </p>
+   </section>
+   <section aria-labelledby="citations-title" class="scope" id="citations">
+    <div class="section-heading"><h2 id="citations-title">论文引用与数据用途</h2></div>
+    <ul class="citation-list">
+     <li><strong>N0</strong> 将 <a href="#exumi">exUMI</a> 列为手持采集先例。<a href="https://arxiv.org/html/2608.29601#S2.SS1">N0 论文</a></li>
+     <li><strong>FACT</strong> 复用论文口径的 100 小时 <a href="#t-rex">T-Rex</a> 机器人数据，另采 <a href="#ego_force">EgoForce</a> 人手数据。<a href="https://fact-1-0.github.io/FACT.pdf">FACT 论文</a></li>
+     <li><strong>TF²-Steering</strong> 用 <a href="#openneodata">OpenNeoData</a>、<a href="#t-rex">T-Rex</a> 和 <a href="#ftp1-sharpa">FTP-1-Sharpa</a> 做触觉预训练，30%／40%／30% 为训练采样权重。<a href="https://arxiv.org/html/2611.01483#A1.SS1.SSS2">论文附录</a></li>
+     <li><strong>WiTac</strong> 用 <a href="#sharpadex">SharpaDex</a> 做触觉预训练，以 <a href="#t-rex">T-Rex</a> 作对比。<a href="https://arxiv.org/html/2611.21057#S3.SS2">训练章节</a></li>
+     <li><strong>TouchWorld</strong> 引用 <a href="#t-rex">T-Rex</a> 的高频触觉控制，在人手侧用 <a href="#egotouch">EgoTouch</a> 预训练。<a href="https://arxiv.org/html/2607.07287#S3.SS2">训练章节</a></li>
+     <li><strong>其他线索</strong>。NAT 使用了 <a href="#openneodata">OpenNeoData</a> 的两类动作数据。<a href="#uvta">UVTA</a> 独立采集了人手和机器人数据。<a href="#tipdex">TipDex</a> 与 <a href="#xp-teleop">Xp-Teleop</a> 发布的是机器人数据。<a href="https://arxiv.org/html/2611.28873#A1.T8">NAT 数据表</a></li>
+    </ul>
    </section>
    <section aria-labelledby="scope-title" class="scope" id="scope">
     <div class="section-heading">
@@ -2765,13 +3163,19 @@
       </p>
      </div>
     </div>
+    <ul aria-label="通过筛选的数据集按采集方式统计" class="composition">
+     <li><strong>10</strong><span>人手戴手套</span></li>
+     <li><strong>6</strong><span>人操控夹爪</span></li>
+     <li><strong>1</strong><span>固定压力平板</span></li>
+     <li><strong>1</strong><span>混合采集</span></li>
+    </ul>
     <div class="scope-grid">
      <div>
       <h3>
        筛选范围
       </h3>
       <p>
-       纳入通过七项硬门槛的记录，覆盖实测触觉、人类采集、时间配对、访问、来源、最低规模与研究许可。时长和段数采用表中注明的发布版本。目视预览与原始随机样本各自标明来源。
+       18 套通过原有硬筛。扩展参考收录相关真人、手持和机器人数据，逐项注明访问、许可及核实范围。目视预览与原始随机样本分别标注。
       </p>
       <a href="data/datasets.csv">
        带证据的筛选表
@@ -2782,7 +3186,7 @@
        人手和夹爪
       </h3>
       <p>
-       只看手套与夹爪，人手手套 10 套、夹爪 5 套。已有登记的时长分别约 1,095.48 与 1,410.71 小时，含 TacVerse 的发布下限。Daimon-Infinity 首批 1,000 小时保持在混合组。
+       手持夹爪的轨迹描述工具怎么移动和开合。机器人数据记录机器人的动作。Daimon-Infinity 按混合发布登记。
       </p>
       <a href="https://huggingface.co/datasets/daimonrobotics/Daimon-Infinity#data-statistics">
        Daimon-Infinity 发布口径
@@ -2793,7 +3197,7 @@
        样本与许可
       </h3>
       <p>
-       本页并排片由发布数据转制，设备和信号来自对应原始项目。受访问条款约束的样本使用发布者自己的公开视频。每段下方可以查看 MP4、来源和原许可。
+       数据详情标出原始数据制作的并排片和发布者演示。受限或许可未核实的素材按发布者来源链接或播放。每段下方可查看视频来源。
       </p>
       <a href="https://github.com/iairplane/AwesomeTouchDataset/blob/main/MEDIA.md">
        媒体来源和署名

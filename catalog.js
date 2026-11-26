@@ -4,28 +4,36 @@
   const tools = document.getElementById("catalog-tools");
   const filters = document.getElementById("filters");
   const search = document.getElementById("search");
-  const cards = Array.from(document.querySelectorAll(".dataset"), (card) => ({
-    card, text: card.textContent.toLowerCase(), topic: card.classList.contains("topic")
-  }));
-  const datasetCount = cards.filter(({ topic }) => !topic).length;
+  const cards = Array.from(document.querySelectorAll("#catalog .dataset"));
+  const rows = Array.from(document.querySelectorAll("#overview-table tr[data-target]"), (row) => {
+    const target = document.getElementById(row.dataset.target);
+    return {
+      row, target, card: target.closest(".dataset"),
+      text: `${row.textContent} ${target.textContent}`.toLowerCase()
+    };
+  });
   const count = document.getElementById("catalog-count");
   const empty = document.getElementById("catalog-empty");
   let mode = "all";
 
   function filter() {
     const terms = search.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    let visible = 0;
-    let topics = 0;
-    for (const { card, text, topic } of cards) {
-      const matches = mode === "all" || card.dataset.mode === mode;
-      card.hidden = !matches || !terms.every((term) => text.includes(term));
-      if (!card.hidden) {
-        visible += Number(!topic);
-        topics += Number(topic);
-      }
+    const visibleCards = new Set();
+    let screened = 0;
+    let reference = 0;
+    for (const { row, target, card, text } of rows) {
+      const matchesMode = mode === "all" || row.dataset.mode === mode;
+      const matches = matchesMode && terms.every((term) => text.includes(term));
+      row.hidden = !matches;
+      if (target !== card) target.hidden = !matches;
+      if (!matches) continue;
+      visibleCards.add(card);
+      screened += Number(row.dataset.scope === "screened");
+      reference += Number(row.dataset.scope === "reference");
     }
-    count.textContent = `显示 ${visible} / ${datasetCount} 套数据集${topics ? `，另有 ${topics} 个专题` : ""}`;
-    empty.hidden = visible + topics !== 0;
+    for (const card of cards) card.hidden = !visibleCards.has(card);
+    count.textContent = `显示 ${screened + reference} 套 · ${screened} 套通过筛选 · ${reference} 套扩展参考`;
+    empty.hidden = visibleCards.size !== 0;
   }
 
   function setMode(next) {
@@ -42,16 +50,20 @@
   search.addEventListener("input", filter);
   function revealAnchor(hash) {
     const target = document.getElementById(hash.slice(1));
-    if (target?.closest(".dataset")?.hidden) {
+    if (target?.closest(".dataset") && target.closest("[hidden]")) {
       search.value = "";
       setMode("all");
       target.scrollIntoView();
     }
+    return target;
   }
 
   window.addEventListener("hashchange", () => revealAnchor(location.hash));
-  document.querySelector('nav a[href="#tachintech"]').addEventListener("click", (event) => {
-    revealAnchor(event.currentTarget.hash);
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest('a[href^="#"]');
+    if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const target = revealAnchor(link.hash);
+    if (link.closest("#overview-table")) target?.focus({ preventScroll: true });
   });
 
   const players = Array.from(document.querySelectorAll("video"));
