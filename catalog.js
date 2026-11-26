@@ -5,6 +5,7 @@
   const filters = document.getElementById("filters");
   const search = document.getElementById("search");
   const cards = Array.from(document.querySelectorAll("#catalog .dataset"));
+  const groups = document.querySelectorAll("#overview-table .access-group");
   const rows = Array.from(document.querySelectorAll("#overview-table tr[data-target]"), (row) => {
     const target = document.getElementById(row.dataset.target);
     return {
@@ -30,6 +31,9 @@
       visibleCards.add(card);
       screened += Number(row.dataset.scope === "screened");
       reference += Number(row.dataset.scope === "reference");
+    }
+    for (const group of groups) {
+      group.hidden = !group.querySelector("tr[data-target]:not([hidden])");
     }
     for (const card of cards) card.hidden = !visibleCards.has(card);
     count.textContent = `显示 ${screened + reference} 套 · ${screened} 套通过筛选 · ${reference} 套扩展参考`;

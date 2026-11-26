@@ -7,8 +7,8 @@
   <title>
    AwesomeTouchDataset · 第一人称触觉数据集
   </title>
-  <link href="styles.css?v=pretraining" rel="stylesheet"/>
-  <script defer="" src="catalog.js?v=pretraining">
+  <link href="styles.css?v=pretrain-catalog" rel="stylesheet"/>
+  <script defer="" src="catalog.js?v=pretrain-catalog">
   </script>
  </head>
  <body>
@@ -49,7 +49,7 @@
     <div class="section-heading">
      <div>
       <h2 id="overview-title">数据集总览</h2>
-      <p>公开可下载优先，其次是需申请和许可待核。同一档内按发布时长降序，时长未核实的按段数排列在后。</p>
+      <p>先按访问状态分组。组内按发布时长从大到小排，只有段数的放在该组末尾，按段数降序。</p>
      </div>
      <a class="secondary-link" href="#datasets">浏览视频与详情</a>
     </div>
@@ -89,7 +89,8 @@
        <th scope="col">直接提供</th>
        <th scope="col">可计算或需补齐</th>
       </tr></thead>
-      <tbody>
+      <tbody class="access-group">
+       <tr class="access-heading"><th scope="rowgroup" colspan="5">公开可下载</th></tr>
        <tr data-target="tacclaw" data-mode="mixed" data-scope="screened" data-access="public">
         <th scope="row"><a href="#tacclaw">TacClaw-Infinity</a><span class="overview-label">混合采集</span><span class="overview-format">MP4 · 16 位 MOV · Parquet</span></th>
         <td class="overview-size">首批约 1,000 小时 · 段数未核实<span class="overview-access">公开可下载</span></td><td>夹爪腕端；外骨骼版另有头戴与外部相机</td>
@@ -185,6 +186,9 @@
         <td class="overview-size">1,344 段 · 时长未核实<span class="overview-access">公开可下载</span></td><td>头戴＋7 路固定 RGB-D</td>
         <td>105×185 实测台面压力、手表面压力图、21 点拟合骨架与手部网格</td><td>原值可换算牛顿。可计算台面接触面积、位置及与手部的对应。</td>
        </tr>
+      </tbody>
+      <tbody class="access-group">
+       <tr class="access-heading"><th scope="rowgroup" colspan="5">需登录或申请</th></tr>
        <tr data-target="openneodata" data-mode="mixed" data-scope="reference" data-access="gated">
         <th scope="row"><a href="#openneodata">N0 / OpenNeoData</a><span class="overview-label">混合采集 · 参考</span><span class="overview-format">MP4 · Parquet / OXT Zarr</span></th>
         <td class="overview-size">混合库 5,000+ 小时 · 20 万+ 段<span class="overview-access">需申请</span></td><td>手持版在夹爪腕端；固定机械臂另有第三视角</td>
@@ -197,7 +201,7 @@
        </tr>
        <tr data-target="touchscale" data-mode="glove" data-scope="screened" data-access="gated">
         <th scope="row"><a href="#touchscale">TouchScale</a><span class="overview-label">人手手套</span><span class="overview-format">TAR · MP4 · MKV · NPZ · HDF5</span></th>
-        <td class="overview-size">100 小时 · 15,324 段<span class="overview-access">需申请</span></td><td>头戴 RGB-D＋双腕 RGB</td>
+        <td class="overview-size">100 小时 · 15,324 段<span class="overview-access">登录后接受条款</span></td><td>头戴 RGB-D＋双腕 RGB</td>
         <td>每手 880 点法向力（N）、切向字段、头部 IMU、任务</td><td>接触分布、力和持续时间。可用头戴深度和标定生成点云。</td>
        </tr>
        <tr data-target="egoexplorer" data-mode="glove" data-scope="screened" data-access="gated">
@@ -215,6 +219,9 @@
         <td class="overview-size">20.73 小时 · 541 段<span class="overview-access">需申请</span></td><td>头戴四鱼眼＋外部固定相机</td>
         <td>每手 460 个原始槽位、各路时间戳、IMU、标定、文字</td><td>看触觉变化与视频对齐。有效触点数、单位和本子集手姿待核。</td>
        </tr>
+      </tbody>
+      <tbody class="access-group">
+       <tr class="access-heading"><th scope="rowgroup" colspan="5">文件公开 · 许可待核</th></tr>
        <tr data-target="tipdex" data-mode="robot" data-scope="reference" data-access="unverified">
         <th scope="row"><a href="#tipdex">TipDex-Data</a><span class="overview-label">机器人 · 参考</span><span class="overview-format">Parquet（内含图像）</span></th>
         <td class="overview-size">约 26.16 分钟 · 50 段原始录制<span class="overview-access">文件公开 · 许可待核</span></td><td>俯视＋机器人双腕</td>
@@ -239,36 +246,36 @@
     <div class="section-heading">
      <div>
       <h2 id="pretraining-title">预训练分组</h2>
-      <p>同组可共用训练标签。入训前按发布版本核对同步和缺帧，混合库按子集使用。</p>
+      <p>按能对齐的训练标签分组。入训前核对视频、触觉和动作的时间戳及缺帧。</p>
      </div>
     </div>
     <div class="overview-scroll pretraining-scroll" role="region" aria-label="预训练分组表" tabindex="0">
      <table class="overview-table pretraining-table" id="pretraining-table" aria-labelledby="pretraining-title">
-      <thead><tr><th scope="col">类别</th><th scope="col">可统一的训练标签</th><th scope="col">数据集</th></tr></thead>
+      <thead><tr><th scope="col">数据类型</th><th scope="col">可对齐的标签</th><th scope="col">数据集</th></tr></thead>
       <tbody>
        <tr>
         <th scope="row">人手视频＋触觉＋三维手姿</th>
-        <td>按帧对齐手部关节点和分区接触。腕部空间轨迹单独保留。</td>
-        <td><a href="#twintouch">HumanTouch</a>、<a href="#tachin-pro-e">Pro‑E</a>、<a href="#egoexplorer">EgoExplorer</a>、<a href="#opentouch">OpenTouch</a>（右手）、<a href="#april-glove">April Glove</a>（待授权抽样）</td>
+        <td>手腕坐标系下的三维关节点、分区接触。另存已提供的腕部轨迹。</td>
+        <td><a href="#twintouch">HumanTouch</a>、<a href="#tachin-pro-e">TachinGlove Pro‑E</a>、<a href="#egoexplorer">EgoExplorer</a>、<a href="#opentouch">OpenTouch</a>（右手）、<a href="#april-glove">April Glove</a>（待授权抽样）</td>
        </tr>
        <tr>
         <th scope="row">人手视频＋触觉</th>
-        <td>按帧训练接触部位和时刻。弯曲值、关节角和视觉手姿作为附加标签。</td>
-        <td><a href="#touchscale">TouchScale</a>、<a href="#ego_force">EgoForce</a>、<a href="#egotactile">EgoTactile</a>、<a href="#vtdexmanip">VTDexManip</a>、<a href="#egotouch">EgoTouch</a>、<a href="#ace_data0">ACE 桌面触觉版</a>、<a href="#egotac_sc">EgoTac‑SC</a>、<a href="#uvta">UVTA 人手版</a></td>
+        <td>接触部位和时刻。关节角、弯曲值和视频估计手姿可另作标签。</td>
+        <td><a href="#touchscale">TouchScale</a>、<a href="#ego_force">EgoForce</a>、<a href="#egotactile">EgoTactile</a>、<a href="#vtdexmanip">VTDexManip</a>、<a href="#egotouch">EgoTouch</a>、<a href="#ace_data0">ACE 桌面触觉版</a>。<a href="#egotac_sc">EgoTac‑SC</a> 和 <a href="#uvta">UVTA 人手版</a>另有动作标签，三维骨架转换待核。</td>
        </tr>
        <tr>
         <th scope="row">手持夹爪视频＋触觉＋动作</th>
-        <td>统一夹爪位置、旋转和开口。光学触觉和压力阵列可共享接触时序标签。</td>
+        <td>夹爪位置、旋转和开口。光学触觉与压力阵列可共用接触时序。</td>
         <td><a href="#tacverse">TacVerse</a>、<a href="#exumi">exUMI</a>、<a href="#freetacman">FreeTacMan</a>、<a href="#vitamin_b">ViTaMIn‑B</a>、<a href="#aetherock">AetheRock</a>、<a href="#touch_in_the_wild">Touch in the Wild</a>，以及 <a href="#openneodata">N0</a>、<a href="#tachin-tacrich">TacRich</a>、<a href="#tacclaw">Daimon</a> 的手持子集</td>
        </tr>
        <tr>
         <th scope="row">机器人视频＋触觉＋动作</th>
-        <td>视觉与触觉按帧配对。动作按机器人硬件统一关节顺序和单位。</td>
+        <td>视频与触觉配对。同设备可按关节顺序和单位对齐动作。</td>
         <td><a href="#t-rex">T‑Rex</a>、<a href="#sharpadex">SharpaDex</a>、<a href="#ftp1-sharpa">FTP‑1‑Sharpa</a>、<a href="#openneodata">N0 机器人子集</a>、<a href="#tachin-tacrich">TacRich 遥操</a>、<a href="#tipdex">TipDex</a>、<a href="#xp-teleop">Xp‑Teleop</a></td>
        </tr>
        <tr>
         <th scope="row">台面压力＋手姿</th>
-        <td>统一台面接触位置和压力分布。手表面压力图由实测台面压力投影得到。</td>
+        <td>台面接触位置、压力分布与手姿。手表面压力由台面压力投影。</td>
         <td><a href="#egopressure">EgoPressure</a></td>
        </tr>
       </tbody>

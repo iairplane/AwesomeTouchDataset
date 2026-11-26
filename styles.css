@@ -67,6 +67,8 @@ section { scroll-margin-top: 12px; }
 .overview-table tbody th { background: #fff; font-weight: 700; }
 .overview-table tbody tr:hover > * { background: #f3f8fd; }
 .overview-table tbody tr:last-child > * { border-bottom: 0; }
+.overview-table .access-heading th { position: static; padding: 7px 12px; background: #f6f8fb; color: #244460; box-shadow: none; }
+.access-group + .access-group .access-heading th { border-top: 1px solid var(--line); }
 .overview-table .overview-format { display: block; margin-top: 2px; color: var(--muted); font-size: .82rem; font-weight: 400; }
 .overview-table .overview-label { display: block; margin-top: 3px; color: var(--muted); font-size: .82rem; font-weight: 600; }
 .overview-size { font-variant-numeric: tabular-nums; }
@@ -79,6 +81,7 @@ section { scroll-margin-top: 12px; }
 .pretraining-table th:first-child { width: 23%; }
 .pretraining-table th:nth-child(2) { width: 33%; }
 .pretraining-table th:nth-child(3) { width: 44%; }
+.pretraining-table td a { white-space: nowrap; }
 .catalog-heading { margin-block: 16px 10px; }
 #catalog { display: grid; gap: 13px; }
 .dataset { border: 1px solid var(--line); border-radius: 8px; padding: clamp(12px,2.2vw,22px); scroll-margin-top: 12px; }
