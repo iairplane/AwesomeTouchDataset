@@ -1,0 +1,2721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <meta content="经过筛选的第一人称触觉数据集。比较已发布规模、采集设备、触觉分辨率与视频样本。" name="description"/>
+  <title>
+   AwesomeTouchDataset · 第一人称触觉数据集
+  </title>
+  <link href="styles.css" rel="stylesheet"/>
+  <script defer="" src="catalog.js">
+  </script>
+ </head>
+ <body>
+  <header class="topbar">
+   <div class="wrap header-inner">
+    <a class="brand" href="#top">
+     <span aria-hidden="true" class="brand-symbol">
+     </span>
+     AwesomeTouchDataset
+    </a>
+    <nav aria-label="网站导航">
+     <a href="#datasets">
+      数据集
+     </a>
+     <a href="#scope">
+      统计口径
+     </a>
+     <a href="https://github.com/iairplane/AwesomeTouchDataset">
+      GitHub
+     </a>
+    </nav>
+   </div>
+  </header>
+  <main class="wrap" id="top">
+   <section aria-labelledby="page-title" class="intro">
+    <p class="kicker">
+     视觉 × 触觉 × 人类操作
+    </p>
+    <h1 id="page-title">
+     第一人称触觉数据集
+    </h1>
+    <p class="intro-text">
+     从采集方式、发布规模和实际视频三方面比较 17 套数据。每套标明手套或夹爪型号、触觉原理、分辨率和下载入口。
+    </p>
+    <ul aria-label="按数据集数统计采集方式" class="composition">
+     <li>
+      <strong>
+       10
+      </strong>
+      <span>
+       人手戴手套
+      </span>
+     </li>
+     <li>
+      <strong>
+       5
+      </strong>
+      <span>
+       人操控夹爪
+      </span>
+     </li>
+     <li>
+      <strong>
+       1
+      </strong>
+      <span>
+       固定压力平板
+      </span>
+     </li>
+     <li>
+      <strong>
+       1
+      </strong>
+      <span>
+       混合采集
+      </span>
+     </li>
+    </ul>
+   </section>
+   <section aria-labelledby="catalog-title" id="datasets">
+    <div class="section-heading">
+     <div>
+      <h2 id="catalog-title">
+       数据集目录
+      </h2>
+      <p>
+       点数据入口查看文件与许可，点视频查看接触画面。
+      </p>
+     </div>
+     <a class="secondary-link" href="data/datasets.csv">
+      下载筛选 CSV
+     </a>
+    </div>
+    <div class="catalog-tools" hidden="" id="catalog-tools">
+     <div aria-label="按采集方式筛选" class="filters" id="filters">
+      <button aria-pressed="true" data-mode="all" type="button">
+       全部
+      </button>
+      <button aria-pressed="false" data-mode="glove" type="button">
+       手套
+      </button>
+      <button aria-pressed="false" data-mode="gripper" type="button">
+       夹爪
+      </button>
+      <button aria-pressed="false" data-mode="surface" type="button">
+       压力平板
+      </button>
+      <button aria-pressed="false" data-mode="mixed" type="button">
+       混合
+      </button>
+     </div>
+     <div class="search-box">
+      <label for="search">
+       查找数据集或设备
+      </label>
+      <input autocomplete="off" id="search" placeholder="例如 EgoForce、Wuji、视触觉" type="search"/>
+     </div>
+    </div>
+    <p aria-live="polite" class="result-count" id="catalog-count">
+     17 套数据集
+    </p>
+    <div id="catalog">
+     <article class="dataset" data-mode="glove" id="ego_force">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         EgoForce (FACT)
+        </h3>
+        <span class="type">
+         人手戴手套
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/zhicao/EgoForce">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2610.19155">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        735.61 小时
+       </span>
+       <span class="amount">
+        18,311 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        CC BY-NC 4.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="EgoForce (FACT) 10 秒并排样本" controls="" playsinline="" poster="assets/ego_force.webp" preload="none">
+         <source src="assets/ego_force.webm" type="video/webm"/>
+         <source src="assets/ego_force.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         原始第 033 段。前约 2 秒左手抬起黄色杯子，左拇指力值升高。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/ego_force.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/zhicao/EgoForce">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+           许可 · CC BY-NC 4.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 University of Michigan / Stanford / Microsoft Research，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           FusionX 穿戴采集系统，双手 TouchTronix 触觉手套；指弯传感和手套 IMU。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           压阻导电织物阵列，气囊与参考压力传感器进行逐点标定。发布指尖力值为 N，同时提供相对压力读数。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           发布为每手 5 指×12 点（60 指尖测点），并有指弯和姿态附属字段。硬件另有掌面阵列，论文约 200 Hz 原采；公开 NPZ 对齐头部约 30 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           头戴 Arducam AR0234 全局快门双目，原采每眼 1920×1200；双腕原采各 1920×1080。发布每眼 960×600、双腕各 960×540，约 30 fps。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           18,311 段人手触觉与头戴视频配对，其中 18,306 段也具双腕全流。论文的机器人示教不计入本发布子库。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          发布卡 739 小时包括 62 段无可用触觉录像；735.61 小时只计已配对头戴影像与触觉。论文训练时也使用掌部硬件及独立的机器人数据。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/zhicao/EgoForce">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2610.19155#A3">
+            FACT 论文附录 C 硬件分项
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2610.19155">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="glove" id="twintouch">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         HumanTouch
+        </h3>
+        <span class="type">
+         人手戴手套
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/chuqiaoLyu/Xspark-HumanTouch">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://xsparkai.com/sparklab/humantouch/">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        132.29 小时
+       </span>
+       <span class="amount">
+        17,575 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        CC BY-NC 4.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="HumanTouch 10 秒并排样本" controls="" playsinline="" poster="assets/twintouch.webp" preload="none">
+         <source src="assets/twintouch.webm" type="video/webm"/>
+         <source src="assets/twintouch.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         HumanTouch X001_000312 的发布片段，头戴与触觉按发布帧对照。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/twintouch.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/chuqiaoLyu/Xspark-HumanTouch/tree/81822a10cac5def2638db546eaeced581d71a8b5">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+           许可 · CC BY-NC 4.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 SparkLab@Xspark AI，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           SparkLab/Xspark 双手柔性触觉手套，叠戴 MANUS 电磁手姿跟踪；腕部 6DoF 跟踪。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           柔性压阻阵列覆盖五指及手掌。原始触觉相对值与按解剖区聚合的响应分别发布。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           360 个有效点/手。Parquet 的 raw_left/raw_right 各 460 个存储值；patch_pressure 为双手共 12 区。发布统一 60 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           头部场景 RGB＋双腕 RGB。抽查 X001、X005、X010 元数据为头部 1920×1080、双腕各 1280×960，均 60 fps。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           当前发布的 17,575 段 HumanTouch 都是戴手套的人手直接操作。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          TwinTouch-20H 是相关论文生成的戴手套与裸手视频对照版本，单独统计；触觉字段的 460 维存储长度与 360 个有效位置分开看。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/chuqiaoLyu/Xspark-HumanTouch/tree/81822a10cac5def2638db546eaeced581d71a8b5">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://xsparkai.com/sparklab/humantouch/">
+            HumanTouch 官方采集报告
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/chuqiaoLyu/Xspark-HumanTouch">
+            发布数据卡
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/chuqiaoLyu/Xspark-HumanTouch/resolve/81822a10cac5def2638db546eaeced581d71a8b5/X001/meta/info.json">
+            X001 固定版本发布字段
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="glove" id="touchscale">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         TouchScale
+        </h3>
+        <span class="type">
+         人手戴手套
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/2077AIDataFoundation/TouchScale">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2610.10288">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        100 小时
+       </span>
+       <span class="amount">
+        15,324 段
+       </span>
+       <span class="">
+        需授权或同意协议
+       </span>
+       <span class="">
+        CC BY-NC 4.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="TouchScale 官方样本" controls="" playsinline="" preload="none">
+         <source src="https://touch-scale.github.io/assets/videos/hero-human-tubes-composite.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          发布者托管。
+         </strong>
+         官方人手操作样例，画面展示接触及双手触觉图。规模采用 TouchScale 主仓发布索引。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="https://touch-scale.github.io/assets/videos/hero-human-tubes-composite.mp4">
+           打开官方 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://touch-scale.github.io/">
+           发布者项目
+          </a>
+         </li>
+        </ul>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           双手 Tachin Glove 柔性触觉手套。OXT 硬件标识 TachinTechEIG012。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           柔性电子皮肤分布阵列，覆盖五指和手掌。原始 NPZ 提供逐触点法向力（N）及 X/Y 切向分量。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           每手 15 块、880 个发布触点；单元 1.5×1.5 mm，论文空间分辨率 &lt;2 mm。数据卡名义触觉 35–90 Hz，逐段索引报告 30–99.8 Hz，HDF5 同步网格 30 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           头戴 Orbbec Gemini 345Lg RGB-D＋双腕 Intel RealSense D405。RGB 各 1280×720@30 fps；原采深度 640×480，发布配准深度 1280×720@30 fps。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           主仓 15,324 段均为人手戴手套直接操作物体；该子集不计夹爪轨迹。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          时长和段数采用 WebDataset 主仓发布索引。880 个触点与同步流频率是不同规格。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/2077AIDataFoundation/TouchScale">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2610.10288">
+            硬件论文 §3.1、附录 7
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/2077AIDataFoundation/TouchScale-OXT">
+            OXT 硬件标识
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2610.10288">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="glove" id="egoexplorer">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         EgoExplorer
+        </h3>
+        <span class="type">
+         人手戴手套
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/InternRobotics/EgoExplorer_OXT">
+          Hugging Face · OXT 版
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2610.18872">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        57.3 小时
+       </span>
+       <span class="amount">
+        1,513 段
+       </span>
+       <span class="">
+        需授权或同意协议
+       </span>
+       <span class="">
+        CC BY-NC 4.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="EgoExplorer 官方样本" controls="" playsinline="" preload="none">
+         <source src="https://sage-physicalai.github.io/egoexplorer.github.io/assets/sessions/session_G.mp4?v=31" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          发布者托管。
+         </strong>
+         官方折纸箱多模态样例，5 倍播放。数据量采用 OXT；演示是发布者独立提供的样例。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="https://sage-physicalai.github.io/egoexplorer.github.io/assets/sessions/session_G.mp4?v=31">
+           打开官方 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://sage-physicalai.github.io/egoexplorer.github.io/">
+           发布者项目
+          </a>
+         </li>
+        </ul>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           Wuji Glove ＋ 5 枚 VIVE Ultimate Tracker（头、双腕、双踝）。项目也使用 MANUS Metagloves Pro 记录手关节。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           Wuji 全手压阻式压力阵列，手部姿态由 EMF 电磁跟踪采集。MANUS 手套只提供手关节动作。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           Wuji 原始矩阵每手 24×31 个槽位，约 120 Hz；品牌规格为 526 个有效点。OXT 发布为每手 17 个解剖区域（14 个手指区＋3 个掌区），30 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           头戴 GoPro HERO13 Black ＋ Media Mod；迷你版 RGB 1920×970，OXT 的策略 RGB 224×224，均按 30 Hz 输出。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           OXT 的 1,513 段均是人直接操作。主项目另有仅记录动作的 MANUS 手套采集，当前 OXT 卡片字段为 Wuji 17 区触觉。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          数据量来自 OXT 版。LeRobot 迷你版另行授权，两版均发布每手 17 区域触觉。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/InternRobotics/EgoExplorer_OXT">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://internrobotics.github.io/EgoExplorer-Guidelines/en/01_hardware_and_wearing/">
+            采集硬件清单
+           </a>
+          </li>
+          <li>
+           <a href="https://wuji.tech/en/glove">
+            Wuji 官方规格
+           </a>
+          </li>
+          <li>
+           <a href="https://docs.wuji.tech/docs/en/wuji-glove/latest/sdk-data-reference/tactile#tactile-matrix-layout">
+            Wuji 官方压阻阵列与有效格定义
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/InternRobotics/EgoExplorer_OXT#data-format">
+            OXT 版数据规模及字段
+           </a>
+          </li>
+          <li>
+           <a href="https://internrobotics.github.io/EgoExplorer-Guidelines/en/08_unified_30hz/">
+            17 区接触计算与导出
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/InternRobotics/EgoExplorer">
+            并排片实际来源 · LeRobot 迷你版
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2610.18872">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="glove" id="egotac_sc">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         EgoTac-SC (Aether)
+        </h3>
+        <span class="type">
+         人手戴手套
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/wkzhang/EgoTac_OXT">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2608.15060">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        36.08 小时
+       </span>
+       <span class="amount">
+        857 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        Apache-2.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="EgoTac-SC (Aether) 10 秒并排样本" controls="" playsinline="" poster="assets/egotac_sc.webp" preload="none">
+         <source src="assets/egotac_sc.webm" type="video/webm"/>
+         <source src="assets/egotac_sc.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         OXT 原样本 1767081525243。约第 5 秒夹住衣物，第 8 秒右掌响应升高。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/egotac_sc.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/wkzhang/EgoTac_OXT/tree/dc35b21f33a73e1e0f2ed8827bc3dbd9670757da/EgoTac_OXT">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="licenses/Apache-2.0.txt">
+           许可 · Apache-2.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 Shanghai Qi Zhi Institute / SJTU / Tsinghua / Fudan，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           双手 AetherGloveV1 运动触觉手套，单手配 HTC VIVE Tracker 和 11 个九轴 IMU。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           自研手套内的手指与掌面分布式力感矩阵。OXT 交付为滤波后的非负响应，物理标定单位未随包发布。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           每手 132 个原测力通道（60 手指＋72 掌面）。抽查 OXT 档为手指 5×4×3、掌 1×5×15（含 3 个额外位置），共同对齐到标称 30 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           头戴 ZED 2i 双目 RGB-D（论文原采 1080p）；抽查 OXT 发布头戴 RGB 为 224×224，无腕部视频字段。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           857 段 OXT 发布数据均为 EgoTac-SC 自采人手戴手套操作，计入本看板的是该自采子库。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          论文的 778 点/手 MANO 图由原测数据插值得来；合并训练的其他 HOI 接触标签不计入该子库。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/wkzhang/EgoTac_OXT/tree/dc35b21f33a73e1e0f2ed8827bc3dbd9670757da/EgoTac_OXT">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2608.15060#A2">
+            硬件与通道附录
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/wkzhang/EgoTac-SC-OXT/blob/main/README.md">
+            备用发布说明
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2608.15060">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="glove" id="ace_data0">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         ACE-Data-0
+        </h3>
+        <span class="type">
+         人手戴手套
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/ACERobotics/ACE-Data-0">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2607.28625">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        20.73 小时
+       </span>
+       <span class="amount">
+        541 段
+       </span>
+       <span class="">
+        需授权或同意协议
+       </span>
+       <span class="">
+        ACE-Data-0 Research License
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="ACE-Data-0 官方样本" controls="" playsinline="" preload="none">
+         <source src="https://ace-data-engine.github.io/ACE-Data-0/assets/videos/teaser-video.mp4#t=103,113" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          发布者托管。
+         </strong>
+         官方 01:43–01:53，按多个源时刻展示头戴画面与触觉图。连续原始配对样本需授权。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="https://ace-data-engine.github.io/ACE-Data-0/assets/videos/teaser-video.mp4#t=103,113">
+           打开官方 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://ace-data-engine.github.io/ACE-Data-0/">
+           发布者项目
+          </a>
+         </li>
+        </ul>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           ACE-Sense-Glove Lite 双手全掌触觉手套；OptiTrack PrimeX 22 和带标记的动捕服记录人体与物体。房间版另用 MANUS 手部动捕，桌面触觉子集单独列计。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           触觉手套记录手指及手掌接触压力；发布含重映射、基线校正的手形压力图。传感器材料／换能原理未披露。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           已有本地缓存的第 0 分片第 0 段显示每手 MAT_0–459 共 460 个原始数据槽。可用物理触点数和二维布点未知。该段双手的采样间隔中位数约 10／11 ms；发布参考索引 30 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           ACE-Ego-Head-V02 Lite 头戴四鱼眼每路 1088×1280、20 fps；桌面配置另有 8 台固定 GoPro，1920×1080、30 fps。原始头戴和参考索引频率分别记录。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           标注为桌面触觉的 541 段均为人直接佩戴手套操作；手持夹爪 0%。20.73 小时按公开索引的 30 Hz 参考序列折算。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          时长和段数采用 11 个桌面触觉分片的公开索引。完整原始片访问由发布者授权。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/ACERobotics/ACE-Data-0">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2607.28625v1#S3.SS2.SSS2">
+            论文采集装置和传感器，§3.2.2
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/ACERobotics/ACE-Data-0/tree/main/Table-scale/Tactile">
+            公开桌面触觉分片目录
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/ACERobotics/ACE-Data-0/blob/main/Table-scale/Tactile/ACE-Data-Tactile-0/meta/info.json">
+            第 0 分片发布参考速率和视频规格
+           </a>
+          </li>
+          <li>
+           <a href="https://ace-data-engine.github.io/ACE-Data-0/assets/videos/teaser-video.mp4#t=102,117">
+            官方剪辑的多时刻触觉演示
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2607.28625">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="glove" id="vtdexmanip">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         VTDexManip (M²VTP)
+        </h3>
+        <span class="type">
+         人手戴手套
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/wuliwuling/VTDexmanip">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://proceedings.iclr.cc/paper_files/paper/2025/hash/e19b6f65791e350347bcff8a3955cb5b-Abstract-Conference.html">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        5.23 小时
+       </span>
+       <span class="amount">
+        2,032 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        CC BY-NC-SA 4.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="VTDexManip (M²VTP) 10 秒并排样本" controls="" playsinline="" poster="assets/vtdexmanip.webp" preload="none">
+         <source src="assets/vtdexmanip.webm" type="video/webm"/>
+         <source src="assets/vtdexmanip.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         发布片段 401002，头戴画面与每帧 20 个触觉电压值同步显示。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/vtdexmanip.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/wuliwuling/VTDexmanip/tree/main">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="licenses/VTDexManip.txt">
+           许可 · CC BY-NC-SA 4.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 Zhejiang University，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           作者自制布质触觉手套，配 AD7606 读数模块与 STM32F205RBT6。HoloLens 2 用于采人的头戴视角。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           20 个商用薄膜压阻压力传感器覆盖手指和掌部。拇指尖与掌部用直径 18.3 mm 的感测片，其余 10 mm；以力／扭矩计标定电压响应。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           原采每手 20 点、200 Hz；发布样本为每帧 4×5 个电压值，随图像索引以 30 Hz 回放。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           HoloLens 2 的第一人称 RGB。已抽查发布 PNG 为 424×240，30 Hz 是发布回放频率。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           2,032 段均为人直接戴手套操作；手持采集夹爪 0%。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          Shadow Hand 与 Azure Kinect 属于后续机器人部署实验。论文实验可二值化接触，发布触觉 JSON 保留电压。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/wuliwuling/VTDexmanip/tree/main">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://proceedings.iclr.cc/paper_files/paper/2025/file/e19b6f65791e350347bcff8a3955cb5b-Paper-Conference.pdf">
+            ICLR 论文 §3、附录 A.1 图 8
+           </a>
+          </li>
+          <li>
+           <a href="https://github.com/LQTS/VTDexManipPretraining/blob/master/vitac_pretrain/visualize.py">
+            作者的发布回放脚本
+           </a>
+          </li>
+          <li>
+           <a href="https://proceedings.iclr.cc/paper_files/paper/2025/hash/e19b6f65791e350347bcff8a3955cb5b-Abstract-Conference.html">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="glove" id="egotactile">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         EgoTactile
+        </h3>
+        <span class="type">
+         人手戴手套
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/HustleHard/EgoTactile">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2606.09243">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        5.21 小时
+       </span>
+       <span class="amount">
+        692 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        CC BY-NC 4.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="EgoTactile 10 秒并排样本" controls="" playsinline="" poster="assets/egotactile.webp" preload="none">
+         <source src="assets/egotactile.webm" type="video/webm"/>
+         <source src="assets/egotactile.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         直接配对的右手手套样本，CocaCola-330ml。只显示原生压力通道。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/egotactile.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/HustleHard/EgoTactile">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+           许可 · CC BY-NC 4.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 Tsinghua SIGS / HIT Shenzhen / Pengcheng / JQ Industries / UCL，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           人手佩戴全手压力手套；直接配对样本记录戴手套的右手。厂家和具体转导结构未公开。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           全手压力点读数，作者以 N 表示。发布附属布局区分原生压力与手指弯曲。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           每手 132 个原生压力通道。含 5 个弯曲通道在内共 137 个物理索引，弯曲信号各扩成 6 格后为 162 个显示格；源记录保持 256 维封装。约 17 Hz 原采，发布配对 15 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           DJI Action 5 Pro，头戴或颈挂，源 RGB 1280×720@30 fps，发布同步 1280×720@15 fps。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           看板计入 692 段画面内戴手套直接配对。另有 75 段裸手画面与画外手套弱配对，独立于该计数。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          裸手子集仍由另一个人手戴手套提供触觉；发布时间配对与直接同步的物理含义不同。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/HustleHard/EgoTactile">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2606.09243#S4.SS1">
+            采集设备与双子集论文
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/HustleHard/EgoTactile-OXT#source-and-conversion-notes">
+            通道布局与发布计数
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2606.09243">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="glove" id="opentouch">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         OpenTouch
+        </h3>
+        <span class="type">
+         人手戴手套
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/rayxsong/opentouch">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2512.16842">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        3.03 小时
+       </span>
+       <span class="amount">
+        2,958 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        CC BY 4.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="OpenTouch 10 秒并排样本" controls="" playsinline="" poster="assets/opentouch.webp" preload="none">
+         <source src="assets/opentouch.webm" type="video/webm"/>
+         <source src="assets/opentouch.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         发布 HDF5，食用麦当劳任务 demo_15。热力图按发布者的反向标度显示 169 个物理点。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/opentouch.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/rayxsong/opentouch">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="https://creativecommons.org/licenses/by/4.0/">
+           许可 · CC BY 4.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 MIT / University of Washington / Brown / Harvard et al.，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           自制薄型全手触觉层，叠戴 Rokoko Smartglove 动捕手套。动捕使用 IMU 与 EMF 融合。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           柔性印刷电路夹压阻膜，两面硅胶封装。传感层覆盖手指与手掌。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           16×16 电极地址矩阵中有 169 个有效压力点；抽样 HDF5 的 right_pressure 为每帧 16×16，配套视频时基 30 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           Meta Project Aria 眼镜。源 RGB 1408×1408@30 Hz；抽样 HDF5 发布 JPEG 解码为 640×480。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           近身视角的人手直接操作。抽样发布文件记录右手压力和 21 个右手关节点。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          公开发布 26 个 HDF5 文件中的 2,958 段。数据按发布者反向数值尺度换算显示；16×16 包含未用地址。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/rayxsong/opentouch">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2512.16842#S3.SS1">
+            自制设备与采集
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2512.16842#A4">
+            系统硬件附录
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/rayxsong/opentouch/tree/main">
+            HDF5 发布文件
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2512.16842">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="glove" id="uvta">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         UVTA
+        </h3>
+        <span class="type">
+         人手戴手套
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/Chopper233/UVTA">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2609.34182">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        时长待核实
+       </span>
+       <span class="amount">
+        5,000 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        Apache-2.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="UVTA 10 秒并排样本" controls="" playsinline="" poster="assets/uvta.webp" preload="none">
+         <source src="assets/uvta.webm" type="video/webm"/>
+         <source src="assets/uvta.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         人手手套滚动球体第 862 段。接触期间拇指、食指和中指区域出现响应。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/uvta.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/Chopper233/UVTA/tree/main">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="licenses/Apache-2.0.txt">
+           许可 · Apache-2.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 Beijing Institute for General Artificial Intelligence / Sharpa / Shanghai Jiao Tong University，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           人手侧为自制被动 22 自由度连杆外骨骼手套，两个 VIVE Tracker 3.0 跟踪腕部与桌面基准。机器人侧为 Sharpa North ＋ Sharpa Wave 灵巧手。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           人手指尖为 FSR（力敏电阻）阵列；机器人五指的光学视触觉形变图经 VTPM 转成同一套区域读数。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           人手原采 5 指×20 点＝100 点／手；发布 Zarr 为 5 指×4 区＝20 个标量／手。机器人侧也发布 20 区映射，两个子集统一重采样至 30 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           单目腕部鱼眼 RGB，作者未给商品型号；本地核验的发布人手 Zarr 为 480×384，模型输入另缩放为 224×224。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           本看板口径的 5,000 段均为人手外骨骼手套。整仓另发布 749 段机器人遥操；按整仓段数，人手 86.97%、机器人 13.03%、手持夹爪 0%。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          论文写 750 条机器人示教，发布清单中翻书任务为 149 段、其余各 150 段，合计 749。人佩戴的被动外骨骼随手机械运动，采集侧仍由人的手指接触物体。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/Chopper233/UVTA/tree/main">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2609.34182v2#S3.SS1">
+            论文的采集装置与同步，§III-A、附录 A-B
+           </a>
+          </li>
+          <li>
+           <a href="https://github.com/uni-vta/UVTA#data">
+            作者发布仓与实际人机数量
+           </a>
+          </li>
+          <li>
+           <a href="https://github.com/uni-vta/UVTA/blob/main/deform_to_human/fsr_region.py">
+            官方 100→20 区域合并代码
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2609.34182">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="gripper" id="tacverse">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         TacVerse
+        </h3>
+        <span class="type">
+         人操控夹爪
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/TacVerse/TacVerse">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://www.xenserobotics.com/article/387222/detail/41">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        1,400+ 小时
+       </span>
+       <span class="amount">
+        75,000+ 段
+       </span>
+       <span class="">
+        需授权或同意协议
+       </span>
+       <span class="">
+        CC BY-SA 4.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="TacVerse 10 秒并排样本" controls="" playsinline="" poster="assets/tacverse.webp" preload="none">
+         <source src="assets/tacverse.webm" type="video/webm"/>
+         <source src="assets/tacverse.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         公开的带头视角擦黑板样本。右侧显示四路光学视触觉变化。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/tacverse.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/TacVerse/xtac-umi-g1-clean-blackboard">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/">
+           许可 · CC BY-SA 4.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 Xense Robotics，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           Xense XTac-UMI-G1 双手被动手持夹爪，各有人手驱动的机械开合、开口编码器和 PICO Motion Tracker 6DoF 追踪。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           每爪左右指各一枚 Xense Neutron 光学视触觉，共四路；发布的是校正后原始胶面图像，可见标记位移和反光变化。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           发布的 4 路触觉各 700×400 RGB；腕部和带头视角版本的各眼均为 640×480 RGB。全部发布流 30 fps 对齐。设备官方文档的触觉原始采集为 120 fps。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           所有段含双腕鱼眼。`xtac-umi-g1` 另由 PICO 4 Ultra 头显记录左右眼及头姿态；`taccap-g1` 仅双腕。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           两版本全部是双手持夹爪。官方列仅腕部 1,100+ 小时／55,000+ 段，带头部视角 300+ 小时／22,000+ 段。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          两组发布数均为下限，无法据此计算精确头视角份额。并排片取公开的头视角擦黑板示例。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/TacVerse/TacVerse">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/TacVerse/TacVerse#two-subsets-taccap-g1-and-xtac-umi-g1">
+            官方子集规模
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/TacVerse/TacVerse#51-visual-and-tactile-streams">
+            官方型号与发布图像尺寸
+           </a>
+          </li>
+          <li>
+           <a href="https://github.com/XenseRobotics-AI/XTac-UMI-G1-Docs/blob/main/docs/product/g1.en.md">
+            夹爪原始采集文档
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/TacVerse/xtac-umi-g1-clean-blackboard">
+            公开擦黑板样本
+           </a>
+          </li>
+          <li>
+           <a href="https://www.xenserobotics.com/article/387222/detail/41">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="gripper" id="aetherock">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         AetheRock
+        </h3>
+        <span class="type">
+         人操控夹爪
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/lihong-cs/AetheRock_OXT">
+          Hugging Face · OXT 转换版
+         </a>
+        </li>
+        <li>
+         <a href="https://modelscope.cn/datasets/lihongcs/aetherock/files">
+          ModelScope · 原始发布
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2606.09777">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        8.53 小时
+       </span>
+       <span class="amount">
+        3,760 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        Apache-2.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="AetheRock 10 秒并排样本" controls="" playsinline="" poster="assets/aetherock.webp" preload="none">
+         <source src="assets/aetherock.webm" type="video/webm"/>
+         <source src="assets/aetherock.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         挂毛巾第 74 段，起始 10 秒。两路光学形变各自显示；样本的两个标称力字段值相同。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/aetherock.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://modelscope.cn/datasets/lihongcs/aetherock/files">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="licenses/Apache-2.0.txt">
+           许可 · Apache-2.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 Shanghai Jiao Tong University / Ant Group / Shanghai Innovation Institute / BIGAI，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           AetheRock 前臂佩戴式 UMI，手指驱动平行或自适应两指夹爪；HTC VIVE Ultimate Tracker 跟踪位姿，AS5600 磁编码器测开度。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           物体侧每指 GelSlim-Mini 光学视触觉，PDMS 弹性体及银粉反光面；操作者按压处有电阻式压力传感器，测控制用夹持力度。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           核验的 ModelScope 源 Zarr 每帧两路 224×224×3 触觉图、一张 224×224×3 腕 RGB、两个力字段，整表 24 Hz。光学相机原始成像尺寸未核实。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           Hikrobot MV-CB060-10UM/UC 腕部工业相机；公开主包保存一条腕 RGB。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           公开训练包 3,760 段按前臂式夹爪数据归类，其中夹爪的物体接触信号与人手按压控制信号同时记录。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          规模采用 ModelScope 原始 Zarr 发布。Hugging Face 提供另行转换的 OXT 版。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://modelscope.cn/datasets/lihongcs/aetherock/files">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2606.09777#S3">
+            论文 GelSlim 和硬件
+           </a>
+          </li>
+          <li>
+           <a href="https://lihongcs.github.io/aetherock/">
+            官方项目硬件图
+           </a>
+          </li>
+          <li>
+           <a href="https://modelscope.cn/datasets/lihongcs/aetherock/resolve/master/towel_hanging/towel_hanging.zarr.zip">
+            挂毛巾源包
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2606.09777">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="gripper" id="vitamin_b">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         ViTaMIn-B
+        </h3>
+        <span class="type">
+         人操控夹爪
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/chuanyune/ViTaMIn-B_data_and_ckpt">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2511.05858">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        2.19 小时
+       </span>
+       <span class="amount">
+        1,077 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        MIT
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="ViTaMIn-B 10 秒并排样本" controls="" playsinline="" poster="assets/vitamin_b.webp" preload="none">
+         <source src="assets/vitamin_b.webm" type="video/webm"/>
+         <source src="assets/vitamin_b.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         擦烧杯第 19 段。约第 2.5 秒左夹爪抓烧杯，第 4.5 秒右夹爪夹住海绵。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/vitamin_b.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/chuanyune/ViTaMIn-B_data_and_ckpt">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="licenses/ViTaMIn-B-MIT.txt">
+           许可 · MIT
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 Tsinghua University / UC Berkeley / JD Explore Academy / The Hong Kong Polytechnic University，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           ViTaMIn-B 双手各持一把机械夹爪，最大开口约 8 cm；Meta Quest 3 两手控制器提供 6DoF，ArUco 估计夹爪开度。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           每爪两片 DuoTact，共四路视触觉。柔性 TPU 框架、带反光层的硅胶、LED 与内部 RGB 相机成像，可由整体形变重建点云。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           内部触觉相机原始图 640×480、30 fps；核验烧杯清洁发布 Zarr 两路腕 RGB 与四路触觉 RGB 均为 224×224，四路触觉点云每路 256×3。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           两把夹爪各配 1 路 GoPro HERO10 腕部 RGB 和 2 路内部触觉摄像头。视觉与触觉采集 30 Hz，Quest 追踪原采 72 Hz 后插值对齐。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           当前 4 个公开训练 Zarr、1,077 段均为双手持夹爪示教。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          这是 DuoTact＋Quest 的 ViTaMIn-B 版本。并排片显示两路腕 RGB 与四路触觉相对变化。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/chuanyune/ViTaMIn-B_data_and_ckpt">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2511.05858#S3">
+            论文 DuoTact 结构与分辨率
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2511.05858#S4">
+            论文双手采集硬件
+           </a>
+          </li>
+          <li>
+           <a href="https://github.com/chuanyune/ViTaMIn-B_code#-zarr-data-structure">
+            官方发布 Zarr 字段
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/chuanyune/ViTaMIn-B_data_and_ckpt/blob/b5e777efe36e087e45471c5d99e830d10fb1a8bc/beaker_wiping.zip">
+            烧杯擦拭发布包（Zarr）
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2511.05858">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="gripper" id="freetacman">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         FreeTacMan
+        </h3>
+        <span class="type">
+         人操控夹爪
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/OpenDriveLab/FreeTacMan">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2506.01941">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        时长待核实
+       </span>
+       <span class="amount">
+        6,427 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        MIT
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="FreeTacMan 10 秒并排样本" controls="" playsinline="" poster="assets/freetacman.webp" preload="none">
+         <source src="assets/freetacman.webm" type="video/webm"/>
+         <source src="assets/freetacman.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         Slot_188。右侧是两路光学触觉 RGB 相对空载基线的变化。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/freetacman.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/OpenDriveLab/FreeTacMan">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="https://opensource.org/license/mit">
+           许可 · MIT
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 Shanghai Innovation Institute / HKU / Shanghai Jiao Tong University，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           FreeTacMan 指戴式 in-situ 双指夹爪。操作者把手指绑在传感指端上，直接驱动夹爪。NOKOV 240 Hz 光学动捕跟踪夹爪位姿和开度。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           基于 McTac 的模块化相机式视触觉。两只传感夹指用内置 RGB 相机读取接触面的光学变化。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           腕部 RGB 和视触觉 RGB 通常各为 640×480、30 fps。官方采集硬件规格与抽查发布视频一致。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           夹爪上方配 180° 腕部鱼眼相机，640×480、30 fps。正常三相机版提供该腕视图与两路指端内摄。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           收录的 6,427 段均为指戴夹爪采集，其中 5,628 段配两路触觉，799 段为单触觉流旧版。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          触觉传感面随着人的手指运动，物体与夹指接触；Piper／Franka 是文中部署机械臂。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/OpenDriveLab/FreeTacMan">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2506.01941#S3.SS1">
+            论文夹爪与传感器
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2506.01941#A1">
+            采集相机规格
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/OpenDriveLab/FreeTacMan/tree/030316fb41d6fa1e58cccb4bbe0f6fddbb932671/Slot">
+            发布文件与相机流
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2506.01941">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="gripper" id="touch_in_the_wild">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         Touch in the Wild
+        </h3>
+        <span class="type">
+         人操控夹爪
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/binghaohuang-robot/touch_in_the_wild-dataset">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2507.15062">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        时长待核实
+       </span>
+       <span class="amount">
+        约 2,700 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        MIT
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="Touch in the Wild 10 秒并排样本" controls="" playsinline="" poster="assets/touch_in_the_wild.webp" preload="none">
+         <source src="assets/touch_in_the_wild.webm" type="video/webm"/>
+         <source src="assets/touch_in_the_wild.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         流体转移 Zarr 第 2 段。约第 1 秒夹指合拢，压力阵列响应升高。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/touch_in_the_wild.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/binghaohuang-robot/touch_in_the_wild-dataset">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="https://opensource.org/license/mit">
+           许可 · MIT
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 Columbia University，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           便携手持两指鳍形自适应夹爪，双指均为柔性鳍形结构。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           两侧各有一块压阻阵列，压阻材料夹在两片柔性印刷电路 FPC 之间，由定制 Arduino PCB 读出。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           硬件每夹指 12×32＝384 个税尔，两指共 768，单格 2×2 mm；原采集触觉 23 Hz。发布 Zarr `camera0_tactile` 每帧存为 12×64，训练代码可重排为 24×32。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           夹爪腕端 GoPro HERO9 鱼眼 RGB，原采集 60 Hz；抽查流体转移 Zarr 的发布 RGB 是 224×224，训练 RGB 与触觉按帧索引配对。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           约 2,700 段发布预训练样本均为人手持夹爪。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          并排片使用流体转移发布 Zarr；论文的 23 Hz 是独立触觉采集频率，和视觉或导出帧率分开。发布阵列已做基线处理和归一化。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/binghaohuang-robot/touch_in_the_wild-dataset">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2507.15062#S3">
+            论文传感器与 GoPro 同步
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/binghaohuang-robot/touch_in_the_wild-dataset/blob/main/four_tasks/fluid_transfer/fluid_transfer.zarr.zip">
+            流体转移 Zarr
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2507.15062">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="surface" id="egopressure">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         EgoPressure
+        </h3>
+        <span class="type">
+         固定压力平板
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/eth-siplab/EgoPressure">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://openaccess.thecvf.com/content/CVPR2025/html/Zhao_EgoPressure_A_Dataset_for_Hand_Pressure_and_Pose_Estimation_in_CVPR_2025_paper.html">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        时长待核实
+       </span>
+       <span class="amount">
+        1,344 段
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        CC BY-NC-SA 4.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="EgoPressure 10 秒并排样本" controls="" playsinline="" poster="assets/egopressure.webp" preload="none">
+         <source src="assets/egopressure.webm" type="video/webm"/>
+         <source src="assets/egopressure.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         p_001 的右手食指触压平板。热力图显示同一平面传感器的读数。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/egopressure.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/eth-siplab/EgoPressure">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+           许可 · CC BY-NC-SA 4.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 ETH Zürich / Microsoft，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           裸手直接触压固定的 Sensel Morph 测力板；21 名参与者分别用左右手完成触压动作。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           Sensel Morph 平面压力阵列；发布原始面压力，并将实测压力投影到 MANO 手部 UV 表面。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           105×185 个压力阵列单元（19,425 格，间距 1.25 mm）；另有 224×224 派生 UV 图。发布对齐 30 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           1 台头戴＋7 台固定的 Azure Kinect RGB-D。发布 RGB 分别为 1920×1080 和 2560×1440，各路深度 512×512，30 Hz。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           1,344 段均为人手＋固定测力平板。单列为平面接触类；若按是否人手直接接触，人手 100%、手持夹爪 0%。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          计数对象是桌面测力格。224×224 UV 是经手部网格映射的表示，且压力单位可按官方校准从传感器计数转换。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/eth-siplab/EgoPressure">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://huggingface.co/datasets/eth-siplab/EgoPressure#modalities">
+            EgoPressure 数据卡与阵列字段
+           </a>
+          </li>
+          <li>
+           <a href="https://siplab.org/projects/EgoPressure">
+            设备和标定项目页
+           </a>
+          </li>
+          <li>
+           <a href="https://guide.sensel.com/api/">
+            Sensel Morph 官方传感器文档
+           </a>
+          </li>
+          <li>
+           <a href="https://openaccess.thecvf.com/content/CVPR2025/html/Zhao_EgoPressure_A_Dataset_for_Hand_Pressure_and_Pose_Estimation_in_CVPR_2025_paper.html">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+     <article class="dataset" data-mode="mixed" id="tacclaw">
+      <header class="dataset-header">
+       <div>
+        <h3>
+         TacClaw-Infinity (Daimon-Infinity)
+        </h3>
+        <span class="type">
+         混合采集
+        </span>
+       </div>
+       <ul class="dataset-links">
+        <li>
+         <a href="https://huggingface.co/datasets/daimonrobotics/Daimon-Infinity">
+          Hugging Face
+         </a>
+        </li>
+        <li>
+         <a href="https://arxiv.org/abs/2610.20320">
+          论文／项目
+         </a>
+        </li>
+       </ul>
+      </header>
+      <p class="meta">
+       <span class="amount">
+        1,000 小时
+       </span>
+       <span class="amount">
+        段数待核实
+       </span>
+       <span class="">
+        公开
+       </span>
+       <span class="">
+        CC BY-NC-SA 4.0
+       </span>
+      </p>
+      <div class="dataset-content">
+       <figure class="media">
+        <video aria-label="TacClaw-Infinity (Daimon-Infinity) 10 秒并排样本" controls="" playsinline="" poster="assets/tacclaw.webp" preload="none">
+         <source src="assets/tacclaw.webm" type="video/webm"/>
+         <source src="assets/tacclaw.mp4" type="video/mp4"/>
+        </video>
+        <figcaption>
+         <strong>
+          10 秒并排片。
+         </strong>
+         DM-DataClaw 第 161 段。左侧腕视图，右侧是两个夹指视触觉深度的相对变化。
+        </figcaption>
+        <ul class="media-links">
+         <li>
+          <a href="assets/tacclaw.mp4">
+           打开 MP4
+          </a>
+         </li>
+         <li>
+          <a href="https://huggingface.co/datasets/daimonrobotics/Daimon-Infinity">
+           样本来源
+          </a>
+         </li>
+         <li>
+          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+           许可 · CC BY-NC-SA 4.0
+          </a>
+         </li>
+        </ul>
+        <p class="video-credit">
+         来源 Daimon Robotics / Nanjing University / Great Bay University 等，视频已剪辑并叠加触觉显示。
+        </p>
+       </figure>
+       <div>
+        <dl class="fields">
+         <div>
+          <dt>
+           操作设备
+          </dt>
+          <dd>
+           Daimon 首批混合发布。主要是 DM-DataClaw 手持 UMI 双指夹爪，有单爪和双爪配置；少量是直接随人手运动的 DM-DataDex／TacExoGaze 穿戴式外骨骼。DM-TacClaw 电动夹爪是部署设备。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           传感原理
+          </dt>
+          <dd>
+           夹指 DM-Tac X 光学视触觉，记录接触形变、剪切和深度；外骨骼也有分布式指尖视触觉，另用关节编码器和腕部追踪器捕捉姿态。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           分辨率与频率
+          </dt>
+          <dd>
+           DM-Tac X 相机 640×480，形变、剪切和深度导出图每指 384×288；硬件最高 120 Hz，训练发布流按 30 fps 对齐。抽样热图用两片 16 位深度图的相对变化。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           视觉设备
+          </dt>
+          <dd>
+           夹爪配腕部广角鱼眼 RGB、双目跟踪相机＋IMU；发布卡列典型视觉 1920×1080，样本 Episode 161 腕部发布视频实测 800×450。外骨骼另有 VR 头显第一人称和外部 RGB-D。
+          </dd>
+         </div>
+         <div>
+          <dt>
+           人手／工具构成
+          </dt>
+          <dd>
+           官方约 1,209 小时统计样本中，DM-DataClaw 95%、DM-DataDex 5%。总表的首批约 1,000 小时也为夹爪为主的混合版，精确发布比例未核实。
+          </dd>
+         </div>
+        </dl>
+        <details class="notes">
+         <summary>
+          发布口径与来源
+         </summary>
+         <p>
+          当前 10 秒并排片来自 DM-DataClaw Episode 161。光学图像像素表示接触形变采样位置，不是独立压力税尔。
+         </p>
+         <ul class="proof-links">
+          <li>
+           <a href="https://huggingface.co/datasets/daimonrobotics/Daimon-Infinity">
+            发布文件目录
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/html/2610.20320#S3.SS2">
+            论文采集系统
+           </a>
+          </li>
+          <li>
+           <a href="https://modelscope.cn/datasets/daimonrobotics/images/resolve/master/images/dataset_share_pie.png">
+            官方设备构成图
+           </a>
+          </li>
+          <li>
+           <a href="https://www.dmrobot.com/en/devices/dm-tac-x.html">
+            DM-Tac X 型号规格
+           </a>
+          </li>
+          <li>
+           <a href="https://arxiv.org/abs/2610.20320">
+            论文或项目报告
+           </a>
+          </li>
+         </ul>
+        </details>
+       </div>
+      </div>
+     </article>
+    </div>
+    <p hidden="" id="catalog-empty">
+     没有匹配的数据集。
+    </p>
+   </section>
+   <section aria-labelledby="scope-title" class="scope" id="scope">
+    <div class="section-heading">
+     <div>
+      <h2 id="scope-title">
+       统计口径
+      </h2>
+      <p>
+       发布规模按实际列出的样本和文件目录登记，未核实的数字留空。
+      </p>
+     </div>
+    </div>
+    <div class="scope-grid">
+     <div>
+      <h3>
+       筛选范围
+      </h3>
+      <p>
+       纳入通过七项硬门槛的记录，覆盖实测触觉、人类采集、时间配对、访问、来源、最低规模与研究许可。时长和段数采用表中注明的发布版本。目视预览与原始随机样本各自标明来源。
+      </p>
+      <a href="data/datasets.csv">
+       带证据的筛选表
+      </a>
+     </div>
+     <div>
+      <h3>
+       人手和夹爪
+      </h3>
+      <p>
+       只看手套与夹爪，人手手套 10 套、夹爪 5 套。已有登记的时长分别约 1,095.48 与 1,410.71 小时，含 TacVerse 的发布下限。Daimon-Infinity 首批 1,000 小时保持在混合组。
+      </p>
+      <a href="https://huggingface.co/datasets/daimonrobotics/Daimon-Infinity#data-statistics">
+       Daimon-Infinity 发布口径
+      </a>
+     </div>
+     <div>
+      <h3>
+       样本与许可
+      </h3>
+      <p>
+       本页并排片由发布数据转制，设备和信号来自对应原始项目。受访问条款约束的样本使用发布者自己的公开视频。每段下方可以查看 MP4、来源和原许可。
+      </p>
+      <a href="https://github.com/iairplane/AwesomeTouchDataset/blob/main/MEDIA.md">
+       媒体来源和署名
+      </a>
+     </div>
+    </div>
+   </section>
+   <footer class="footer">
+    <a class="brand" href="#top">
+     AwesomeTouchDataset
+    </a>
+    <a href="https://github.com/iairplane/AwesomeTouchDataset">
+     GitHub 仓库
+    </a>
+   </footer>
+  </main>
+ </body>
+</html>
