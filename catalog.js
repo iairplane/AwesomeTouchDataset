@@ -63,7 +63,7 @@
     const link = event.target.closest('a[href^="#"]');
     if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const target = revealAnchor(link.hash);
-    if (link.closest("#overview-table")) target?.focus({ preventScroll: true });
+    if (link.closest("#overview-table, #pretraining-table")) target?.focus({ preventScroll: true });
   });
 
   const players = Array.from(document.querySelectorAll("video"));
