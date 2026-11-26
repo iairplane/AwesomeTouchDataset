@@ -3,6 +3,7 @@
 一份第一人称视觉–触觉数据集索引。目录收录通过筛选的 17 套发布数据，列出采集设备、传感方案、规模、视频和下载入口。
 
 - [浏览 GitHub Pages](https://iairplane.github.io/AwesomeTouchDataset/)
+- [TachinTech 混合采集专题](https://iairplane.github.io/AwesomeTouchDataset/#tachintech)
 - [下载筛选 CSV](data/datasets.csv)
 - [媒体来源与署名](MEDIA.md)
 

@@ -86,6 +86,14 @@ section { scroll-margin-top: 12px; }
 .notes { margin-top: 6px; }
 .notes summary { cursor: pointer; font-size: .84rem; font-weight: 680; color: var(--blue); }
 .notes p { color: var(--muted); font-size: .85rem; margin: 4px 0; }
+.topic-intro { color: var(--muted); font-size: .9rem; margin-top: 8px; }
+.topic-part { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 12px; }
+.topic-part h4 { font-size: 1.14rem; line-height: 1.28; margin: 0; }
+[data-mode="mixed"] .type-glove { color: var(--glove); }
+.topic-mix { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 9px; font-size: .84rem; font-weight: 680; line-height: 1.5; }
+.topic-mix span { padding: 4px 7px; border-radius: 4px; }
+.topic-mix-umi { background: #faf0e7; color: var(--gripper); }
+.topic-mix-teleop { background: var(--soft); color: var(--mixed); }
 #catalog-empty { color: var(--muted); padding: 11px 0 3px; }
 .scope { margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--line); }
 .scope-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px 18px; margin-top: 8px; }

@@ -23,6 +23,9 @@
      <a href="#datasets">
       数据集
      </a>
+     <a href="#tachintech">
+      TachinTech
+     </a>
      <a href="#scope">
       统计口径
      </a>
@@ -41,7 +44,7 @@
      第一人称触觉数据集
     </h1>
     <p class="intro-text">
-     从采集方式、发布规模和实际视频三方面比较 17 套数据。每套标明手套或夹爪型号、触觉原理、分辨率和下载入口。
+     比较 17 套通过硬筛的数据集，另附 TachinTech 混合采集专题。每套标明采集方式、发布规模、设备和视频样本。
     </p>
     <ul aria-label="按数据集数统计采集方式" class="composition">
      <li>
@@ -118,7 +121,7 @@
      </div>
     </div>
     <p aria-live="polite" class="result-count" id="catalog-count">
-     17 套数据集
+     17 套数据集，另有 1 个专题
     </p>
     <div id="catalog">
      <article class="dataset" data-mode="glove" id="ego_force">
@@ -2656,9 +2659,99 @@
        </div>
       </div>
      </article>
+     <article class="dataset topic" data-mode="mixed" id="tachintech">
+      <header class="dataset-header">
+       <div>
+        <h3>TachinTech 采集专题</h3>
+        <span class="type">混合类别 · 补充参考</span>
+       </div>
+       <ul class="dataset-links">
+        <li><a href="https://huggingface.co/Tachin-TachinTech">Hugging Face 发布者</a></li>
+       </ul>
+      </header>
+      <p class="topic-intro">同一发布者下的两套独立数据。Pro-E 记录戴手套的人手直接接触，TacRich-Manip 记录手持夹爪与机器人遥操。主目录的 17 套按硬筛口径统计，TachinTech 在此作为专题单列。</p>
+
+      <section class="topic-part" id="tachin-pro-e" aria-labelledby="tachin-pro-e-title">
+       <header class="dataset-header">
+        <div>
+         <h4 id="tachin-pro-e-title">TachinGlove Pro-E</h4>
+         <span class="type type-glove">第一人称 · 人手戴手套</span>
+        </div>
+        <ul class="dataset-links">
+         <li><a href="https://huggingface.co/datasets/Tachin-TachinTech/TachinGlove_Pro-E">Hugging Face</a></li>
+         <li><a href="https://huggingface.co/datasets/Tachin-TachinTech/TachinGlove_Pro-E#lerobot-format">LeRobot 字段</a></li>
+        </ul>
+       </header>
+       <p class="meta"><span class="amount">369 段原始录制</span><span class="amount">3.64 小时左目录像</span><span>公开</span><span>CC BY-NC 4.0</span></p>
+       <div class="dataset-content">
+        <figure class="media">
+         <video controls playsinline preload="none" poster="assets/tachin-pro-e.webp" aria-label="Pro-E 门板开合 10 秒并排样本">
+          <source src="assets/tachin-pro-e.webm" type="video/webm">
+          <source src="assets/tachin-pro-e.mp4" type="video/mp4">
+         </video>
+         <figcaption><strong>10 秒并排片。</strong>约第 6.5–7.3 秒，双手合上门板，两侧手套热力图随接触变化。</figcaption>
+         <ul class="media-links">
+          <li><a href="assets/tachin-pro-e.mp4">打开 MP4</a></li>
+          <li><a href="https://huggingface.co/datasets/Tachin-TachinTech/TachinGlove_Pro-E/tree/8dbc1f1b859b1fabab57726a0f1bd6c0c0756bf4/Raw_data/Sample_data_EMF_1023/Open%20%26%20Close/customized_glove_device_pack_id_0_20261023_104800_018">原始录制</a></li>
+          <li><a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></li>
+         </ul>
+         <p class="video-credit">来源 TachinTech。截取左目录像，用同侧主机时间戳匹配最近触觉帧，生成并排热力图。</p>
+        </figure>
+        <div>
+         <dl class="fields">
+          <div><dt>采集装置</dt><dd>双手 TachinGlove Pro-E 手套、头戴双目相机与 IMU。手腕局部骨架每手 25 个关节，电磁跟踪另记录每手 5 个指尖的位姿。</dd></div>
+          <div><dt>触觉与分辨率</dt><dd>每手 15 块压力传感区，覆盖手指和手掌。实查样本每手保存 872 个网格值，布局中 89 个位置为掩码，有效物理点为 783。通用数据卡描述每手 880 维，实际载入以各包布局为准。<a href="https://huggingface.co/datasets/Tachin-TachinTech/TachinGlove_Pro-E/blob/a9e659d7ced467347fcd6485531155fefb9bc2b9/Raw_data/TachinGlove_EMF_Pointclouds_Pack/emf_pointclouds_pack/tactile_skin/tactile_skin.schema.right.json">传感布局</a></dd></div>
+          <div><dt>视觉与时间</dt><dd>实查原始样本左右目均为 1600×1200、30 fps，配相机硬件时间与主机时间。LeRobot 版以约 30 fps 的视频帧为发布对齐网格。</dd></div>
+          <div><dt>任务组成</dt><dd>插入与拔出 150 段、一般开合 120 段、按钮与旋钮 56 段、旋拧开合 23 段、抓取与铺平织物 20 段。</dd></div>
+          <div><dt>数据量口径</dt><dd>3.64 小时为 369 段的左目硬件时间戳跨度之和。另核实 20 个 LeRobot 外层包中有 628 个嵌套切片，已有样例与原始录制配回，切片规模单独登记。<a href="https://huggingface.co/datasets/Tachin-TachinTech/TachinGlove_Pro-E/tree/a9e659d7ced467347fcd6485531155fefb9bc2b9/LeRobot_Data/LeRobot_data">固定版本文件目录</a></dd></div>
+         </dl>
+        </div>
+       </div>
+      </section>
+
+      <section class="topic-part" id="tachin-tacrich" aria-labelledby="tachin-tacrich-title">
+       <header class="dataset-header">
+        <div>
+         <h4 id="tachin-tacrich-title">TacRich-Manip</h4>
+         <span class="type">混合采集 · 手持 UMI 与机器人遥操</span>
+        </div>
+        <ul class="dataset-links">
+         <li><a href="https://huggingface.co/datasets/Tachin-TachinTech/TacRich-Manip">Hugging Face · 全库</a></li>
+         <li><a href="https://huggingface.co/datasets/qingzhu-robotics/TacRich-Manip-LeRobot-umi-set-the-steel-plate">Hugging Face · UMI 子集</a></li>
+        </ul>
+       </header>
+       <p class="meta"><span class="amount">823 段</span><span class="amount">约 9.14 小时</span><span>LeRobot v3.0</span><span>Apache-2.0</span></p>
+       <div class="topic-mix" aria-label="按示教段数，98 段人手持夹爪，725 段机器人遥操">
+        <span class="topic-mix-umi">手持 UMI 98 段 · 11.9%</span>
+        <span class="topic-mix-teleop">机器人遥操 725 段 · 88.1%</span>
+       </div>
+       <div class="dataset-content">
+        <figure class="media">
+         <video controls playsinline preload="none" poster="assets/tachin-tacrich.webp" aria-label="TacRich 手持夹爪钢板放置 10 秒并排样本">
+          <source src="assets/tachin-tacrich.webm" type="video/webm">
+          <source src="assets/tachin-tacrich.mp4" type="video/mp4">
+         </video>
+         <figcaption><strong>10 秒并排片。</strong>手持 UMI 放置钢板。约第 5.5 秒夹指夹住钢板，左右触觉都有响应。</figcaption>
+         <ul class="media-links">
+          <li><a href="assets/tachin-tacrich.mp4">打开 MP4</a></li>
+          <li><a href="https://huggingface.co/datasets/Tachin-TachinTech/TacRich-Manip/blob/59f0f5b67f80d0571efbe911c1e2e4f615f04f9d/data/chunk-000/file-000.parquet">源分片</a></li>
+          <li><a href="licenses/Apache-2.0.txt">Apache-2.0</a></li>
+         </ul>
+         <p class="video-credit">来源 Tachin Technology、Qingzhu Robotics 与数据集贡献者。截取第 0 段的第 4–14 秒，并排显示鱼眼图像和双指触觉响应。</p>
+        </figure>
+        <dl class="fields">
+         <div><dt>采集装置</dt><dd>Songling PIKA 夹爪与相机，TACHIN PA-STE 电子皮肤。机器人遥操侧使用 Realman RM75B 机械臂。<a href="https://huggingface.co/datasets/Tachin-TachinTech/TacRich-Manip/blob/59f0f5b67f80d0571efbe911c1e2e4f615f04f9d/AUTHORS.md">官方硬件署名</a></dd></div>
+         <div><dt>触觉与分辨率</dt><dd>双指各 32×58 格，发布形状为 2×32×58，同步流标称 40 Hz。数值是校正后的传感响应，换算牛顿需额外标定。</dd></div>
+         <div><dt>视觉设备</dt><dd>前视、侧视与夹爪鱼眼各一路 640×480 RGB，前视另有 16 位毫米深度。示例采用夹爪鱼眼。</dd></div>
+         <div><dt>操作分布</dt><dd>手持 UMI 的 98 段全是钢板放置，86,392 帧、约 0.60 小时，占全库时长约 6.57%。机器人遥操 725 段、约 8.54 小时，包括扶瓶、插销和布置餐桌。</dd></div>
+         <div><dt>动作字段</dt><dd>UMI 子集的机械臂关节角为零填充，动作用各段局部坐标系的下一帧夹爪位姿。遥操作子集同时发布测得的关节状态和控制指令。<a href="https://huggingface.co/datasets/Tachin-TachinTech/TacRich-Manip#complete-feature-inventory">字段说明</a></dd></div>
+        </dl>
+       </div>
+      </section>
+     </article>
     </div>
     <p hidden="" id="catalog-empty">
-     没有匹配的数据集。
+     没有匹配的数据集或专题。
     </p>
    </section>
    <section aria-labelledby="scope-title" class="scope" id="scope">
