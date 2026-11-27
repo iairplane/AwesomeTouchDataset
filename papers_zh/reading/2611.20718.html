@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TaF-Foundation: Wrench-Grounded Cross-Sensor Tactile Representations</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a></nav><div class="paper-meta"><p>中文导读 · arXiv:2611.20718v1</p><p><a href="https://arxiv.org/html/2611.20718v1">英文 HTML</a> · <a href="https://arxiv.org/pdf/2611.20718v1">英文 PDF</a> · <a href="https://arxiv.org/licenses/nonexclusive-distrib/1.0/">arXiv 非独家分发许可 1.0</a></p></div><h1>TaF-Foundation 论文导读</h1>
+<p>不同型号的触觉设备输出差异很大，凝胶图像、阵列读数甚至信号单位都不同。TaF 的办法是给每种传感器同步采一份独立参考，使用统一的六维力和力矩作为共同目标。两种设备无需恰好碰到同一个物体位置才能配对，只要每路原始触觉都有可靠的参考测量，就能把表示拉到可比较的物理空间。<a href="https://arxiv.org/html/2611.20718#S3">原文 §3–4</a></p>
+<h2>采集和建模</h2>
+<p>论文报告一亿以上触觉观测与参考力矩配对，覆盖 24 个传感器和四类感测机制。主体是台架受控接触，因此应把样本数按观测对理解。模型为设备保留输入适配模块，同时学习共享触觉编码。下游 TaF-Policy 再把表示与视觉、机器人状态一起输入以生成动作片段。读这部分要区分两个样本单位，台架配对用来训练表征，执行整段任务的机器人轨迹才用于检验策略。<a href="https://arxiv.org/html/2611.20718#S3">数据 §3</a> · <a href="https://arxiv.org/html/2611.20718#S4">表示和策略 §4</a></p>
+<h2>结果和对照边界</h2>
+<p>表 2 单帧力预测的 RMSE 从最强对照的 2.799 N 降到 2.321 N，相对下降 17.1%。跨设备检索 R@1 从 21.27% 到 34.38%，候选是否匹配按标准化六维力矩距离决定。未见设备的实验留出三种传感器，仍用该设备的新标定样本训练输入适配模块。真机结果还要区分论文分别报告的四任务总体和所有对照都测试的三任务子集，三任务共同口径为 40.0% 对 18.3%。<a href="https://arxiv.org/html/2611.20718#S5.SS2">表 2 与少样本适配 §5.2–5.3</a> · <a href="https://arxiv.org/html/2611.20718#S5.SS5">策略评测 §5.5</a></p>
+<h2>对采集设计的启发</h2>
+<p>先做一套可重复的台架标定，记录触觉原值、参考力矩坐标系以及同步时标。再明确留出传感器和留出物体，以分开看迁移收益。六维净力矩适合比较整体作用力，也可能由多种接触图案产生。若任务需要识别指尖局部滑动、接触边缘或多点压力分布，训练集还要保留原始触觉和局部标签。建议先读 §3 的台架，再对着表 2 和图 5 检查预训练和适配各用了什么数据。<a href="https://arxiv.org/html/2611.20718#S3">台架和数据 §3</a> · <a href="https://arxiv.org/html/2611.20718#S5.SS3">图 5 与适配协议</a></p>
+</main>
+</html>

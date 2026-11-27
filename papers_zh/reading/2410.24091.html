@@ -1,0 +1,1548 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3 D-ViTac｜通过视触觉感知 学习精细操作</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a><label class="language-toggle"><input type="checkbox" id="show-original"> 显示英文段落</label></nav><div class="paper-meta">
+        <p class="original-title" lang="en">3D-ViTac: Learning Fine-Grained Manipulation with Visuo-Tactile Sensing</p>
+        <p>Huang, Binghao · Wang, Yixuan · Yang, Xinyi · Luo, Yiyue · Li, Yunzhu · arXiv:2410.24091v2</p>
+        <p>正文与附录为机器译稿，中文标题和摘要已对照原文校订。公式、参考文献及图内文字保留原样。</p><p><a href="https://arxiv.org/html/2410.24091v2">英文 HTML</a> · <a href="https://arxiv.org/pdf/2410.24091v2">英文 PDF</a> · <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p><p>本中文译稿采用与原文相同的授权。</p>
+        </div><details class="contents"><summary>章节目录</summary><ul><li><a href="#S1">1 引言</a></li><li><a href="#S2">2 相关研究</a></li><li><a href="#S3">3 视觉-触觉操控系统</a></li><li><a href="#S3.SS1">3.1 传感器与夹持器设计</a></li><li><a href="#S3.SS2">3.2 多模态感知与遥操作系统配置</a></li><li><a href="#S4">4 视觉-触觉灵巧性学习</a></li><li><a href="#S4.SS1">4.1 问题建模</a></li><li><a href="#S4.SS2">4.2 密集视觉-触觉表征</a></li><li><a href="#S4.SS3">4.3 训练流程</a></li><li><a href="#S5">5 实验</a></li><li><a href="#S5.SS1">5.1 触觉传感器硬件特性分析</a></li><li><a href="#S5.SS2">5.2 模仿学习实验设置</a></li><li><a href="#S5.SS3">5.3 定性分析</a></li><li><a href="#S6">6 结论与局限性</a></li><li><a href="#S7">7 致谢</a></li><li><a href="#bib">参考文献</a></li><li><a href="#A1">附录 A 触觉传感器硬件</a></li><li><a href="#A1.SS1">A. 1 触觉传感器制造厂</a></li><li><a href="#A1.SS2">A. 2 触觉硬件评估实验</a></li><li><a href="#A2">附录 B 模仿学习实验细节</a></li><li><a href="#A2.SS1">B. 1 系统概述</a></li><li><a href="#A2.SS2">B. 2 实验设置细节</a></li><li><a href="#A2.SS3">B. 3 单臂实验</a></li><li><a href="#A2.SS4">B. 4 学习细节</a></li></ul></details><article class="ltx_document ltx_authors_1line" lang="zh-CN">
+<h1 class="ltx_title ltx_title_document">3D-ViTac｜通过视触觉感知 <br class="ltx_break"/> 学习精细操作</h1>
+<div class="ltx_authors">
+<span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Binghao Huang
+</span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Yixuan Wang
+</span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Xinyi Yang
+</span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Yiyue Luo
+</span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Yunzhu Li
+</span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Columbia University
+</span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">University of Illinois Urbana-Champaign
+</span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">University of Washington
+</span></span></div>
+<div class="ltx_abstract" id="abstract1"><h6 class="ltx_title ltx_title_abstract">摘要</h6>
+<p class="ltx_p" id="abstract1.1">在人与环境进行精细交互时，触觉和视觉都至关重要。赋予机器人类似的多模态感知能力，可以显著增强操作能力，扩展可完成的操作种类。本文提出 3D-ViTac，一套面向双手灵巧操作的多模态感知与学习系统。系统搭载柔性、低成本的触觉传感器，每个传感单元的覆盖面积为 3 <math alttext="mm^{2}" class="ltx_Math" display="inline" id="abstract1.m1" intent=":literal"><semantics><mrow><mi>m</mi><mo lspace="0em" rspace="0em">​</mo><msup><mi>m</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">mm^{2}</annotation></semantics></math>。密集排布的测点能在较大范围内细致记录物理接触，补充视觉信息。我们将视觉与触觉数据融合到统一的 3D 表征空间中，保留其 3D 结构和空间关系。融合后的表征可以搭配扩散策略进行模仿学习。 真机实验表明，即便使用低成本机器人，该系统也能精确操作，并显著优于纯视觉策略。进步尤其体现在安全操作易碎物体，以及完成涉及手内操作的长时程任务。项目主页为 <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://binghao-huang.github.io/3D-ViTac/" title="">https://binghao-huang.github.io/3D-ViTac/</a>。</p><p class="source-paragraph" lang="en">Tactile and visual perception are both crucial for humans to perform fine-grained interactions with their environment. Developing similar multi-modal sensing capabilities for robots can significantly enhance and expand their manipulation skills. This paper introduces 3D-ViTac , a multi-modal sensing and learning system designed for dexterous bimanual manipulation. Our system features tactile sensors equipped with dense sensing units, each covering an area of 3 m ​ m 2 . These sensors are low-cost and flexible, providing detailed and extensive coverage of physical contacts, effectively complementing visual information.
+To integrate tactile and visual data, we fuse them into a unified 3D representation space that preserves their 3D structures and spatial relationships. The multi-modal representation can then be coupled with diffusion policies for imitation learning. Through concrete hardware experiments, we demonstrate that even low-cost robots can perform precise manipulations and significantly outperform vision-only policies, particularly in safe interactions with fragile items and executing long-horizon tasks involving in-hand manipulation. Our project page is available at https://binghao-huang.github.io/3D-ViTac/ .</p>
+</div>
+<div class="ltx_para" id="p1">
+<div class="table-scroll"><table class="ltx_tabular ltx_centering ltx_align_top" id="p1.1">
+<tr class="ltx_tr" id="p1.1.1">
+<td class="ltx_td ltx_align_center" id="p1.1.1.1"><span class="ltx_rule" style="width:0.0pt;height:24.0pt;--ltx-bg-color:black;display:inline-block;"></span></td></tr>
+</table></div>
+</div>
+<div class="ltx_para ltx_noindent" id="p2">
+<blockquote class="ltx_quote" id="p2.1">
+<p class="ltx_p" id="p2.1.1">关键词：接触丰富的操控，多模态感知，触觉感知，模仿学习</p><p class="source-paragraph" lang="en">Keywords: Contact-Rich Manipulation, Multi-Modal Perception, Tactile Sensing, Imitation Learning</p>
+</blockquote>
+</div>
+<figure class="ltx_figure" id="S0.F1"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="207" id="S0.F1.g1" loading="lazy" src="../media/2410.24091/teaser_3.png" style="aspect-ratio:476/207;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 1：我们提出了 3 D-ViTac，这是一个用于灵巧双手操作的多模态感知与学习系统。该系统采用灵活、可扩展且低成本的触觉传感器，每根手指均配备 <math alttext="16\times 16" class="ltx_Math" display="inline" id="S0.F1.m2" intent=":literal"><semantics><mrow><mn>16</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">16\times 16</annotation></semantics></math> 传感器阵列。为了展示该系统的精准操作能力，我们展示了四项任务，这些任务利用了触觉传感器提供的力相关信息与手部位置信息。</figcaption>
+</figure>
+<section class="ltx_section" id="S1">
+<h2 class="ltx_title ltx_title_section">1 引言</h2>
+<div class="ltx_para ltx_noindent" id="S1.p1">
+<p class="ltx_p" id="S1.p1.1">人类在进行日常操作任务时，严重依赖视觉与触觉感知。以抓鸡蛋或葡萄为例：我们首先通过视觉定位物体，然后通过与物体的触觉交互获取更多信息，从而确定应施加的适当力量。使用勺子进食时，我们的眼睛会估计勺子的整体位置与几何信息，而触觉则提供与食物交互时的详细接触信息。视觉与触觉相互补充，增强了我们与环境的互动能力，显著提升了我们的灵活性与鲁棒性，尤其是在涉及大遮挡物及手持操作的任务中。</p><p class="source-paragraph" lang="en">Humans heavily rely on both visual and tactile sensing to perform everyday manipulation tasks. Consider grasping an egg or a grape: we start by visually locating the object, and then extract more information from tactile interactions with the object to determine the appropriate amount of force to apply. When eating with a spoon, our eyes estimate the global position and geometric information of the spoon, while our sense of touch provides detailed contact information during interactions with the food. Vision and touch complement each other, enhancing our interaction with the environment and significantly increasing our flexibility and robustness, especially in tasks involving large occlusions and in-hand manipulation.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S1.p2">
+<p class="ltx_p" id="S1.p2.1">然而，为机器人构建此类多模态平台面临两大主要挑战：(i) 触觉硬件与系统。由于对最小范围及观察方向的要求，许多现有光学触觉传感器要么过于笨重，要么结构过于僵硬，难以实现精细操作或需要柔顺交互的任务 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib1" title="">1</a>, <a class="ltx_ref" href="#bib.bib2" title="">2</a>, <a class="ltx_ref" href="#bib.bib3" title="">3</a>]</cite>。许多商用触觉传感器因定制制造及电子元件的投入而价格昂贵 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib4" title="">4</a>, <a class="ltx_ref" href="#bib.bib5" title="">5</a>]</cite>，而一些低成本触觉传感器则通常信息密度极低，无法提供有效数据 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib6" title="">6</a>, <a class="ltx_ref" href="#bib.bib7" title="">7</a>, <a class="ltx_ref" href="#bib.bib2" title="">2</a>, <a class="ltx_ref" href="#bib.bib8" title="">8</a>]</cite>。(ii) 触觉与视觉模态的差异化特性。触觉信号通常具有局部性和物理性特征，而视觉数据则更具全局性和语义性。这种差异给模型有效处理与解释数据带来了重大挑战。 要成功融合这些不同的模式，需要精心设计触觉传感器与学习算法。</p><p class="source-paragraph" lang="en">However, building such a multi-modal platform for robots brings two major challenges:
+(i) Tactile Hardware and System. Due to requirements for minimal range and viewing directions, many existing optical tactile sensors can be either overly bulky or overly rigid for fine-grained manipulation or tasks that require compliant interactions [ 1 , 2 , 3 ] . Many commercial tactile sensors can also be expensive due to customized manufacturing and electronic components [ 4 , 5 ] , while some low-cost tactile sensors are usually too sparse to convey effective information [ 6 , 7 , 2 , 8 ] .
+(ii) Distinct Nature of Tactile and Visual Modalities. Tactile signals are typically local and physical, while visual data are more global and semantic. This disparity poses significant challenges for models to process and interpret the data effectively. Successfully fusing these distinct modalities requires careful design of the tactile sensor and the learning algorithm.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S1.p3">
+<p class="ltx_p" id="S1.p3.1">为了应对这些挑战，我们提出了 3 D-ViTac，这是一种用于接触密集型操作任务的新型多模态感知与学习系统。(i) 在触觉感知硬件系统方面，我们并未使用现有的光学触觉传感器 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib9" title="">9</a>, <a class="ltx_ref" href="#bib.bib2" title="">2</a>, <a class="ltx_ref" href="#bib.bib10" title="">10</a>, <a class="ltx_ref" href="#bib.bib5" title="">5</a>]</cite>，而是提出了一种替代性的密集、灵活的触觉传感器阵列，该阵列能够覆盖机器人末端执行器的更大区域。我们的触觉传感器以 STAG 手套 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib11" title="">11</a>]</cite> 为灵感设计，具有成本效益高、灵活性强的特点，且能够在操作过程中产生稳定连续的信号。如图 <a class="ltx_ref" href="#S0.F1" title="Figure 1 ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">1</span></a> 所示，该传感器阵列在每根软手指上具有 16 <math alttext="\times" class="ltx_Math" display="inline" id="S1.p3.m1" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 16 的分辨率，整个双手触觉感知系统共包含 1024 个触觉感知单元。 该密集且连续的触觉传感器阵列能够提供有效的反馈，包括接触的存在、施加的法向力大小以及局部接触模式。(ii) 在算法方面，鉴于多模态感官信息，我们不再将视觉和触觉数据分别输入策略 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib12" title="">12</a>]</cite>，而是提出一种统一的 3 D 视觉-触觉表示方式，将这两种模态融合起来用于模仿学习。该表示方式将 3 D 视觉点与 3 D 触觉点（通过机器人运动学计算得出）整合到统一的 3 D 空间中，从而明确考虑到了 3 D 结构以及视觉与触觉之间的空间关系。这种方法通过扩散策略 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib13" title="">13</a>]</cite> 实现有效的模仿学习，使系统能够应对复杂的力变化，并克服严重的视觉遮挡问题。</p><p class="source-paragraph" lang="en">To address these challenges, we present 3D-ViTac , a novel multi-modal sensing and learning system for contact-rich manipulation tasks. (i) For the tactile sensing hardware system, rather than using existing optical tactile sensors [ 9 , 2 , 10 , 5 ] , we propose an alternative dense, flexible tactile sensor array that covers a larger area of the robot end-effector. Our tactile sensors, inspired by the STAG glove [ 11 ] , are cost-effective, flexible, and capable of producing stable continuous signals during manipulation. As illustrated in Fig. 1 , the sensor array has a resolution of 16 × 16 on each soft finger, totaling 1024 tactile sensing units across our bimanual tactile sensing system. This dense, continuous tactile sensor array provides effective feedback, including the presence of contact, the amount of applied normal force, and local contact patterns.
+(ii) On the algorithm side, given the multi-modal sensory information, instead of separately inputting visual and tactile data into the policy [ 12 ] , we propose a unified 3D visuo-tactile representation that fuses these two modalities for imitation learning. This representation integrates 3D visual points and 3D tactile points (calculated using robot kinematics) into a unified 3D space, which explicitly accounts for the 3D structure and spatial relationship between vision and touch. This approach enables effective imitation learning through diffusion policy [ 13 ] , allowing the system to react to nuanced force changes and overcome significant visual occlusions.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S1.p4">
+<p class="ltx_p" id="S1.p4.1">我们对四个具有挑战性的真实场景任务进行了全面评估（例如，操作易碎物品如鸡蛋和水果，以及手持工具与器具的操作，如图 <a class="ltx_ref" href="#S0.F1" title="Figure 1 ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">1</span></a> 所示）。结果表明，我们的 3 视觉-触觉表征通过提供更详细的接触状态及局部几何或位置信息，显著提升了接触密集型操作性能。我们观察到，在视觉遮挡严重的情况下，触觉信息尤为重要。我们还进行了关于感知特性的详细消融研究，比较了不同触觉分辨率下的性能表现，并揭示了连续触觉感知的重要性。此外，在数据收集过程中加入触觉反馈使操作员能够获取更高质量的数据，从而使最终策略更加稳健。</p><p class="source-paragraph" lang="en">We conducted comprehensive evaluations on four challenging real-world tasks (e.g., manipulating fragile objects like eggs and fruit, and in-hand manipulation of tools and utensils, as shown in Fig. 1 ). The results demonstrate that our 3D visuo-tactile representation significantly enhances the performance of contact-rich manipulations by providing more detailed contact states and local geometry or position information. We observed that tactile information is especially critical when there is heavy visual occlusion. We also conducted detailed ablation studies regarding the sensing characteristics, comparing performance across different tactile resolutions, and showed the importance of continuous tactile reading. Additionally, the inclusion of tactile feedback during the data collection process enables the operator to gather higher-quality data, making the final policy more robust.</p>
+</div>
+</section>
+<section class="ltx_section" id="S2">
+<h2 class="ltx_title ltx_title_section">2 相关研究</h2>
+<div class="ltx_para ltx_noindent" id="S2.p1">
+<p class="ltx_p" id="S2.p1.1">双手操作。双臂机器人系统为各种应用提供了丰富的机会 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib14" title="">14</a>, <a class="ltx_ref" href="#bib.bib15" title="">15</a>, <a class="ltx_ref" href="#bib.bib16" title="">16</a>, <a class="ltx_ref" href="#bib.bib13" title="">13</a>, <a class="ltx_ref" href="#bib.bib17" title="">17</a>]</cite>。传统上，双手操作的方法基于经典模型控制视角，利用已知的环境动态进行控制 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib18" title="">18</a>, <a class="ltx_ref" href="#bib.bib19" title="">19</a>, <a class="ltx_ref" href="#bib.bib20" title="">20</a>, <a class="ltx_ref" href="#bib.bib21" title="">21</a>, <a class="ltx_ref" href="#bib.bib22" title="">22</a>, <a class="ltx_ref" href="#bib.bib23" title="">23</a>, <a class="ltx_ref" href="#bib.bib24" title="">24</a>, <a class="ltx_ref" href="#bib.bib25" title="">25</a>]</cite>。然而，这些方法依赖于真实环境模型，不仅构建过程耗时，通常还需要完整状态估计，而获取完整状态估计往往十分困难，尤其是对于具有复杂物理特性的物体，如可变形物品。近年来，机器人学领域的许多研究人员逐渐转向基于学习的方法，例如强化学习 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib15" title="">15</a>, <a class="ltx_ref" href="#bib.bib26" title="">26</a>, <a class="ltx_ref" href="#bib.bib27" title="">27</a>, <a class="ltx_ref" href="#bib.bib28" title="">28</a>, <a class="ltx_ref" href="#bib.bib29" title="">29</a>, <a class="ltx_ref" href="#bib.bib30" title="">30</a>, <a class="ltx_ref" href="#bib.bib31" title="">31</a>, <a class="ltx_ref" href="#bib.bib32" title="">32</a>]</cite> 和模仿学习 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib16" title="">16</a>, <a class="ltx_ref" href="#bib.bib33" title="">33</a>, <a class="ltx_ref" href="#bib.bib17" title="">17</a>, <a class="ltx_ref" href="#bib.bib34" title="">34</a>, <a class="ltx_ref" href="#bib.bib35" title="">35</a>, <a class="ltx_ref" href="#bib.bib36" title="">36</a>, <a class="ltx_ref" href="#bib.bib37" title="">37</a>, <a class="ltx_ref" href="#bib.bib38" title="">38</a>, <a class="ltx_ref" href="#bib.bib39" title="">39</a>, <a class="ltx_ref" href="#bib.bib40" title="">40</a>, <a class="ltx_ref" href="#bib.bib41" title="">41</a>]</cite>。 然而，大多数双手操作方法仍主要依赖视觉输入 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib16" title="">16</a>, <a class="ltx_ref" href="#bib.bib13" title="">13</a>, <a class="ltx_ref" href="#bib.bib42" title="">42</a>, <a class="ltx_ref" href="#bib.bib43" title="">43</a>, <a class="ltx_ref" href="#bib.bib44" title="">44</a>, <a class="ltx_ref" href="#bib.bib45" title="">45</a>, <a class="ltx_ref" href="#bib.bib46" title="">46</a>]</cite>，这限制了机器人达到人类水平的灵活性与灵巧性，因为人类与机器人之间存在感知差距。为了克服这些限制，近期的研究 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib47" title="">47</a>, <a class="ltx_ref" href="#bib.bib48" title="">48</a>]</cite> 采用了来自光学触觉传感器的图像 RGB。但由于这些传感器中摄像机的范围极小，机器人的手指通常体积庞大且过于僵硬，从而限制了其在更复杂的灵巧任务中的有效性。相比之下，本研究中引入的触觉传感器基于压阻材料，能够实现更大范围的、柔性的薄形手指覆盖。</p><p class="source-paragraph" lang="en">Bimanual Manipulation. Dual-arm robotic setups present a wealth of opportunities for broad applications [ 14 , 15 , 16 , 13 , 17 ] . Traditionally, approaches to bimanual manipulation were based on a classical model-based control perspective using known environmental dynamics [ 18 , 19 , 20 , 21 , 22 , 23 , 24 , 25 ] . However, these methods depend on ground truth environment models that are not only time-consuming to construct but also typically require full-state estimation, which is often difficult to obtain, particularly for objects with complex physical properties, such as deformable items.
+In recent years, many researchers in the robotics community have increasingly shifted their focus to learning-based methods, such as reinforcement learning [ 15 , 26 , 27 , 28 , 29 , 30 , 31 , 32 ] , and imitation learning [ 16 , 33 , 17 , 34 , 35 , 36 , 37 , 38 , 39 , 40 , 41 ] . However, most bimanual manipulation methods still primarily rely on visual inputs [ 16 , 13 , 42 , 43 , 44 , 45 , 46 ] , limiting the robot’s ability to achieve human-level flexibility and dexterity due to the sensing gap between humans and robots.
+To overcome these limitations, recent works [ 47 , 48 ] employ RGB images from optical tactile sensors. However, due to the minimal range of the cameras in these sensors, the robot fingers are typically very bulky and overly rigid, limiting their effectiveness in more complicated dexterous tasks. In contrast, the tactile sensor introduced in this work is based on piezoresistive materials, allowing for larger-scale, compliant coverage of flexible thin fingers.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S2.p2">
+<p class="ltx_p" id="S2.p2.1">视觉-触觉操作。触觉信息在生物学上具有至关重要的作用 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib49" title="">49</a>]</cite> ，视觉与触觉的融合对于人类成功与环境互动至关重要 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib50" title="">50</a>]</cite> . 视觉提供了对环境的宏观视角，但往往缺乏详细的接触信息，且存在视觉遮挡问题，这些问题可以通过触觉感知有效弥补。 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib51" title="">51</a>, <a class="ltx_ref" href="#bib.bib52" title="">52</a>, <a class="ltx_ref" href="#bib.bib53" title="">53</a>, <a class="ltx_ref" href="#bib.bib54" title="">54</a>, <a class="ltx_ref" href="#bib.bib55" title="">55</a>, <a class="ltx_ref" href="#bib.bib56" title="">56</a>, <a class="ltx_ref" href="#bib.bib57" title="">57</a>, <a class="ltx_ref" href="#bib.bib58" title="">58</a>, <a class="ltx_ref" href="#bib.bib59" title="">59</a>, <a class="ltx_ref" href="#bib.bib60" title="">60</a>, <a class="ltx_ref" href="#bib.bib61" title="">61</a>, <a class="ltx_ref" href="#bib.bib62" title="">62</a>]</cite> 整合视觉与触觉信息对机器人操作也至关重要。林等人 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib14" title="">14</a>]</cite> 提出一种视觉-触觉策略，该策略利用双手系统中的人类示范行为。然而，其触觉传感器分辨率较低，且其方法未明确考虑视觉与触觉之间的空间关系。为克服这一缺陷，Yuan等人进行了研究。 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib27" title="">27</a>]</cite>提出了机器人通感理论，该理论将视觉与触觉数据作为单一输入输入到策略网络中。然而，这种方法仅考虑低分辨率的二进制触觉信号，而触觉感知能力存在局限性。相比之下，我们的方法采用密集连续的触觉感知系统，能够提供关于接触区域的全面信息。此外，通过将两种感知方式整合到统一的 3 D 表示空间中，我们还能明确描述场景结构，从而实现更高效的策略学习过程。</p><p class="source-paragraph" lang="en">Visuo-Tactile Manipulation. Tactile information plays a crucial biological role [ 49 ] , and the integration of vision and touch is fundamental for humans to successfully interact with their environment [ 50 ] . Vision provides a broad perspective of the environment but often lacks detailed contact information and suffers from visual occlusion, which can be effectively complemented by tactile sensing [ 51 , 52 , 53 , 54 , 55 , 56 , 57 , 58 , 59 , 60 , 61 , 62 ] . Integrating visual and tactile information is also crucial for robotic manipulation.
+Lin et al. [ 14 ] propose a visuo-tactile policy that leverages human demonstrations within a bimanual system. However, their tactile sensor is low-resolution, and their approach lacks an explicit account of the spatial relationship between vision and touch. To address this limitation, Yuan et al. [ 27 ] proposed Robot Synesthesia, which combines visual and tactile data as a single input to the policy network. However, this approach only considers low-resolution binary tactile signals, which are limited in visuo-tactile sensing capacity.
+In contrast, our method employs a dense continuous tactile sensing system that delivers comprehensive information about the contact area. We also provide explicit accounting of the scene structure by integrating both modalities into a unified 3D representation space, leading to a more effective policy learning process.</p>
+</div>
+</section>
+<section class="ltx_section" id="S3">
+<h2 class="ltx_title ltx_title_section">3 视觉-触觉操控系统</h2>
+<section class="ltx_subsection" id="S3.SS1">
+<h3 class="ltx_title ltx_title_subsection">3.1 传感器与夹持器设计</h3>
+<figure class="ltx_figure" id="S3.F2"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="210" id="S3.F2.g1" loading="lazy" src="../media/2410.24091/system_setup_v6.png" style="aspect-ratio:476/210;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 2：我们的触觉感知平台。部分 (a) 展示了我们的双手联合触觉集成系统配置。我们在柔软夹爪上安装了四个触觉传感器垫（每只手两个）。触觉读数会在后屏上显示。部分 (b) 描述了我们触觉集成式柔软夹爪的设计。每个传感器包含 256 个感知单元，其位置如 (ii) 所示。我们还设计了一个读取板，用于收集触觉信号并将其传输给主机计算机。部分 (c) 展示了我们触觉传感器的物理特性与感知一致性（详情见第 <a class="ltx_ref" href="#S5" title="5 Experiments ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">5</span></a> 节）。</figcaption>
+</figure>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p1">
+<p class="ltx_p" id="S3.SS1.p1.1">柔性触觉传感器。我们的触觉传感器垫由电阻感测矩阵构成，能够将机械压力转化为电信号。这些触觉传感器垫的总厚度小于 1 <math alttext="mm" class="ltx_Math" display="inline" id="S3.SS1.p1.m1" intent=":literal"><semantics><mrow><mi>m</mi><mo lspace="0em" rspace="0em">​</mo><mi>m</mi></mrow><annotation encoding="application/x-tex">mm</annotation></semantics></math>，可轻松集成到各种机器人操作器上，包括机器人臂的表面。在本文中，我们将触觉传感器安装在一个柔软且可弯曲的鳍状夹持器上，如图 <a class="ltx_ref" href="#S3.F2" title="Figure 2 ‣ 3.1 Sensor and Gripper Design ‣ 3 Visuo-Tactile Manipulation System ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">2</span></a> (b) 所示。这些柔性传感器垫随着柔软的夹持器弯曲，仍能持续有效传输信号，使得该系统能够在广泛的机器人应用场景中发挥作用。</p><p class="source-paragraph" lang="en">Flexible Tactile Sensors. Our sensor pads consist of resistive sensing matrices that convert mechanical pressure into electrical signals. Designed with a total thickness of less than 1 m ​ m , the tactile sensor pads can be easily integrated onto various robotic manipulators, including the surfaces of robot arms. In this paper, we install the tactile sensors on a soft and adaptable fin-shaped gripper, as shown in Fig. 2 (b). These flexible sensor pads bend with the soft gripper and continue to provide effective signal transmission, making the system versatile across a wide range of robotic applications.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p2">
+<p class="ltx_p" id="S3.SS1.p2.1">如图 <a class="ltx_ref" href="#S3.F2" title="Figure 2 ‣ 3.1 Sensor and Gripper Design ‣ 3 Visuo-Tactile Manipulation System ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">2</span></a> (b) 所示，操作器的每个手指均配备有包含 256 传感单元（由 16 传感器阵列构成的 16）的传感器垫。传感器垫的尺寸、密度及空间传感分辨率均可进行定制；在我们当前的设计中，每个传感器点的分辨率设定为 3 <math alttext="mm^{2}" class="ltx_Math" display="inline" id="S3.SS1.p2.m1" intent=":literal"><semantics><mrow><mi>m</mi><mo lspace="0em" rspace="0em">​</mo><msup><mi>m</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">mm^{2}</annotation></semantics></math>。与 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib11" title="">11</a>]</cite> 类似，触觉传感垫采用三层结构设计，其中压阻层（Velostat）被夹在两组正交排列的导电纱线之间，后者作为电极使用。这些层随后通过高强度粘合剂（3 M 468 MP）封装在两种形状相同的聚酰亚胺薄膜之间，从而确保电极与压阻膜之间具有稳定的电接触，这对可靠的信号采集至关重要。 传感器特性在多个设备间具有可重复性，且在多次循环中具有可靠性。关于触觉传感器制造方面的更详细信息，请参见附录。</p><p class="source-paragraph" lang="en">As illustrated in Fig. 2 (b), each finger of the manipulator is equipped with a sensor pad containing 256 sensing units (a 16 by 16 sensor array). The size, density, and spatial sensing resolution of the sensor pads can be customized; in our current design, the resolution is set at 3 m ​ m 2 per sensor point. Similar to [ 11 ] , the tactile sensing pads leverage a triple-layer design, where a piezoresistive layer (Velostat) is sandwiched between two sets of orthogonally aligned conductive yarns serving as electrodes. These layers are then encapsulated between two shaped Polyimide films using a high-strength adhesive (3M 468MP), ensuring robust electrical contact between the electrodes and the piezoresistive film, which is crucial for reliable signal acquisition. The sensor characteristics are repeatable across multiple devices and reliable over multiple cycles. More detailed information on tactile sensor manufacturing is available in the Appendix.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p3">
+<p class="ltx_p" id="S3.SS1.p3.1">压阻层的电阻值会随着施加的压力变化，从而使每个传感器节点能够将机械压力转化为电信号。这些模拟信号由 Arduino Nano 捕获，并通过串行通信传输至计算机。我们采用定制的电气读取电路，以最高约 32.2 FPS 的帧率获取数据。一个传感器垫片及读取板（不含 Arduino）的总成本约为 $ 20。我们致力于发布关于硬件制造的全面教程。</p><p class="source-paragraph" lang="en">The resistance of the piezoresistive layer changes in response to applied pressure, enabling each sensor point to convert mechanical pressure into an electrical signal. These analog signals are captured by an Arduino Nano and transmitted to a computer via serial communication. We use a customized electrical readout circuit to acquire data at a frame rate of up to approximately 32.2 FPS. The total cost of one sensor pad and the reading board (without Arduino) is about $20. We are committed to releasing comprehensive tutorials for hardware manufacturing.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p4">
+<p class="ltx_p" id="S3.SS1.p4.1">柔性触觉传感器与柔软夹爪的集成。我们将触觉传感器安装在由 TPU 材料制成的全 3 3D 打印柔软夹爪表面（见图 <a class="ltx_ref" href="#S3.F2" title="Figure 2 ‣ 3.1 Sensor and Gripper Design ‣ 3 Visuo-Tactile Manipulation System ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">2</span></a> (b)）。触觉传感器垫与柔性柔软夹爪结合良好。我们的新夹爪设计具有多项优势。首先，柔软的夹爪结构显著增加了传感器与目标物体之间的接触面积。这不仅有助于稳定操作过程，还能确保物体接触模式与几何形状的准确反映。其次，虽然视觉-触觉策略能带来一定的动作一致性，但柔软的夹爪特性还带来了机械一致性 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib42" title="">42</a>]</cite>，使我们能够更有效地处理脆弱物体。</p><p class="source-paragraph" lang="en">Integration of Flexible Tactile Sensor and Soft Gripper. We install our tactile sensors on the surface of a fully 3D-printed soft gripper made from TPU material (Fig. 2 (b)). The tactile sensor pads integrate well with the flexible soft gripper. Our new gripper design offers several advantages. First, the soft nature of the gripper significantly increases the contact area between the sensors and the target objects. This not only helps stabilize the manipulation process but also ensures consistent reflection of the contacting patterns and geometry of the objects. Second, while our visuo-tactile policy provides certain levels of action compliance, the softness of the gripper adds mechanical compliance [ 42 ] , enabling us to handle fragile objects more effectively.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S3.SS2">
+<h3 class="ltx_title ltx_title_subsection">3.2 多模态感知与遥操作系统配置</h3>
+<div class="ltx_para ltx_noindent" id="S3.SS2.p1">
+<p class="ltx_p" id="S3.SS2.p1.1">我们采用双手遥操作系统，利用两个主机器人来控制两个傀儡机器人 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib16" title="">16</a>]</cite>。在数据收集过程中，我们从多种传感器中收集同步的多模态信息，这些传感器包括触觉传感器、多视角RGBD相机（Realsense）以及机器人目标动作和当前关节状态的数据，采集频率为 10 Hz。传感信息之间的同步对于保持多模态数据集的时间一致性至关重要，从而能够准确实现触觉反馈与视觉数据之间的对齐。我们还通过在屏幕上可视化实时触觉信息反馈来实现这一点，如图 <a class="ltx_ref" href="#S3.F2" title="Figure 2 ‣ 3.1 Sensor and Gripper Design ‣ 3 Visuo-Tactile Manipulation System ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">2</span></a> (a) 所示。这使得人类操作员能够评估接触是否足够以实现安全抓取，进而提升数据质量，具体说明将在 Sec. <a class="ltx_ref" href="#S5" title="5 Experiments ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">5</span></a> 中给出。</p><p class="source-paragraph" lang="en">We employ a bimanual teleoperation system using two master robots to control two puppet robots [ 16 ] . During the data collection process, we gather synchronized multimodal information at a consistent frequency of 10 Hz from various sensors, including tactile sensors, multi-view RGBD cameras (Realsense), and data on robot target actions and current joint states. Synchronization among the sensing information is critical for maintaining the temporal consistency of the multimodal dataset, allowing for accurate alignment between tactile feedback and visual data. We also implement real-time tactile information feedback by visualizing it on the screen, as shown in Fig. 2 (a). This enables the human operators to assess the adequacy of contact for secure grasping, which enhances the quality of the collected data, as will be detailed in Sec. 5 .</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S4">
+<h2 class="ltx_title ltx_title_section">4 视觉-触觉灵巧性学习</h2>
+<section class="ltx_subsection" id="S4.SS1">
+<h3 class="ltx_title ltx_title_subsection">4.1 问题建模</h3>
+<div class="ltx_para ltx_noindent" id="S4.SS1.p1">
+<p class="ltx_p" id="S4.SS1.p1.1">在我们的研究中，我们致力于通过模仿学习来学习富含接触信息的机器人技能轨迹这一挑战。图 <a class="ltx_ref" href="#S4.F3" title="Figure 3 ‣ 4.1 Problem Formulation ‣ 4 Learning Visuo-Tactile Dexterity ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">3</span></a> 展示了视觉-触觉数据与后续动作生成过程的整合情况。具体而言，我们提出了一种视觉-触觉策略，记为 <math alttext="\pi:\mathcal{O}\rightarrow\mathcal{A}" class="ltx_Math" display="inline" id="S4.SS1.p1.m1" intent=":literal"><semantics><mrow><mi>π</mi><mo lspace="0.278em" rspace="0.278em">:</mo><mrow><mi class="ltx_font_mathcaligraphic">𝒪</mi><mo stretchy="false">→</mo><mi class="ltx_font_mathcaligraphic">𝒜</mi></mrow></mrow><annotation encoding="application/x-tex">\pi:\mathcal{O}\rightarrow\mathcal{A}</annotation></semantics></math>。该策略将结合后的视觉与触觉观测结果 <math alttext="o\in\mathcal{O}" class="ltx_Math" display="inline" id="S4.SS1.p1.m2" intent=":literal"><semantics><mrow><mi>o</mi><mo>∈</mo><mi class="ltx_font_mathcaligraphic">𝒪</mi></mrow><annotation encoding="application/x-tex">o\in\mathcal{O}</annotation></semantics></math> 映射为具体动作 <math alttext="a\in\mathcal{A}" class="ltx_Math" display="inline" id="S4.SS1.p1.m3" intent=":literal"><semantics><mrow><mi>a</mi><mo>∈</mo><mi class="ltx_font_mathcaligraphic">𝒜</mi></mrow><annotation encoding="application/x-tex">a\in\mathcal{A}</annotation></semantics></math>。我们的方法由两个关键部分构成：( 1 ) 密集的视觉-触觉表示：图。 <a class="ltx_ref" href="#S4.F3" title="Figure 3 ‣ 4.1 Problem Formulation ‣ 4 Learning Visuo-Tactile Dexterity ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">3</span></a> (b) 展示了在统一坐标系下视觉与触觉数据的融合过程，包括：(i) 3 D视觉点云（由 <math alttext="{\color[rgb]{0.5664,0.793,0.9766}\bullet}" class="ltx_Math" display="inline" id="S4.SS1.p1.m4" intent=":literal"><semantics><mo mathcolor="#90CAF9" style="--ltx-fg-color:#90CAF9;">∙</mo><annotation encoding="application/x-tex">{\color[rgb]{0.5664,0.793,0.9766}\bullet}</annotation></semantics></math> 可视化）：由相机捕获后进行格式化处理为 <math alttext="P^{\text{visual}}_{t}\in\mathbb{R}^{N_{\text{vis}}\times 4}" class="ltx_Math" display="inline" id="S4.SS1.p1.m5" intent=":literal"><semantics><mrow><msubsup><mi>P</mi><mi>t</mi><mtext>visual</mtext></msubsup><mo>∈</mo><msup><mi>ℝ</mi><mrow><msub><mi>N</mi><mtext>vis</mtext></msub><mo lspace="0.222em" rspace="0.222em">×</mo><mn>4</mn></mrow></msup></mrow><annotation encoding="application/x-tex">P^{\text{visual}}_{t}\in\mathbb{R}^{N_{\text{vis}}\times 4}</annotation></semantics></math>，并额外增加一个空通道以匹配触觉数据的结构。(ii) 3 D触觉点云（由 <math alttext="{\color[rgb]{0.4805,0.1211,0.5078}\bullet}" class="ltx_Math" display="inline" id="S4.SS1.p1.m6" intent=":literal"><semantics><mo mathcolor="#7B1F81" style="--ltx-fg-color:#7B1F81;">∙</mo><annotation encoding="application/x-tex">{\color[rgb]{0.4805,0.1211,0.5078}\bullet}</annotation></semantics></math> 可视化）：该触觉点云包含所有触觉感知单元的点，并将感知值作为特征通道进行格式化处理为 <math alttext="P_{t}^{\text{tactile}}\in\mathbb{R}^{N_{\text{tac}}\times 4}" class="ltx_Math" display="inline" id="S4.SS1.p1.m7" intent=":literal"><semantics><mrow><msubsup><mi>P</mi><mi>t</mi><mtext>tactile</mtext></msubsup><mo>∈</mo><msup><mi>ℝ</mi><mrow><msub><mi>N</mi><mtext>tac</mtext></msub><mo lspace="0.222em" rspace="0.222em">×</mo><mn>4</mn></mrow></msup></mrow><annotation encoding="application/x-tex">P_{t}^{\text{tactile}}\in\mathbb{R}^{N_{\text{tac}}\times 4}</annotation></semantics></math>。(2) 策略学习：图 <a class="ltx_ref" href="#S4.F3" title="Figure 3 ‣ 4.1 Problem Formulation ‣ 4 Learning Visuo-Tactile Dexterity ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">3</span></a> (c) 展示了模仿学习过程。基于我们的 3 D密集视觉-触觉表示，我们利用扩散策略 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib13" title="">13</a>]</cite> 生成一系列机器人关节状态作为动作序列。</p><p class="source-paragraph" lang="en">In our study, we address the challenge of learning contact-rich robot skill trajectories through imitation learning. Fig. 3 provides an overview of the integration of visuo-tactile data and the subsequent action generation processes. Specifically, we introduce a visuo-tactile policy, denoted as π : 𝒪 → 𝒜 . This policy maps combined visual and tactile observations o ∈ 𝒪 to actions a ∈ 𝒜 .
+Our method consists of two critical parts: (1) Dense Visuo-Tactile Representation: Fig. 3 (b) shows the integration of visual and tactile data within a unified coordinate system, which includes: (i) 3D Visual Point Cloud (visualized by ∙ ): Captured by the camera, formatted as P t visual ∈ ℝ N vis × 4 , including an additional empty channel to match the shape of the tactile data. (ii) 3D Tactile Point Cloud (visualized by ∙ ): This tactile point cloud includes all the points of the tactile sensing units and uses the sensing value as a feature channel, formatted as P t tactile ∈ ℝ N tac × 4 . (2) Policy Learning: Fig. 3 (c) indicates the imitation learning process. Conditioned on our 3D dense visuo-tactile representation, we leverage the diffusion policy [ 13 ] to generate actions as a sequence of robot joint states.</p>
+</div>
+<figure class="ltx_figure" id="S4.F3"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="238" id="S4.F3.g1" loading="lazy" src="../media/2410.24091/method_v5.png" style="aspect-ratio:476/238;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 3：视觉-触觉策略。部分 (a) 展示了实际应用场景及被操控物体。部分 (b) 展示了视觉数据（上块）与触觉数据（下块）的处理过程，随后这些数据在相同的 3 D 坐标体系中进行整合。从触觉信号的可视化结果来看，由于两个夹持器的相对运动不同，即使抓取工具中的对称部分时，同一夹持器上两个手指的力分布也会有所不同。这种精细信息对于手持物体操控尤为重要。部分 (c) 描述了我们的决策过程，我们的网络将整合后的 3 D 视觉-触觉表示作为输入，并输出预测的动作序列。</figcaption>
+</figure>
+</section>
+<section class="ltx_subsection" id="S4.SS2">
+<h3 class="ltx_title ltx_title_subsection">4.2 密集视觉-触觉表征</h3>
+<div class="ltx_para ltx_noindent" id="S4.SS2.p1">
+<p class="ltx_p" id="S4.SS2.p1.1">在我们的方法中，无需分别处理触觉与视觉模式以进行特征提取 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib14" title="">14</a>]</cite> 我们将触觉与视觉数据整合，将其映射到同一空间 3 D空间。如图中所示。 <a class="ltx_ref" href="#S4.F3" title="Figure 3 ‣ 4.1 Problem Formulation ‣ 4 Learning Visuo-Tactile Dexterity ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">3</span></a> (b)，顶部行展示了视觉观测的处理过程，而底部行则描述了密集数据的处理过程 3 利用触觉信号与机器人本体感知的触觉点。</p><p class="source-paragraph" lang="en">In our approach, instead of separately processing tactile and visual modalities for feature extraction [ 14 ] , we integrate tactile and visual data by projecting them into the same 3D space. As illustrated in Fig. 3 (b), the top row demonstrates the processing of visual observations, while the bottom row depicts the processing of dense 3D tactile points using tactile signals and robot proprioception.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS2.p2">
+<p class="ltx_p" id="S4.SS2.p2.1">3 D视觉点云。我们对由相机捕获的点云实施一系列数据预处理操作，记为<math alttext="P^{\text{visual}}_{t}\in\mathbb{R}^{N_{\text{vis}}\times 4}" class="ltx_Math" display="inline" id="S4.SS2.p2.m1" intent=":literal"><semantics><mrow><msubsup><mi>P</mi><mi>t</mi><mtext>visual</mtext></msubsup><mo>∈</mo><msup><mi>ℝ</mi><mrow><msub><mi>N</mi><mtext>vis</mtext></msub><mo lspace="0.222em" rspace="0.222em">×</mo><mn>4</mn></mrow></msup></mrow><annotation encoding="application/x-tex">P^{\text{visual}}_{t}\in\mathbb{R}^{N_{\text{vis}}\times 4}</annotation></semantics></math>。该过程包含四个步骤：(i) 合并：将多视角深度观测得到的点云进行合并，以确保对观测环境的全面覆盖。(ii) 裁剪：使用手动定义的边界框，将点云裁剪至指定的工作区域。(iii) 降采样：为了提升视觉数据处理的效率，我们采用最远点采样法对点云进行降采样（FPS），<cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib63" title="">63</a>]</cite>，从而确保3 D空间中的覆盖更为均匀（相比均匀采样）。此处设置<math alttext="N_{\text{vis}}=512" class="ltx_Math" display="inline" id="S4.SS2.p2.m2" intent=":literal"><semantics><mrow><msub><mi>N</mi><mtext>vis</mtext></msub><mo>=</mo><mn>512</mn></mrow><annotation encoding="application/x-tex">N_{\text{vis}}=512</annotation></semantics></math>，以平衡几何细节与计算效率。(iv) 变换：将点云转换为机器人的基坐标系。</p><p class="source-paragraph" lang="en">3D Visual Point Cloud. We implement a series of data preprocessing procedures on the point cloud captured by the camera, denoted as P t visual ∈ ℝ N vis × 4 . The process involves four steps: (i) Merge: We combine point clouds from multi-view depth observations to ensure comprehensive coverage of the observed environment. (ii) Crop: The point cloud is cropped to the designated work region using a manually defined bounding box. (iii) Down-Sample: To enhance the efficiency of our visual data processing, we down-sample the point cloud using Farthest Point Sampling (FPS) [ 63 ] to ensure a more uniform coverage of the 3D space (compared to uniform sampling). Here, we set N vis = 512 to maintain a balance between geometric detail and computational efficiency. (iv) Transform: The point cloud is transformed into the robot’s base frame.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS2.p3">
+<p class="ltx_p" id="S4.SS2.p3.1">3 触觉点云。基于触觉的点云 <math alttext="P_{t}^{\text{tactile}}\in\mathbb{R}^{N_{\text{tac}}\times 4}" class="ltx_Math" display="inline" id="S4.SS2.p3.m1" intent=":literal"><semantics><mrow><msubsup><mi>P</mi><mi>t</mi><mtext>tactile</mtext></msubsup><mo>∈</mo><msup><mi>ℝ</mi><mrow><msub><mi>N</mi><mtext>tac</mtext></msub><mo lspace="0.222em" rspace="0.222em">×</mo><mn>4</mn></mrow></msup></mrow><annotation encoding="application/x-tex">P_{t}^{\text{tactile}}\in\mathbb{R}^{N_{\text{tac}}\times 4}</annotation></semantics></math> 反映了 3 D 空间中触觉单元所获取的连续触觉读数及位置信息。为了确定每个传感器的位置，我们依据机器人的关节状态，通过正向运动学计算机械手的实际位置。我们将 <math alttext="N_{\text{tac}}=256\times N_{\text{finger}}" class="ltx_Math" display="inline" id="S4.SS2.p3.m2" intent=":literal"><semantics><mrow><msub><mi>N</mi><mtext>tac</mtext></msub><mo>=</mo><mrow><mn>256</mn><mo lspace="0.222em" rspace="0.222em">×</mo><msub><mi>N</mi><mtext>finger</mtext></msub></mrow></mrow><annotation encoding="application/x-tex">N_{\text{tac}}=256\times N_{\text{finger}}</annotation></semantics></math> 设定为触觉点云的参数，其中 <math alttext="N_{\text{finger}}" class="ltx_Math" display="inline" id="S4.SS2.p3.m3" intent=":literal"><semantics><msub><mi>N</mi><mtext>finger</mtext></msub><annotation encoding="application/x-tex">N_{\text{finger}}</annotation></semantics></math> 表示配备有触觉传感器垫的机器人手指数量。每个传感器垫由 256 个触觉点组成。我们将 <math alttext="N_{\text{finger}}=2" class="ltx_Math" display="inline" id="S4.SS2.p3.m4" intent=":literal"><semantics><mrow><msub><mi>N</mi><mtext>finger</mtext></msub><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">N_{\text{finger}}=2</annotation></semantics></math> 设定为单臂任务参数，<math alttext="N_{\text{finger}}=4" class="ltx_Math" display="inline" id="S4.SS2.p3.m5" intent=":literal"><semantics><mrow><msub><mi>N</mi><mtext>finger</mtext></msub><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">N_{\text{finger}}=4</annotation></semantics></math> 则设定为双手任务参数。</p><p class="source-paragraph" lang="en">3D Tactile Point Cloud. The tactile-based point cloud, P t tactile ∈ ℝ N tac × 4 , represents the positions and the continuous tactile readings from the tactile units in 3D space. To determine the position of each sensor, we calculate the real-time grippers’ positions using forward kinematics based on the robot’s joint states.
+We set N tac = 256 × N finger for the tactile point cloud, where N finger represents the number of robot fingers equipped with the tactile sensor pads. Each sensor pad consists of 256 tactile points. We set N finger = 2 for the single arm task and N finger = 4 for the bimanual task.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS2.p4">
+<p class="ltx_p" id="S4.SS2.p4.1">3 D 视觉-触觉点。随后，我们将两种类型的点云 <math alttext="o=P_{t}^{\text{tactile}}\cup P^{\text{visual}}_{t}" class="ltx_Math" display="inline" id="S4.SS2.p4.m1" intent=":literal"><semantics><mrow><mi>o</mi><mo>=</mo><mrow><msubsup><mi>P</mi><mi>t</mi><mtext>tactile</mtext></msubsup><mo>∪</mo><msubsup><mi>P</mi><mi>t</mi><mtext>visual</mtext></msubsup></mrow></mrow><annotation encoding="application/x-tex">o=P_{t}^{\text{tactile}}\cup P^{\text{visual}}_{t}</annotation></semantics></math> 整合到相同的空间坐标中，如图 <a class="ltx_ref" href="#S4.F3" title="Figure 3 ‣ 4.1 Problem Formulation ‣ 4 Learning Visuo-Tactile Dexterity ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">3</span></a> (c) 所示。每个点还被分配了独热编码，以表明它是视觉点还是触觉点。这种统一的 3 D 视觉-触觉表示方式，为策略网络提供了关于触觉数据与视觉数据之间空间关系的详细且明确的信息。这种整合引入了归纳偏见，从而提升了在触觉丰富的任务中的操作效率，尤其是那些需要同时考虑两种模态的任务。</p><p class="source-paragraph" lang="en">3D Visuo-Tactile Points. We then integrate the two types of point clouds, o = P t tactile ∪ P t visual , into the same spatial coordinates, as visualized in Fig. 3 (c). Each point is also assigned a one-hot encoding to indicate whether it is a visual point or a tactile point. This unified 3D visuo-tactile representation provides the policy network with a detailed and explicit accounting of the spatial relationships between tactile and visual data. This integration introduces an inductive bias that enhances the effectiveness of manipulation in contact-rich tasks, particularly those requiring a comprehensive consideration of both modalities.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S4.SS3">
+<h3 class="ltx_title ltx_title_subsection">4.3 训练流程</h3>
+<div class="ltx_para ltx_noindent" id="S4.SS3.p1">
+<p class="ltx_p" id="S4.SS3.p1.1">如图 <a class="ltx_ref" href="#S4.F3" title="Figure 3 ‣ 4.1 Problem Formulation ‣ 4 Learning Visuo-Tactile Dexterity ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">3</span></a> (c) 所示，我们的方法中的决策模块被构建为条件去噪扩散模型 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib64" title="">64</a>]</cite>。该模型以 PointNet++ <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib65" title="">65</a>]</cite> 架构作为骨干网络，并基于 3 视觉触觉表征 <math alttext="o" class="ltx_Math" display="inline" id="S4.SS3.p1.m1" intent=":literal"><semantics><mi>o</mi><annotation encoding="application/x-tex">o</annotation></semantics></math> 进行训练，从而将随机高斯噪声去噪为具体动作 <math alttext="a" class="ltx_Math" display="inline" id="S4.SS3.p1.m2" intent=":literal"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>。</p><p class="source-paragraph" lang="en">As shown in Fig. 3 (c), the decision module in our method is formulated as a conditional denoising diffusion model [ 64 ] .
+It uses the PointNet++ [ 65 ] architecture as the backbone and is conditioned on the 3D visuo-tactile representation o to denoise random Gaussian noise into the actions a .</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S5">
+<h2 class="ltx_title ltx_title_section">5 实验</h2>
+<section class="ltx_subsection" id="S5.SS1">
+<h3 class="ltx_title ltx_title_subsection">5.1 触觉传感器硬件特性分析</h3>
+<div class="ltx_para ltx_noindent" id="S5.SS1.p1">
+<p class="ltx_p" id="S5.SS1.p1.1">我们评估了触觉传感器的物理特性，以更清晰地了解其性能与信号范围。如图 <a class="ltx_ref" href="#S3.F2" title="Figure 2 ‣ 3.1 Sensor and Gripper Design ‣ 3 Visuo-Tactile Manipulation System ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">2</span></a> (c) 中的上图所示，该图展示了触觉传感器的读取信号随施加力变化的规律。我们从一个传感器垫中选取了 10 传感器单元，并利用这些单元的数据来拟合各个曲线。图 <a class="ltx_ref" href="#S3.F2" title="Figure 2 ‣ 3.1 Sensor and Gripper Design ‣ 3 Visuo-Tactile Manipulation System ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">2</span></a> (c) 中的下图则显示了不同负载下触觉传感器垫的稳定性。我们将传感器划分为 8、<math alttext="\times" class="ltx_Math" display="inline" id="S5.SS1.p1.m1" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 和 8 网格，并汇总了每个单元的读数。不同负载下 8、<math alttext="\times" class="ltx_Math" display="inline" id="S5.SS1.p1.m2" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 和 8 网格的稳定性则通过箱形图进行展示。 为了展示我们高密度、连续触觉传感器的性能，我们还进行了额外的实验，针对 6 和 DoF 姿态估计任务，仅利用 3 D 触觉信息以及被操控物体的模型进行研究。更多细节请参见附录。</p><p class="source-paragraph" lang="en">We evaluated the physical characteristics of our tactile sensors to better understand their performance and signal range. As depicted in Fig. 2 (c), the top figure illustrates how the reading signals of our tactile sensors vary with the applied force. We selected 10 sensor units from one sensor pad, and the data from each of them were used to fit individual curves. The bottom figure in Fig. 2 (c) shows the consistency of our tactile sensor pad under different loads. We divided our sensor into an 8 × 8 grid and summed the readings from each unit. The consistency of the 8 × 8 grid under different loads is shown using a box plot. To demonstrate the capabilities of our dense, continuous tactile sensors, we also conducted additional experiments for 6 DoF pose estimation using only 3D tactile information and models of the manipulated objects. More details can be found in the Appendix.</p>
+</div>
+<figure class="ltx_figure" id="S5.F4"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="280" id="S5.F4.g1" loading="lazy" src="../media/2410.24091/quantative_result_2.png" style="aspect-ratio:476/280;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 4：策略部署。我们针对四项长期视野、高精度操控任务对我们的视觉-触觉策略进行了评估。这些任务的详细描述与指标可参见第 <a class="ltx_ref" href="#S5.SS2" title="5.2 Experiment Setup for Imitation Learing ‣ 5 Experiments ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">5.2</span></a> 节。前两行展示了需要精细力信息处理的任务，最后两行则聚焦于需要手持物体状态信息的任务。更多细节请观看我们的 <a class="ltx_ref ltx_href" href="https://binghao-huang.github.io/3D-ViTac/" title="">website</a> 视频。</figcaption>
+</figure>
+</section>
+<section class="ltx_subsection" id="S5.SS2">
+<h3 class="ltx_title ltx_title_subsection">5.2 模仿学习实验设置</h3>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p1">
+<p class="ltx_p" id="S5.SS2.p1.1">我们在四项具有挑战性的实际机器人任务上对我们的多模态感知与学习系统进行了评估，每项任务又被划分为四个步骤，以便更细致地评估性能（图 <a class="ltx_ref" href="#S5.F4" title="Figure 4 ‣ 5.1 Tactile Sensor Hardware Characterization ‣ 5 Experiments ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">4</span></a>）。根据这些任务从触觉信号整合中获得的收益程度，对任务进行了分类。以下是所有任务的基本描述及评估指标：</p><p class="source-paragraph" lang="en">We evaluate our multi-modal sensing and learning system on four challenging real-world robotic tasks, each divided into four steps for a more fine-grained assessment of performance (Fig. 4 ). Tasks are categorized based on how they benefit from the incorporation of tactile signals. Below are the basic descriptions and evaluation metrics for all tasks:</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p2">
+<p class="ltx_p" id="S5.SS2.p2.1">( 1 ) 需要精细力信息任务：</p><p class="source-paragraph" lang="en">(1) Tasks Requiring Fine-Grained Force Information:</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p3">
+<p class="ltx_p" id="S5.SS2.p3.1">鸡蛋蒸制。机器人首先用右手打开鸡蛋盘。随后，机器人必须抓取鸡蛋并将其放入蒸锅中。之后，用左手调整并固定蒸锅的盖子在鸡蛋上。评估指标：如果鸡蛋被放置时未受损且蒸锅盖子正确覆盖在鸡蛋上，则任务视为成功。如果由于握力不足导致鸡蛋掉落，或过度用力导致鸡蛋破裂，则视为处理失败。</p><p class="source-paragraph" lang="en">Egg Steaming . The robot uses its right hand to open the egg tray first. Then the robot must grasp and place an egg into an egg cooker. Subsequently, the left hand is used to relocate and secure the cooker’s cover over the egg. Evaluation Metrics: The task is considered successful if the egg is placed without damage and the cooker’s cover is properly positioned over the egg. A handling failure occurs if the egg falls due to insufficient grip force or cracks under excessive force.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p4">
+<p class="ltx_p" id="S5.SS2.p4.1">水果处理。机器人用左手握住盘子并将其放在桌上。随后，两个机械臂协同操作以打开塑料袋。接着，右臂抓取一颗或多颗葡萄，并将其放在盘子上。评估指标：如果葡萄被放置在盘子上且未受到任何损伤，则视为该任务完成。</p><p class="source-paragraph" lang="en">Fruit Preparation . The robot uses its left hand to grasp the plate and place it on the table. Subsequently, both robot arms collaborate to open the plastic bag. Then, the right arm grasps a grape or several grapes and places them on the plate. Evaluation Metrics: The task is considered successful if the grapes are placed on the plate without sustaining any damage.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p5">
+<p class="ltx_p" id="S5.SS2.p5.1">(2) 需要手持状态信息的任务：</p><p class="source-paragraph" lang="en">(2) Tasks Requiring In-Hand State Information:</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p6">
+<p class="ltx_p" id="S5.SS2.p6.1">六角钥匙采集操作。右手需握住六角钥匙，随后左手握住该钥匙，再利用左手调整六角钥匙的位置。之后，机器人需将内六角扳手准确插入盒子上的孔中。评估指标：内六角扳手能够准确插入孔中即视为操作成功。此外，若未能正确调整六角钥匙的位置，则可能导致无法将其插入孔中。</p><p class="source-paragraph" lang="en">Hex Key Collection. The right hand is required to grasp the Hex Key, and then the left hand needs to grasp the Hex key followed by an in-hand adjustment of the Hex Key’s position using its left hand. Subsequently, the robot is required to accurately insert the Allen wrench into the hole in the box. Evaluation Metrics: A successful insertion of the Allen wrench into the hole is considered a successful operation. Additionally, any failure to properly adjust the Hex Key’s position may result in the inability when inserting it into the hole.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p7">
+<p class="ltx_p" id="S5.SS2.p7.1">三明治服务方式。首先，右手需握住服务勺；其次，左手需握住锅柄并倾斜锅体。随后，右手从锅中取出煎蛋，并将其放在面包上供用户食用。评估指标：机器人必须成功从锅中取出煎蛋并将其放在面包上。</p><p class="source-paragraph" lang="en">Sandwich Serving. First, the right hand is required to grasp the serving spoon. Second, the left hand needs to hold the pot handle and then tilt the pot. The right hand should then retrieve the fried egg from the pot and serve it on the bread. Evaluation Metrics: The robot must successfully retrieve the fried egg from the pot and serve it on the bread.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p8">
+<p class="ltx_p" id="S5.SS2.p8.1">在实验中，我们主要将我们的方法与以下基线方法进行对比。所有策略均经过 2,000 轮次的训练。包括我们的方法及基线方法在内，所有方法均使用三种相机视角。</p><p class="source-paragraph" lang="en">In the experiments, we primarily compare our methods with the following baselines. We trained all policies for 2,000 epochs. All methods, including ours and the baselines, use three camera views.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p9">
+<p class="ltx_p" id="S5.SS2.p9.1">( 1 ) RGB 仅限使用。该方法以来自摄像机的多视图 RGB 作为基于图像的扩散策略的输入。我们采用与 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib13" title="">13</a>]</cite> 相同的实现方式。</p><p class="source-paragraph" lang="en">(1) RGB Only . This method uses multi-view RGB from cameras as input for the image-based diffusion policy. We use the same implementation as [ 13 ] .</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p10">
+<p class="ltx_p" id="S5.SS2.p10.1">( 2 ) RGB 结合触觉图像。该方法通过不同的分支处理多视图 RGB 图像与触觉图像，以用于扩散策略。我们使用 CNN 作为触觉图像的特征提取器。</p><p class="source-paragraph" lang="en">(2) RGB w/ Tactile Image . This method processes multi-view RGB images and tactile images through different branches for the diffusion policy. We use a CNN as the feature extractor for tactile images.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p11">
+<p class="ltx_p" id="S5.SS2.p11.1">(3 ) PC. 仅限。该方法仅使用多视图视觉点云作为扩散策略的感知方式。我们采用 PointNet++ 作为特征提取器。</p><p class="source-paragraph" lang="en">(3) PC. Only . This method uses only multi-view visual point clouds as the sensing modality for the diffusion policy. We use PointNet++ as the feature extractor.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p12">
+<p class="ltx_p" id="S5.SS2.p12.1">(4 ) PC. 配备触觉图像功能。该方法通过不同分支将多视图视觉点云与触觉图像融合，用于扩散策略的构建。我们采用 CNN 作为触觉图像的特征提取器，而 PointNet++ 则作为点云的特征提取器。</p><p class="source-paragraph" lang="en">(4) PC. w/ Tactile Image . This method fuses multi-view visual point clouds and tactile images through different branches for the diffusion policy. We use a CNN as the feature extractor for tactile images and PointNet++ as the feature extractor for point clouds.</p>
+</div>
+<figure class="ltx_table" id="S5.T1">
+<div class="ltx_inline-block ltx_transformed_outer" id="S5.T1.2" style="width:345.0pt;height:124.1pt;vertical-align:-60.6pt;"><span class="ltx_transformed_inner" style="transform:translate(-129.9pt,46.7pt) scale(0.570438433567996,0.570438433567996) ;">
+<div class="table-scroll"><table class="ltx_tabular ltx_align_middle" id="S5.T1.2.1">
+<tr class="ltx_tr" id="S5.T1.2.1.1">
+<td class="ltx_td ltx_align_center" colspan="9" id="S5.T1.2.1.1.1">需要精细力信息的任务</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.2">
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t" id="S5.T1.2.1.2.1" rowspan="3">模式</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t" colspan="4" id="S5.T1.2.1.2.2">蒸蛋技术（30 演示）</td>
+<td class="ltx_td ltx_align_center ltx_border_t" colspan="4" id="S5.T1.2.1.2.3">水果加工（30 演示）</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.3">
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.3.1">开放</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.3.2">抓取</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.3.3">位置</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.3.4">整体</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.3.5">抓取与</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.3.6">开放</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.3.7">抓取</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.3.8">整体</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.4">
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.1">蛋盘</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.2">蛋</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.3">蛋</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.4.4">任务</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.5">定位盘</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.6">塑料袋</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.7">葡萄</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.8">任务</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.5">
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t" id="S5.T1.2.1.5.1">RGB 仅</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.5.2">0.95</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.5.3">0.75</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.5.4">0.60</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t" id="S5.T1.2.1.5.5">0.50</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.5.6">0.95</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.5.7">0.75</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.5.8">0.45</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.5.9">0.45</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.6">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T1.2.1.6.1">RGB 带触觉图像</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.6.2">0.95</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.6.3"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.6.3.1">0.90</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.6.4">0.80</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.6.5">0.70</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.6.6">0.90</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.6.7">0.80</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.6.8">0.70</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.6.9">0.70</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.7">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T1.2.1.7.1">PC. 仅限</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.7.2"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.7.2.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.7.3">0.75</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.7.4">0.65</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.7.5">0.55</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.7.6"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.7.6.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.7.7">0.85</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.7.8">0.50</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.7.9">0.45</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.8">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T1.2.1.8.1">带触觉图像的 PC</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.8.2"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.8.2.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.8.3">0.85</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.8.4">0.70</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.8.5">0.70</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.8.6">0.95</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.8.7"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.8.7.1">0.90</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.8.8">0.75</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.8.9">0.65</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.9">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T1.2.1.9.1">带触觉点功能的 PC（我们的产品）</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.9.2"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.9.2.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.9.3"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.9.3.1">0.90</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.9.4"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.9.4.1">0.90</span></td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.9.5"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.9.5.1">0.85</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.9.6">0.95</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.9.7">0.85</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.9.8"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.9.8.1">0.80</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.9.9"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.9.9.1">0.80</span></td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.10">
+<td class="ltx_td ltx_align_center" colspan="9" id="S5.T1.2.1.10.1">需要手持状态信息的任务</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.11">
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t" id="S5.T1.2.1.11.1" rowspan="3">模式</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t" colspan="4" id="S5.T1.2.1.11.2">六位密钥收集（30 演示）</td>
+<td class="ltx_td ltx_align_center ltx_border_t" colspan="4" id="S5.T1.2.1.11.3">三明治式服务（50 演示）</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.12">
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.12.1">右手</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.12.2">左手</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.12.3">手内</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.12.4">整体</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.12.5">抓取</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.12.6">倾斜</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.12.7">获取</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.12.8">整体</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.13">
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.13.1">抓取</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.13.2">抓取</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.13.3">调整</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.13.4">任务</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.13.5">服务勺</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.13.6">机器人策略</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.13.7">煎蛋</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.13.8">任务</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.14">
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t" id="S5.T1.2.1.14.1">RGB 仅</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.14.2">0.90</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.14.3">0.85</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.14.4">0.55</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t" id="S5.T1.2.1.14.5">0.45</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.14.6"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.14.6.1">1.00</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.14.7">0.95</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.14.8">0.70</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.14.9">0.60</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.15">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T1.2.1.15.1">RGB 带触觉图像</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.15.2">0.95</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.15.3">0.90</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.15.4">0.70</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.15.5">0.60</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.15.6"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.15.6.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.15.7"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.15.7.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.15.8">0.85</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.15.9">0.75</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.16">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T1.2.1.16.1">PC. 仅限</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.16.2"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.16.2.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.16.3">0.90</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.16.4">0.65</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.16.5">0.65</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.16.6"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.16.6.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.16.7"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.16.7.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.16.8">0.75</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.16.9">0.65</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.17">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T1.2.1.17.1">带触觉图像的 PC</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.17.2">0.95</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.17.3">0.85</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.17.4">0.60</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.17.5">0.50</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.17.6"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.17.6.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.17.7">0.90</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.17.8">0.75</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.17.9">0.65</td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.18">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T1.2.1.18.1">带触觉点功能的 PC（我们的产品）</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.18.2"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.18.2.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.18.3"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.18.3.1">0.95</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.18.4"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.18.4.1">0.95</span></td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.2.1.18.5"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.18.5.1">0.90</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.18.6"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.18.6.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.18.7"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.18.7.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.18.8"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.18.8.1">0.90</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.18.9"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.18.9.1">0.85</span></td></tr>
+</table></div>
+</span></div>
+<figcaption class="ltx_caption">表 1：与基线模型的对比。我们针对 20 场景对策略进行了评估，每项任务的最佳表现已用粗体标注。更多对比视频请查看我们的 <a class="ltx_ref ltx_href" href="https://binghao-huang.github.io/3D-ViTac/" title="">website</a>。</figcaption>
+</figure>
+</section>
+<section class="ltx_subsection" id="S5.SS3">
+<h3 class="ltx_title ltx_title_subsection">5.3 定性分析</h3>
+<div class="ltx_para ltx_noindent" id="S5.SS3.p1">
+<p class="ltx_p" id="S5.SS3.p1.1">我们的策略整合了视觉、触觉感知与机器人本体感知三种机制，在四项具有挑战性的长期任务中均表现出有效性。我们观察到整合触觉功能的三个关键优势。（ 1 ）触觉传感器能够提供关于接触存在情况以及所需施加力度的关键反馈。例如，在蒸鸡蛋任务中，常见的问题是施加的力不足，这往往导致鸡蛋掉落或无法从托盘中成功抓取。同样，在葡萄处理任务中，典型的错误在于夹持器试图同时抓取多个葡萄，从而施加过大的力，进而损坏果实。（ 2 ）我们的策略利用触觉提供的详细接触模式，有效解决了视觉遮挡问题。 在六角钥匙采集任务中，一个常见的失败原因在于无法调整六角钥匙在手中的位置，从而导致后续插入尝试失败。在三明治服务任务中，触觉反馈对于理解手中状态以及接触区域与所有工具之间的空间关系至关重要，尤其是当勺子与锅相互作用时工具可能会被动旋转——这是基线方法中经常导致失败的原因。（ 3 ）触觉反馈提供了在任务阶段之间切换所需的信心。在视觉信息嘈杂或严重遮挡的场景中，这一点尤为重要。在我们对袋中葡萄的抓取实验中，仅依赖视觉信息的策略经常失败，常常卡在袋中无法进入下一阶段。关于失败案例的更多细节和视频可参见附录。</p><p class="source-paragraph" lang="en">Our policy integrates three modalities: vision, tactile sensing, and robot proprioception, and has proven to be effective through four challenging, long-horizon tasks. We observe three key benefits of integrating touch.
+(1) Tactile sensors provide critical feedback on the presence of contact and the appropriate amount of force to apply. For example, a common issue observed with the baseline during the egg-steaming task is the application of insufficient force, which often results in the egg falling or not being successfully grasped from the tray. Similarly, during the grape-handling task, a typical error occurs when the gripper attempts to grasp multiple grapes at once, applying excessive force that damages the fruit.
+(2) Our policy leverages detailed contact patterns provided by touch to address visual occlusions effectively. A common failure in the baseline during the Hex Key collection task is the inability to adjust the hex key’s position in hand, leading to failures in subsequent insertion attempts. In the sandwich serving task, tactile feedback is crucial for understanding the in-hand states and the spatial relationship between the contact area and all tools, especially when tools may passively rotate as the spoon interacts with the pot—a frequent cause of failures in baseline approaches.
+(3) Tactile feedback provides the confidence needed to transition between task stages. This is especially important in scenarios where the visual information is noisy or highly occluded. During our experiments on grasping grapes in a bag, the visual-only policy frequently failed, often getting stuck in the bag and unable to progress to the next stage. More details and videos about failure cases can be found in the Appendix.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS3.p2">
+<p class="ltx_p" id="S5.SS3.p2.1">关于不同视觉信息水平下的消融研究。在操作任务中，尤其是双手操作任务中，视觉遮挡带来了重大挑战。为了探究触觉感知能否弥补视觉遮挡的影响，我们通过改变训练集及策略部署过程中使用的摄像头数量，来调整遮挡程度。如表 <a class="ltx_ref" href="#S5.T2" title="Table 2 ‣ 5.3 Qualitative Analysis ‣ 5 Experiments ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">2</span></a> 所示，Cam 表示使用视觉点云，而 Tactile Points 则指在 3 D 空间中使用与摄像头坐标对齐的触觉点云。结果表明，即使摄像头数量减少导致视觉遮挡加剧，借助触觉信息，策略依然能够表现良好。</p><p class="source-paragraph" lang="en">Ablation Study on Varying Levels of Visual Information. Visual occlusion presents a significant challenge in manipulation tasks, especially in bimanual tasks. To determine whether tactile sensing can compensate for visual occlusion, we varied the levels of occlusion by changing the number of cameras used both in the training set and during the policy rollout. As detailed in Table 2 , Cam refers to the use of visual point clouds, while Tactile Points denotes the use of tactile point clouds in 3D space, aligned with the camera coordinates. Results show that even as visual occlusion increases with fewer cameras, the policy continues to perform well with the aid of tactile information.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS3.p3">
+<p class="ltx_p" id="S5.SS3.p3.1">对不同触觉信息水平的消融研究。接触数据在形式与分辨率上可能有所不同。密集且连续的触觉数据不仅能表明接触的存在，还能衡量所施加的力的大小以及详细的局部接触模式——这些能力是稀疏的二进制触觉信号所不具备的。 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib26" title="">26</a>]</cite> 为了验证这一点，我们改变了触觉分辨率。 16 <math alttext="\times" class="ltx_Math" display="inline" id="S5.SS3.p3.m1" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 16 to 8 <math alttext="\times" class="ltx_Math" display="inline" id="S5.SS3.p3.m2" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 8 以及 4 <math alttext="\times" class="ltx_Math" display="inline" id="S5.SS3.p3.m3" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 4 并增加了一个仅考虑二进制信号的额外基准模型。所有基准模型以及我们的模型均显示在图中。 <a class="ltx_ref" href="#S5.F6" title="Figure 6 ‣ 5.3 Qualitative Analysis ‣ 5 Experiments ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">6</span></a> 将多视图点云整合进去。我们发现，连续信号能显著提升性能，尤其是在需要精确控制手中物体方向的动作中。 在 16、<math alttext="\times" class="ltx_Math" display="inline" id="S5.SS3.p3.m4" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 和 16 的分辨率下，密集触觉模式的表现略优于 8、<math alttext="\times" class="ltx_Math" display="inline" id="S5.SS3.p3.m5" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 和 8 分辨率，并且明显优于 4、<math alttext="\times" class="ltx_Math" display="inline" id="S5.SS3.p3.m6" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>、4 以及二进制比较组。</p><p class="source-paragraph" lang="en">Ablation Study on Varying Levels of Tactile Information. Contact data can vary in form and resolution. Dense and continuous tactile data not only indicate the presence of contact but also measure the amount of applied force and the detailed local contact pattern—capabilities that sparse binary tactile signals lack [ 26 ] . To validate this, we varied the tactile resolution from 16 × 16 to 8 × 8 and 4 × 4 and added an additional baseline that only considers binary signals. All baselines and ours in Fig. 6 incorporate the multi-view point clouds.
+We found that continuous signals significantly enhance performance, especially in actions requiring precise in-hand orientation of the grasped objects. Dense tactile patterns at a resolution of 16 × 16 slightly outperform the 8 × 8 resolution and noticeably surpass the 4 × 4 and binary comparison groups.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS3.p4">
+<p class="ltx_p" id="S5.SS3.p4.1">带有触觉反馈的数据质量验证。如图 <a class="ltx_ref" href="#S3.F2" title="Figure 2 ‣ 3.1 Sensor and Gripper Design ‣ 3 Visuo-Tactile Manipulation System ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">2</span></a> (a) 所示，在数据收集过程中，实时触觉信号会在操作员的屏幕上被可视化显示。这一功能不仅提升了数据收集的效率，还提高了数据的质量。为了验证触觉反馈的有效性，我们让 10 新用户完成两项任务。其中五名用户在触觉反馈下操作遥操作系统，另外五名则没有使用触觉反馈。完成任务的耗时情况如图 <a class="ltx_ref" href="#S5.F5" title="Figure 5 ‣ 5.3 Qualitative Analysis ‣ 5 Experiments ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">5</span></a> 所示。</p><p class="source-paragraph" lang="en">Demonstration Data Quality with Tactile Feedback. As shown in Fig. 2 (a), real-time tactile signals are visualized and displayed on the operator’s screen during data collection. This feature not only enhances the efficiency of data collection but also improves the quality of the data. To validate the effectiveness of tactile feedback, we enlisted 10 new users to complete two tasks. Five of these users operated the teleoperation system with tactile feedback, while the other five did not. The duration to complete the tasks is shown in Fig. 5 .</p>
+</div>
+<figure class="ltx_table" id="S5.T2">
+<div class="ltx_inline-block ltx_align_center ltx_transformed_outer" id="S5.T2.2" style="width:345.0pt;height:59.7pt;vertical-align:-28.3pt;"><span class="ltx_transformed_inner" style="transform:translate(-106.4pt,18.4pt) scale(0.618457518273556,0.618457518273556) ;">
+<div class="table-scroll"><table class="ltx_tabular ltx_align_middle" id="S5.T2.2.1">
+<tr class="ltx_tr" id="S5.T2.2.1.1">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T2.2.1.1.1" rowspan="3">设置</td>
+<td class="ltx_td ltx_align_center ltx_border_r" colspan="4" id="S5.T2.2.1.1.2">鸡蛋烹饪（30 演示）</td>
+<td class="ltx_td ltx_align_center" colspan="4" id="S5.T2.2.1.1.3">六位密钥收集（30 演示）</td></tr>
+<tr class="ltx_tr" id="S5.T2.2.1.2">
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.2.1">开放</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.2.2">抓取</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.2.3">位置</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T2.2.1.2.4">整体</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.2.5">右手</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.2.6">左手</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.2.7">手内</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.2.8">整体</td></tr>
+<tr class="ltx_tr" id="S5.T2.2.1.3">
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.3.1">蛋盘</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.3.2">蛋</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.3.3">蛋</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T2.2.1.3.4">任务</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.3.5">抓取</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.3.6">抓取</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.3.7">调整</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.3.8">任务</td></tr>
+<tr class="ltx_tr" id="S5.T2.2.1.4">
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t" id="S5.T2.2.1.4.1">仅触觉点</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.1.4.2"><math alttext="0.70" class="ltx_Math" display="inline" id="S5.T2.m1" intent=":literal"><semantics><mn>0.70</mn><annotation encoding="application/x-tex">0.70</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.1.4.3"><math alttext="0.55" class="ltx_Math" display="inline" id="S5.T2.m2" intent=":literal"><semantics><mn>0.55</mn><annotation encoding="application/x-tex">0.55</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.1.4.4"><math alttext="0.10" class="ltx_Math" display="inline" id="S5.T2.m3" intent=":literal"><semantics><mn>0.10</mn><annotation encoding="application/x-tex">0.10</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t" id="S5.T2.2.1.4.5"><math alttext="0.10" class="ltx_Math" display="inline" id="S5.T2.m4" intent=":literal"><semantics><mn>0.10</mn><annotation encoding="application/x-tex">0.10</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.1.4.6"><math alttext="0.50" class="ltx_Math" display="inline" id="S5.T2.m5" intent=":literal"><semantics><mn>0.50</mn><annotation encoding="application/x-tex">0.50</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.1.4.7"><math alttext="0.30" class="ltx_Math" display="inline" id="S5.T2.m6" intent=":literal"><semantics><mn>0.30</mn><annotation encoding="application/x-tex">0.30</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.1.4.8"><math alttext="0.30" class="ltx_Math" display="inline" id="S5.T2.m7" intent=":literal"><semantics><mn>0.30</mn><annotation encoding="application/x-tex">0.30</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.1.4.9"><math alttext="0.15" class="ltx_Math" display="inline" id="S5.T2.m8" intent=":literal"><semantics><mn>0.15</mn><annotation encoding="application/x-tex">0.15</annotation></semantics></math></td></tr>
+<tr class="ltx_tr" id="S5.T2.2.1.5">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T2.2.1.5.1">单轮驱动PC。</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.5.2"><math alttext="0.90" class="ltx_Math" display="inline" id="S5.T2.m9" intent=":literal"><semantics><mn>0.90</mn><annotation encoding="application/x-tex">0.90</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.5.3"><math alttext="0.65" class="ltx_Math" display="inline" id="S5.T2.m10" intent=":literal"><semantics><mn>0.65</mn><annotation encoding="application/x-tex">0.65</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.5.4"><math alttext="0.60" class="ltx_Math" display="inline" id="S5.T2.m11" intent=":literal"><semantics><mn>0.60</mn><annotation encoding="application/x-tex">0.60</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T2.2.1.5.5"><math alttext="0.50" class="ltx_Math" display="inline" id="S5.T2.m12" intent=":literal"><semantics><mn>0.50</mn><annotation encoding="application/x-tex">0.50</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.5.6"><math alttext="0.80" class="ltx_Math" display="inline" id="S5.T2.m13" intent=":literal"><semantics><mn>0.80</mn><annotation encoding="application/x-tex">0.80</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.5.7"><math alttext="0.60" class="ltx_Math" display="inline" id="S5.T2.m14" intent=":literal"><semantics><mn>0.60</mn><annotation encoding="application/x-tex">0.60</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.5.8"><math alttext="0.45" class="ltx_Math" display="inline" id="S5.T2.m15" intent=":literal"><semantics><mn>0.45</mn><annotation encoding="application/x-tex">0.45</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.5.9"><math alttext="0.30" class="ltx_Math" display="inline" id="S5.T2.m16" intent=":literal"><semantics><mn>0.30</mn><annotation encoding="application/x-tex">0.30</annotation></semantics></math></td></tr>
+<tr class="ltx_tr" id="S5.T2.2.1.6">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T2.2.1.6.1">多轮盘 PC。仅</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.6.2"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.6.2.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.6.3"><math alttext="0.75" class="ltx_Math" display="inline" id="S5.T2.m18" intent=":literal"><semantics><mn>0.75</mn><annotation encoding="application/x-tex">0.75</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.6.4"><math alttext="0.65" class="ltx_Math" display="inline" id="S5.T2.m19" intent=":literal"><semantics><mn>0.65</mn><annotation encoding="application/x-tex">0.65</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T2.2.1.6.5"><math alttext="0.55" class="ltx_Math" display="inline" id="S5.T2.m20" intent=":literal"><semantics><mn>0.55</mn><annotation encoding="application/x-tex">0.55</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.6.6"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.6.6.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.6.7"><math alttext="0.90" class="ltx_Math" display="inline" id="S5.T2.m22" intent=":literal"><semantics><mn>0.90</mn><annotation encoding="application/x-tex">0.90</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.6.8"><math alttext="0.65" class="ltx_Math" display="inline" id="S5.T2.m23" intent=":literal"><semantics><mn>0.65</mn><annotation encoding="application/x-tex">0.65</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.6.9"><math alttext="0.65" class="ltx_Math" display="inline" id="S5.T2.m24" intent=":literal"><semantics><mn>0.65</mn><annotation encoding="application/x-tex">0.65</annotation></semantics></math></td></tr>
+<tr class="ltx_tr" id="S5.T2.2.1.7">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T2.2.1.7.1">单轮关节机器人 PC。带触觉点</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.7.2"><math alttext="0.95" class="ltx_Math" display="inline" id="S5.T2.m25" intent=":literal"><semantics><mn>0.95</mn><annotation encoding="application/x-tex">0.95</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.7.3"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.7.3.1">0.90</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.7.4"><math alttext="0.85" class="ltx_Math" display="inline" id="S5.T2.m27" intent=":literal"><semantics><mn>0.85</mn><annotation encoding="application/x-tex">0.85</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T2.2.1.7.5"><math alttext="0.80" class="ltx_Math" display="inline" id="S5.T2.m28" intent=":literal"><semantics><mn>0.80</mn><annotation encoding="application/x-tex">0.80</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.7.6"><math alttext="0.85" class="ltx_Math" display="inline" id="S5.T2.m29" intent=":literal"><semantics><mn>0.85</mn><annotation encoding="application/x-tex">0.85</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.7.7"><math alttext="0.80" class="ltx_Math" display="inline" id="S5.T2.m30" intent=":literal"><semantics><mn>0.80</mn><annotation encoding="application/x-tex">0.80</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.7.8"><math alttext="0.75" class="ltx_Math" display="inline" id="S5.T2.m31" intent=":literal"><semantics><mn>0.75</mn><annotation encoding="application/x-tex">0.75</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.7.9"><math alttext="0.70" class="ltx_Math" display="inline" id="S5.T2.m32" intent=":literal"><semantics><mn>0.70</mn><annotation encoding="application/x-tex">0.70</annotation></semantics></math></td></tr>
+<tr class="ltx_tr" id="S5.T2.2.1.8">
+<td class="ltx_td ltx_align_left ltx_border_r" id="S5.T2.2.1.8.1">多轮驱动PC。带触觉点</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.8.2"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.8.2.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.8.3"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.8.3.1">0.90</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.8.4"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.8.4.1">0.90</span></td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T2.2.1.8.5"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.8.5.1">0.85</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.8.6"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.8.6.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.8.7"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.8.7.1">0.95</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.8.8"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.8.8.1">0.95</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.1.8.9"><span class="ltx_text ltx_markedasmath ltx_font_bold" id="S5.T2.2.1.8.9.1">0.90</span></td></tr>
+</table></div>
+</span></div>
+<figcaption class="ltx_caption ltx_centering">表 2：触觉如何补充不同的视觉信息水平？我们通过改变摄像头数量来调控视觉遮挡效应，以此探究触觉反馈如何弥补视觉输入的减少。</figcaption>
+</figure>
+<figure class="ltx_table" id="S5.SS3.tab1">
+<div class="ltx_flex_figure ltx_flex_table">
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure class="ltx_figure ltx_figure_panel ltx_align_middle" id="S5.F5" style="width:141.5pt;"><img alt="Refer to caption" class="ltx_graphics ltx_figure_panel ltx_img_landscape" height="140" id="S5.SS3.g1" loading="lazy" src="../media/2410.24091/human_study.png" style="aspect-ratio:195/140;" width="195"/>
+<figcaption class="ltx_caption">图 5：触觉反馈提升了演示数据质量。对于新使用该系统的人而言，结合视觉与触觉反馈比仅依赖视觉反馈能带来更好的表现。</figcaption>
+</figure></div><div class="ltx_flex_cell ltx_flex_size_2">
+<figure class="ltx_figure ltx_figure_panel ltx_align_middle" id="S5.F6" style="width:203.6pt;"><img alt="Refer to caption" class="ltx_graphics ltx_figure_panel ltx_img_landscape" height="141" id="S5.SS3.g2" loading="lazy" src="../media/2410.24091/resolution_v3.png" style="aspect-ratio:281/141;" width="281"/>
+<br class="ltx_break ltx_break"/>
+<figcaption class="ltx_caption">图 6：不同类型触觉信息的对比。在所有被测试的触觉方式中，我们发现更密集且连续的信号始终优于其他所有对比组。Tac 指的是对触觉信号的使用。</figcaption>
+</figure></div></div>
+</figure>
+</section>
+</section>
+<section class="ltx_section" id="S6">
+<h2 class="ltx_title ltx_title_section">6 结论与局限性</h2>
+<div class="ltx_para ltx_noindent" id="S6.p1">
+<p class="ltx_p" id="S6.p1.1">结论。在本文中，我们开发了一种多模态感知与学习系统，用于需要频繁接触的机器人操作。我们引入了一种密集且灵活的触觉传感器阵列，能够覆盖较广的薄型柔软机器人爪部区域。我们还提出了一种统一的 3 D 视觉-触觉表示方式，该表示方式明确考虑了 3 D 结构以及视觉与触觉之间的空间关系。我们在一系列具有挑战性的操作任务中证明了这些创新的有效性。我们承诺将发布我们的代码与硬件配置。</p><p class="source-paragraph" lang="en">Conclusion. In this paper, we develop a multi-modal sensing and learning system for contact-rich robotic manipulation. We introduce a dense, flexible tactile sensor array that covers a larger area of thin, soft robot grippers. We also propose a unified 3D visuo-tactile representation, which explicitly accounts for the 3D structure and spatial relationship between vision and touch. We demonstrate the effectiveness of these innovations in a range of challenging manipulation tasks. We are committing to release our code and hardware setup.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S6.p2">
+<p class="ltx_p" id="S6.p2.1">局限性。我们认识到，使用多模态感知系统收集真实数据非常昂贵，这既源于数据收集过程，也源于触觉感知模式的引入。我们的研究还缺失了触觉传感器的模拟，这限制了我们引入随机性或扩大数据规模的能力。在未来的工作中，我们计划提升系统的能力，以更好地利用物理模拟技术的最新进展，从而进一步提高策略的泛化能力与鲁棒性。</p><p class="source-paragraph" lang="en">Limitations. We acknowledge that collecting real data with a multi-modal perception system is expensive, due to the data collection itself and the addition of tactile sensing modality. One missing piece of our study is the simulation of our tactile sensor, limiting our ability to introduce randomization or scale up the data.
+In future work, we aim to enhance the system’s capabilities to better exploit advances in physical simulation, further improving the generalizability and robustness of the policy.</p>
+</div>
+</section>
+<section class="ltx_section" id="S7">
+<h2 class="ltx_title ltx_title_section">7 致谢</h2>
+<div class="ltx_para ltx_noindent" id="S7.p1">
+<p class="ltx_p" id="S7.p1.1">丰田研究研究所（TRI）对这项工作提供了部分支持。本文仅反映作者们的观点与结论，与丰田研究所或任何其他丰田机构无关。</p><p class="source-paragraph" lang="en">The Toyota Research Institute (TRI) partially supported this work. This article solely reflects the opinions and conclusions of its authors and not TRI or any other Toyota entity.</p>
+</div>
+</section>
+<section class="ltx_bibliography" id="bib">
+<h2 class="ltx_title ltx_title_bibliography">参考文献</h2>
+<ul class="ltx_biblist">
+<li class="ltx_bibitem" id="bib.bib1"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[1]</span>
+<span class="ltx_bibblock">
+N. Kuppuswamy, A. Alspach, A. Uttamchandani, S. Creasey, T. Ikeda, and R. Tedrake.
+
+</span>
+<span class="ltx_bibblock">Soft-bubble grippers for robust and perceptive manipulation.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib1.1">2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, pages 9917–9924. IEEE, 2020.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib2"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[2]</span>
+<span class="ltx_bibblock">
+J. Xu, S. Song, and M. Ciocarlie.
+
+</span>
+<span class="ltx_bibblock">Tandem: Learning joint exploration and decision making with tactile sensors.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib2.1">IEEE Robotics and Automation Letters</em>, 7(4):10391–10398, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib3"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[3]</span>
+<span class="ltx_bibblock">
+I. H. Taylor, S. Dong, and A. Rodriguez.
+
+</span>
+<span class="ltx_bibblock">Gelslim 3.0: High-resolution measurement of shape, force and slip in a compact tactile-sensing finger.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib3.1">2022 International Conference on Robotics and Automation (ICRA)</em>, pages 10781–10787. IEEE, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib4"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[4]</span>
+<span class="ltx_bibblock">
+T. P. Tomo, M. Regoli, A. Schmitz, L. Natale, H. Kristanto, S. Somlor, L. Jamone, G. Metta, and S. Sugano.
+
+</span>
+<span class="ltx_bibblock">A new silicone structure for uskin—a soft, distributed, digital 3-axis skin sensor and its integration on the humanoid robot icub.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib4.1">IEEE Robotics and Automation Letters</em>, 3(3):2584–2591, 2018.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib5"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[5]</span>
+<span class="ltx_bibblock">
+J. Zhao and E. H. Adelson.
+
+</span>
+<span class="ltx_bibblock">Gelsight svelte: A human finger-shaped single-camera tactile robot finger with large sensing coverage and proprioceptive sensing.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib5.1">2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, pages 8979–8984. IEEE, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib6"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[6]</span>
+<span class="ltx_bibblock">
+R. Bhirangi, T. Hellebrekers, C. Majidi, and A. Gupta.
+
+</span>
+<span class="ltx_bibblock">Reskin: versatile, replaceable, lasting tactile skins.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib6.1">5th Annual Conference on Robot Learning</em>, 2021.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib7"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[7]</span>
+<span class="ltx_bibblock">
+R. Bhirangi, A. DeFranco, J. Adkins, C. Majidi, A. Gupta, T. Hellebrekers, and V. Kumar.
+
+</span>
+<span class="ltx_bibblock">All the feels: A dexterous hand with large area sensing.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib7.1">arXiv preprint arXiv:2210.15658</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib8"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[8]</span>
+<span class="ltx_bibblock">
+G. Büscher, M. Meier, G. Walck, R. Haschke, and H. J. Ritter.
+
+</span>
+<span class="ltx_bibblock">Augmenting curved robot surfaces with soft tactile skin.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib8.1">2015 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, pages 1514–1519, 2015.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.1109/IROS.2015.7353568" title="">doi:<span class="ltx_ref ltx_nolink">10.1109/IROS.2015.7353568</span></a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib9"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[9]</span>
+<span class="ltx_bibblock">
+A. Padmanabha, F. Ebert, S. Tian, R. Calandra, C. Finn, and S. Levine.
+
+</span>
+<span class="ltx_bibblock">Omnitact: A multi-directional high-resolution touch sensor.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib9.1">2020 IEEE International Conference on Robotics and Automation (ICRA)</em>, pages 618–624. IEEE, 2020.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib10"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[10]</span>
+<span class="ltx_bibblock">
+M. Lambeta, P.-W. Chou, S. Tian, B. Yang, B. Maloon, V. R. Most, D. Stroud, R. Santos, A. Byagowi, G. Kammerer, et al.
+
+</span>
+<span class="ltx_bibblock">Digit: A novel design for a low-cost compact high-resolution tactile sensor with application to in-hand manipulation.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib10.1">IEEE Robotics and Automation Letters</em>, 5(3):3838–3845, 2020.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib11"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[11]</span>
+<span class="ltx_bibblock">
+S. M. Sundaram, P. Kellnhofer, Y. Li, J.-Y. Zhu, A. Torralba, and W. Matusik.
+
+</span>
+<span class="ltx_bibblock">Learning the signatures of the human grasp using a scalable tactile glove.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib11.1">Nature</em>, 569:698 – 702, 2019.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://api.semanticscholar.org/CorpusID:169033286" title="">https://api.semanticscholar.org/CorpusID:169033286</a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib12"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[12]</span>
+<span class="ltx_bibblock">
+R. Calandra, A. Owens, M. Upadhyaya, W. Yuan, J. Lin, E. H. Adelson, and S. Levine.
+
+</span>
+<span class="ltx_bibblock">The feeling of success: Does touch sensing help predict grasp outcomes?
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib12.1">arXiv preprint arXiv:1710.05512</em>, 2017.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib13"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[13]</span>
+<span class="ltx_bibblock">
+C. Chi, S. Feng, Y. Du, Z. Xu, E. Cousineau, B. Burchfiel, and S. Song.
+
+</span>
+<span class="ltx_bibblock">Diffusion policy: Visuomotor policy learning via action diffusion.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib13.1">arXiv preprint arXiv:2303.04137</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib14"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[14]</span>
+<span class="ltx_bibblock">
+T. Lin, Y. Zhang, Q. Li, H. Qi, B. Yi, S. Levine, and J. Malik.
+
+</span>
+<span class="ltx_bibblock">Learning visuotactile skills with two multifingered hands.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib14.1">arXiv preprint arXiv:2404.16823</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib15"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[15]</span>
+<span class="ltx_bibblock">
+B. Huang, Y. Chen, T. Wang, Y. Qin, Y. Yang, N. Atanasov, and X. Wang.
+
+</span>
+<span class="ltx_bibblock">Dynamic handover: Throw and catch with bimanual hands.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib15.1">arXiv preprint arXiv:2309.05655</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib16"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[16]</span>
+<span class="ltx_bibblock">
+T. Z. Zhao, V. Kumar, S. Levine, and C. Finn.
+
+</span>
+<span class="ltx_bibblock">Learning fine-grained bimanual manipulation with low-cost hardware.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib16.1">arXiv preprint arXiv:2304.13705</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib17"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[17]</span>
+<span class="ltx_bibblock">
+Z. Fu, T. Z. Zhao, and C. Finn.
+
+</span>
+<span class="ltx_bibblock">Mobile aloha: Learning bimanual mobile manipulation with low-cost whole-body teleoperation.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib17.1">arXiv</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib18"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[18]</span>
+<span class="ltx_bibblock">
+S. S. M. Salehian, N. Figueroa, and A. Billard.
+
+</span>
+<span class="ltx_bibblock">A unified framework for coordinated multi-arm motion planning.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib18.1">The International Journal of Robotics Research</em>, 37(10):1205–1232, 2018.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.1177/0278364918765952" title="">doi:<span class="ltx_ref ltx_nolink">10.1177/0278364918765952</span></a>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://doi.org/10.1177/0278364918765952" title="">https://doi.org/10.1177/0278364918765952</a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib19"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[19]</span>
+<span class="ltx_bibblock">
+C. Smith, Y. Karayiannidis, L. Nalpantidis, X. Gratal, P. Qi, D. V. Dimarogonas, and D. Kragic.
+
+</span>
+<span class="ltx_bibblock">Dual arm manipulation—a survey.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib19.1">Robotics and Autonomous Systems</em>, 60(10):1340–1353, 2012.
+
+</span>
+<span class="ltx_bibblock">ISSN 0921-8890.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/https://doi.org/10.1016/j.robot.2012.07.005" title="">doi:<span class="ltx_ref ltx_nolink">https://doi.org/10.1016/j.robot.2012.07.005</span></a>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://www.sciencedirect.com/science/article/pii/S092188901200108X" title="">https://www.sciencedirect.com/science/article/pii/S092188901200108X</a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib20"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[20]</span>
+<span class="ltx_bibblock">
+M. Oller, D. Berenson, and N. Fazeli.
+
+</span>
+<span class="ltx_bibblock">Tactilevad: Geometric aliasing-aware dynamics for high-resolution tactile control.
+
+</span>
+<span class="ltx_bibblock">In J. Tan, M. Toussaint, and K. Darvish, editors, <em class="ltx_emph ltx_font_italic" id="bib.bib20.1">Proceedings of The 7th Conference on Robot Learning</em>, volume 229 of <em class="ltx_emph ltx_font_italic" id="bib.bib20.2">Proceedings of Machine Learning Research</em>, pages 3083–3099. PMLR, 06–09 Nov 2023.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://proceedings.mlr.press/v229/oller23a.html" title="">https://proceedings.mlr.press/v229/oller23a.html</a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib21"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[21]</span>
+<span class="ltx_bibblock">
+C. Yang, Y. Jiang, J. Na, Z. Li, L. Cheng, and C.-Y. Su.
+
+</span>
+<span class="ltx_bibblock">Finite-time convergence adaptive fuzzy control for dual-arm robot with unknown kinematics and dynamics.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib21.1">IEEE Transactions on Fuzzy Systems</em>, 27(3):574–588, 2019.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.1109/TFUZZ.2018.2864940" title="">doi:<span class="ltx_ref ltx_nolink">10.1109/TFUZZ.2018.2864940</span></a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib22"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[22]</span>
+<span class="ltx_bibblock">
+N. Vahrenkamp, M. Przybylski, T. Asfour, and R. Dillmann.
+
+</span>
+<span class="ltx_bibblock">Bimanual grasp planning.
+
+</span>
+<span class="ltx_bibblock">pages 493–499, 10 2011.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.1109/Humanoids.2011.6100824" title="">doi:<span class="ltx_ref ltx_nolink">10.1109/Humanoids.2011.6100824</span></a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib23"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[23]</span>
+<span class="ltx_bibblock">
+T. Pang, H. J. T. Suh, L. Yang, and R. Tedrake.
+
+</span>
+<span class="ltx_bibblock">Global planning for contact-rich manipulation via local smoothing of quasi-dynamic contact models, 2022.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2206.10787" title="">https://arxiv.org/abs/2206.10787</a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib24"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[24]</span>
+<span class="ltx_bibblock">
+H. T. Suh, N. Kuppuswamy, T. Pang, P. Mitiguy, A. Alspach, and R. Tedrake.
+
+</span>
+<span class="ltx_bibblock">Seed: Series elastic end effectors in 6d for visuotactile tool use.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib24.1">2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, pages 4684–4691. IEEE, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib25"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[25]</span>
+<span class="ltx_bibblock">
+R. Kolamuri, Z. Si, Y. Zhang, A. Agarwal, and W. Yuan.
+
+</span>
+<span class="ltx_bibblock">Improving grasp stability with rotation measurement from tactile sensing.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib25.1">2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, pages 6809–6816. IEEE, 2021.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib26"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[26]</span>
+<span class="ltx_bibblock">
+Z.-H. Yin, B. Huang, Y. Qin, Q. Chen, and X. Wang.
+
+</span>
+<span class="ltx_bibblock">Rotating without seeing: Towards in-hand dexterity through touch.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib26.1">arXiv preprint arXiv:2303.10880</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib27"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[27]</span>
+<span class="ltx_bibblock">
+Y. Yuan, H. Che, Y. Qin, B. Huang, Z.-H. Yin, K.-W. Lee, Y. Wu, S.-C. Lim, and X. Wang.
+
+</span>
+<span class="ltx_bibblock">Robot synesthesia: In-hand manipulation with visuotactile sensing.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib27.1">arXiv preprint arXiv:2312.01853</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib28"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[28]</span>
+<span class="ltx_bibblock">
+Y. Qin, B. Huang, Z.-H. Yin, H. Su, and X. Wang.
+
+</span>
+<span class="ltx_bibblock">Dexpoint: Generalizable point cloud reinforcement learning for sim-to-real dexterous manipulation.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib28.1">Conference on Robot Learning</em>, pages 594–605. PMLR, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib29"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[29]</span>
+<span class="ltx_bibblock">
+Y. Lin, A. Church, M. Yang, H. Li, J. Lloyd, D. Zhang, and N. F. Lepora.
+
+</span>
+<span class="ltx_bibblock">Bi-touch: Bimanual tactile manipulation with sim-to-real deep reinforcement learning.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib29.1">IEEE Robotics and Automation Letters</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib30"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[30]</span>
+<span class="ltx_bibblock">
+T. Lin, Z.-H. Yin, H. Qi, P. Abbeel, and J. Malik.
+
+</span>
+<span class="ltx_bibblock">Twisting lids off with two hands.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib30.1">arXiv:2403.02338</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib31"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[31]</span>
+<span class="ltx_bibblock">
+T. Bi, C. Sferrazza, and R. D’Andrea.
+
+</span>
+<span class="ltx_bibblock">Zero-shot sim-to-real transfer of tactile control policies for aggressive swing-up manipulation.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib31.1">IEEE Robotics and Automation Letters</em>, 6(3):5761–5768, 2021.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib32"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[32]</span>
+<span class="ltx_bibblock">
+A. Church, J. Lloyd, N. F. Lepora, et al.
+
+</span>
+<span class="ltx_bibblock">Tactile sim-to-real policy transfer via real-to-sim image translation.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib32.1">Conference on Robot Learning</em>, pages 1645–1654. PMLR, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib33"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[33]</span>
+<span class="ltx_bibblock">
+J. Wang, Y. Qin, K. Kuang, Y. Korkmaz, A. Gurumoorthy, H. Su, and X. Wang.
+
+</span>
+<span class="ltx_bibblock">CyberDemo: Augmenting Simulated Human Demonstration for Real-World Dexterous Manipulation.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib33.1">arXiv preprint arXiv: 2312.09237</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib34"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[34]</span>
+<span class="ltx_bibblock">
+I. Guzey, B. Evans, S. Chintala, and L. Pinto.
+
+</span>
+<span class="ltx_bibblock">Dexterity from touch: Self-supervised pre-training of tactile representations with robotic play, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib35"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[35]</span>
+<span class="ltx_bibblock">
+J. Grannen, Y. Wu, B. Vu, and D. Sadigh.
+
+</span>
+<span class="ltx_bibblock">Stabilize to act: Learning to coordinate for bimanual manipulation.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib35.1">Conference on Robotic Learning (CoRL)</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib36"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[36]</span>
+<span class="ltx_bibblock">
+H. Kim, Y. Ohmura, and Y. Kuniyoshi.
+
+</span>
+<span class="ltx_bibblock">Robot peels banana with goal-conditioned dual-action deep imitation learning.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib36.1">arXiv preprint arXiv:2203.09749</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib37"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[37]</span>
+<span class="ltx_bibblock">
+P. R. Florence, L. Manuelli, and R. Tedrake.
+
+</span>
+<span class="ltx_bibblock">Dense object nets: Learning dense visual object descriptors by and for robotic manipulation.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib37.1">arXiv preprint arXiv:1806.08756</em>, 2018.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib38"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[38]</span>
+<span class="ltx_bibblock">
+Y. Qin, W. Yang, B. Huang, K. Van Wyk, H. Su, X. Wang, Y.-W. Chao, and D. Fox.
+
+</span>
+<span class="ltx_bibblock">Anyteleop: A general vision-based dexterous robot arm-hand teleoperation system.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib38.1">arXiv preprint arXiv:2307.04577</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib39"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[39]</span>
+<span class="ltx_bibblock">
+P. Florence, C. Lynch, A. Zeng, O. A. Ramirez, A. Wahid, L. Downs, A. Wong, J. Lee, I. Mordatch, and J. Tompson.
+
+</span>
+<span class="ltx_bibblock">Implicit behavioral cloning.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib39.1">Conference on Robot Learning</em>, pages 158–168. PMLR, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib40"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[40]</span>
+<span class="ltx_bibblock">
+S. P. Arunachalam, S. Silwal, B. Evans, and L. Pinto.
+
+</span>
+<span class="ltx_bibblock">Dexterous imitation made easy: A learning-based framework for efficient dexterous manipulation.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib40.1">2023 ieee international conference on robotics and automation (icra)</em>, pages 5954–5961. IEEE, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib41"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[41]</span>
+<span class="ltx_bibblock">
+Y. Chebotar, O. Kroemer, and J. Peters.
+
+</span>
+<span class="ltx_bibblock">Learning robot tactile sensing for object manipulation.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib41.1">2014 IEEE/RSJ International Conference on Intelligent Robots and Systems</em>, pages 3368–3375, 2014.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.1109/IROS.2014.6943031" title="">doi:<span class="ltx_ref ltx_nolink">10.1109/IROS.2014.6943031</span></a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib42"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[42]</span>
+<span class="ltx_bibblock">
+C. Chi, Z. Xu, C. Pan, E. Cousineau, B. Burchfiel, S. Feng, R. Tedrake, and S. Song.
+
+</span>
+<span class="ltx_bibblock">Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib42.1">arXiv preprint arXiv:2402.10329</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib43"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[43]</span>
+<span class="ltx_bibblock">
+C. Wang, L. Fan, J. Sun, R. Zhang, L. Fei-Fei, D. Xu, Y. Zhu, and A. Anandkumar.
+
+</span>
+<span class="ltx_bibblock">Mimicplay: Long-horizon imitation learning by watching human play.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib43.1">arXiv preprint arXiv:2302.12422</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib44"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[44]</span>
+<span class="ltx_bibblock">
+C. Wang, H. Shi, W. Wang, R. Zhang, L. Fei-Fei, and C. K. Liu.
+
+</span>
+<span class="ltx_bibblock">Dexcap: Scalable and portable mocap data collection system for dexterous manipulation.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib44.1">arXiv preprint arXiv:2403.07788</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib45"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[45]</span>
+<span class="ltx_bibblock">
+T. Chen, M. Tippur, S. Wu, V. Kumar, E. Adelson, and P. Agrawal.
+
+</span>
+<span class="ltx_bibblock">Visual dexterity: In-hand reorientation of novel and complex object shapes.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib45.1">Science Robotics</em>, 8(84):eadc9244, 2023.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.1126/scirobotics.adc9244" title="">doi:<span class="ltx_ref ltx_nolink">10.1126/scirobotics.adc9244</span></a>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://www.science.org/doi/abs/10.1126/scirobotics.adc9244" title="">https://www.science.org/doi/abs/10.1126/scirobotics.adc9244</a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib46"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[46]</span>
+<span class="ltx_bibblock">
+C. Finn, T. Yu, T. Zhang, P. Abbeel, and S. Levine.
+
+</span>
+<span class="ltx_bibblock">One-shot visual imitation learning via meta-learning.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib46.1">Conference on robot learning</em>, pages 357–368. PMLR, 2017.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib47"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[47]</span>
+<span class="ltx_bibblock">
+A. George, S. Gano, P. Katragadda, and A. B. Farimani.
+
+</span>
+<span class="ltx_bibblock">Visuo-tactile pretraining for cable plugging.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib47.1">arXiv preprint arXiv:2403.11898</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib48"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[48]</span>
+<span class="ltx_bibblock">
+E. Su, C. Jia, Y. Qin, W. Zhou, A. Macaluso, B. Huang, and X. Wang.
+
+</span>
+<span class="ltx_bibblock">Sim2real manipulation on unknown objects with tactile-based reinforcement learning.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib48.1">arXiv preprint arXiv:2403.12170</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib49"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[49]</span>
+<span class="ltx_bibblock">
+R. S. Johansson and G. Westling.
+
+</span>
+<span class="ltx_bibblock">Roles of glabrous skin receptors and sensorimotor memory in automatic control of precision grip when lifting rougher or more slippery objects.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib49.1">Experimental Brain Research</em>, 56:550–564, 2004.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://api.semanticscholar.org/CorpusID:16631166" title="">https://api.semanticscholar.org/CorpusID:16631166</a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib50"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[50]</span>
+<span class="ltx_bibblock">
+P. Jenmalm and R. S. Johansson.
+
+</span>
+<span class="ltx_bibblock">Visual and somatosensory information about object shape control manipulative fingertip forces.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib50.1">Journal of Neuroscience</em>, 17(11):4486–4499, 1997.
+
+</span>
+<span class="ltx_bibblock">ISSN 0270-6474.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.1523/JNEUROSCI.17-11-04486.1997" title="">doi:<span class="ltx_ref ltx_nolink">10.1523/JNEUROSCI.17-11-04486.1997</span></a>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://www.jneurosci.org/content/17/11/4486" title="">https://www.jneurosci.org/content/17/11/4486</a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib51"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[51]</span>
+<span class="ltx_bibblock">
+S. Suresh, H. Qi, T. Wu, T. Fan, L. Pineda, M. Lambeta, J. Malik, M. Kalakrishnan, R. Calandra, M. Kaess, et al.
+
+</span>
+<span class="ltx_bibblock">Neural feels with neural fields: Visuo-tactile perception for in-hand manipulation.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib51.1">arXiv preprint arXiv:2312.13469</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib52"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[52]</span>
+<span class="ltx_bibblock">
+Z. Ding, G. Chen, Z. Wang, and L. Sun.
+
+</span>
+<span class="ltx_bibblock">Adaptive visual–tactile fusion recognition for robotic operation of multi-material system.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib52.1">Frontiers in Neurorobotics</em>, 17, 2023.
+
+</span>
+<span class="ltx_bibblock">ISSN 1662-5218.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.3389/fnbot.2023.1181383" title="">doi:<span class="ltx_ref ltx_nolink">10.3389/fnbot.2023.1181383</span></a>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://www.frontiersin.org/articles/10.3389/fnbot.2023.1181383" title="">https://www.frontiersin.org/articles/10.3389/fnbot.2023.1181383</a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib53"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[53]</span>
+<span class="ltx_bibblock">
+M. A. Lee, Y. Zhu, K. Srinivasan, P. Shah, S. Savarese, L. Fei-Fei, A. Garg, and J. Bohg.
+
+</span>
+<span class="ltx_bibblock">Making sense of vision and touch: Self-supervised learning of multimodal representations for contact-rich tasks.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib53.1">2019 International Conference on Robotics and Automation (ICRA)</em>, pages 8943–8950. IEEE, 2019.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib54"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[54]</span>
+<span class="ltx_bibblock">
+V. Dave, F. Lygerakis, and E. Rueckert.
+
+</span>
+<span class="ltx_bibblock">Multimodal visual-tactile representation learning through self-supervised contrastive pre-training.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib54.1">arXiv preprint arXiv:2401.12024</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib55"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[55]</span>
+<span class="ltx_bibblock">
+A. Bicchi and V. R. Kumar.
+
+</span>
+<span class="ltx_bibblock">Robotic grasping and contact: a review.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib55.1">Proceedings 2000 ICRA. Millennium Conference. IEEE International Conference on Robotics and Automation. Symposia Proceedings (Cat. No.00CH37065)</em>, 1:348–353 vol.1, 2000.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://api.semanticscholar.org/CorpusID:2650168" title="">https://api.semanticscholar.org/CorpusID:2650168</a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib56"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[56]</span>
+<span class="ltx_bibblock">
+N. Sunil, S. Wang, Y. She, E. Adelson, and A. R. Garcia.
+
+</span>
+<span class="ltx_bibblock">Visuotactile affordances for cloth manipulation with local control.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib56.1">Conference on Robot Learning</em>, pages 1596–1606. PMLR, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib57"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[57]</span>
+<span class="ltx_bibblock">
+W. Yuan, Y. Mo, S. Wang, and E. H. Adelson.
+
+</span>
+<span class="ltx_bibblock">Active clothing material perception using tactile sensing and deep learning.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib57.1">2018 IEEE International Conference on Robotics and Automation (ICRA)</em>, pages 4842–4849. IEEE, 2018.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib58"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[58]</span>
+<span class="ltx_bibblock">
+R. Calandra, A. Owens, D. Jayaraman, J. Lin, W. Yuan, J. Malik, E. H. Adelson, and S. Levine.
+
+</span>
+<span class="ltx_bibblock">More than a feeling: Learning to grasp and regrasp using vision and touch.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib58.1">IEEE Robotics and Automation Letters</em>, 3(4):3300–3307, 2018.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib59"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[59]</span>
+<span class="ltx_bibblock">
+H. van Hoof, N. Chen, M. Karl, P. van der Smagt, and J. Peters.
+
+</span>
+<span class="ltx_bibblock">Stable reinforcement learning with autoencoders for tactile and visual data.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib59.1">2016 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, pages 3928–3934, 2016.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.1109/IROS.2016.7759578" title="">doi:<span class="ltx_ref ltx_nolink">10.1109/IROS.2016.7759578</span></a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib60"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[60]</span>
+<span class="ltx_bibblock">
+Y. Chen, M. Van der Merwe, A. Sipos, and N. Fazeli.
+
+</span>
+<span class="ltx_bibblock">Visuo-tactile transformers for manipulation.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib60.1">6th Annual Conference on Robot Learning</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib61"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[61]</span>
+<span class="ltx_bibblock">
+P. Falco, S. Lu, A. Cirillo, C. Natale, S. Pirozzi, and D. Lee.
+
+</span>
+<span class="ltx_bibblock">Cross-modal visuo-tactile object recognition using robotic active exploration.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib61.1">2017 IEEE International Conference on Robotics and Automation (ICRA)</em>, pages 5273–5280, 2017.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.1109/ICRA.2017.7989619" title="">doi:<span class="ltx_ref ltx_nolink">10.1109/ICRA.2017.7989619</span></a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib62"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[62]</span>
+<span class="ltx_bibblock">
+J. Hansen, F. Hogan, D. Rivkin, D. Meger, M. Jenkin, and G. Dudek.
+
+</span>
+<span class="ltx_bibblock">Visuotactile-rl: Learning multimodal manipulation policies with deep reinforcement learning.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib62.1">2022 International Conference on Robotics and Automation (ICRA)</em>, pages 8298–8304, 2022.
+
+</span>
+<span class="ltx_bibblock"><a class="ltx_ref ltx_href" href="http://dx.doi.org/10.1109/ICRA46639.2022.9812019" title="">doi:<span class="ltx_ref ltx_nolink">10.1109/ICRA46639.2022.9812019</span></a>.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib63"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[63]</span>
+<span class="ltx_bibblock">
+C. Moenning and N. A. Dodgson.
+
+</span>
+<span class="ltx_bibblock">Fast marching farthest point sampling.
+
+</span>
+<span class="ltx_bibblock">Technical report, University of Cambridge, Computer Laboratory, 2003.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib64"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[64]</span>
+<span class="ltx_bibblock">
+J. Ho, A. Jain, and P. Abbeel.
+
+</span>
+<span class="ltx_bibblock">Denoising diffusion probabilistic models.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib64.1">Advances in neural information processing systems</em>, 33:6840–6851, 2020.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib65"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[65]</span>
+<span class="ltx_bibblock">
+C. R. Qi, L. Yi, H. Su, and L. J. Guibas.
+
+</span>
+<span class="ltx_bibblock">Pointnet++: Deep hierarchical feature learning on point sets in a metric space.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib65.1">Advances in neural information processing systems</em>, 30, 2017.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib66"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[66]</span>
+<span class="ltx_bibblock">
+P. M. Djuric, J. H. Kotecha, J. Zhang, Y. Huang, T. Ghirmai, M. F. Bugallo, and J. Miguez.
+
+</span>
+<span class="ltx_bibblock">Particle filtering.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib66.1">IEEE signal processing magazine</em>, 20(5):19–38, 2003.
+
+</span></li>
+</ul>
+</section>
+
+<div class="ltx_para" id="p3">
+<p class="ltx_p ltx_align_center" id="p3.1">补充材料</p><p class="source-paragraph" lang="en">Supplementary Materials</p>
+</div>
+<div class="ltx_para ltx_noindent" id="p4">
+<p class="ltx_p" id="p4.1">内容</p><p class="source-paragraph" lang="en">Contents</p>
+</div>
+<section class="ltx_appendix" id="A1">
+<h2 class="ltx_title ltx_title_appendix">附录 A 触觉传感器硬件</h2>
+<section class="ltx_subsection" id="A1.SS1">
+<h3 class="ltx_title ltx_title_subsection">A. 1 触觉传感器制造厂</h3>
+<section class="ltx_subsubsection" id="A1.SS1.SSS1">
+<h4 class="ltx_title ltx_title_subsubsection">A. 1.1 触觉传感器垫设计</h4>
+<div class="ltx_para ltx_noindent" id="A1.SS1.SSS1.p1">
+<p class="ltx_p" id="A1.SS1.SSS1.p1.1">触觉传感垫采用三层结构设计，其中压阻层（Velostat）被夹在两组正交排列的导电线丝之间，后者作为电极使用。在触觉传感器制造过程中，我们首先将 16 不锈钢薄导电线丝排列在 Velostat 层之上，然后使用高强度粘合剂（3 M 468 MP）确保电极与 Velostat 层之间实现稳固的电连接。此外，还使用粘合剂将导电线丝连接固定到连接器上。该连接器将所有线丝连接至柔性扁平电缆，从而将信号传输至 PCB 板。这种设计使得触觉传感器的导线具有高度灵活性，便于在各种位置安装，例如机器人末端执行器，在操作过程中需要持续移动。 为确保触觉传感器的长期稳定性，我们在粘合剂表面涂覆一层聚酰亚胺层。聚酰亚胺以其热稳定性、良好的化学耐受性、优异的机械性能以及特有的橙黄色而著称。完成这些步骤后，我们会对行中的 16 螺纹进行对齐。随后，我们翻转传感器，并对列中的 16 螺纹进行对齐。</p><p class="source-paragraph" lang="en">The tactile sensing pads leverage a triple-layer design, where a piezoresistive layer (Velostat) is sandwiched between two sets of orthogonally aligned conductive yarns serving as electrodes. During the tactile sensor manufacturing, we first align 16 Stainless Thin Conductive Threads on top of the Velostat layer and then use high-strength adhesive (3M 468MP) to ensure robust electrical contact between the electrodes and the Velostat layer. Additionally, we use adhesive to secure the conductive thread connections to the connector. The connector links all the threads to a flexible flat cable, allowing the signal to be transmitted to the PCB board. This design makes the wires of our tactile sensor highly flexible, facilitating easier installation in various locations, such as the robot end-effector, which requires constant movement during manipulation. To ensure the tactile sensor’s long-term robustness, we attach a polyimide layer on top of the adhesive. Polyimides are known for their thermal stability, good chemical resistance, excellent mechanical properties, and characteristic orange/yellow color. After completing these steps, we finish aligning the 16 threads for the rows. Then, we flip the sensor and align the 16 threads for the columns.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A1.SS1.SSS1.p2">
+<p class="ltx_p" id="A1.SS1.SSS1.p2.1">在获得触觉传感器垫后，我们将传感器安装到机器人的手指上。每个触觉传感器单元的顺序如图 <a class="ltx_ref" href="#A1.F9" title="Figure 9 ‣ A.1.2 Reading Board Design ‣ A.1 Tactile Sensor Manufactory ‣ Appendix A Tactile Sensor Hardware ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">9</span></a> 所示。我们明确界定了触觉排列顺序，以确保每个传感器的位置能够被准确计算，且触觉信号能够与我们的实际设置和数据集正确对应。</p><p class="source-paragraph" lang="en">After obtaining the tactile sensor pad, we attach the sensors to the robot fingers. The order of each tactile sensor unit is visualized in Fig. 9 . We clearly define the tactile order to ensure that each sensor’s position can be accurately calculated, and the tactile signals can correctly correspond to our real setting and dataset.</p>
+</div>
+</section>
+<section class="ltx_subsubsection" id="A1.SS1.SSS2">
+<h4 class="ltx_title ltx_title_subsubsection">A. 1.2 阅读板设计</h4>
+<div class="ltx_para ltx_noindent" id="A1.SS1.SSS2.p1">
+<p class="ltx_p" id="A1.SS1.SSS2.p1.1">为确保机器人中触觉读取板的便捷安装，我们将其设计得尽可能紧凑，如图 <a class="ltx_ref" href="#A1.F8" title="Figure 8 ‣ A.1.2 Reading Board Design ‣ A.1 Tactile Sensor Manufactory ‣ Appendix A Tactile Sensor Hardware ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">8</span></a> 所示。该触觉读取板尺寸为 45.5 mm、<math alttext="\times" class="ltx_Math" display="inline" id="A1.SS1.SSS2.p1.m1" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 和 48.4 mm，并包含 Arduino 芯片。较小的尺寸进一步提升了我们触觉传感器的可扩展性。我们使用两个 8 位移位寄存器和一个 16 通道模拟开关来处理触觉信号，这些信号随后被输入到 Arduino 中。Arduino 中的 ADC 将触觉传感器的模拟信号转换为数字信号，并通过串行通信方式传输给主机。我们将发布一套完整的读取板方案，以便社区可以直接从 PCB 供应商处订购，从而轻松复制我们的触觉传感器。</p><p class="source-paragraph" lang="en">To ensure easy installation of the tactile reading board in the robot, we have designed it to be as compact as possible, as shown in Fig. 8 . The tactile reading board measures 45.5 mm × 48.4 mm and includes an Arduino. The small size further enhances the scalability of our tactile sensors. We use two 8-bit shift registers and one 16-channel analog switch to process the tactile signals, which are then input to the Arduino. The ADC in the Arduino converts the analog signals from the tactile sensor into digital signals and forwards them to the host via serial communication. We will release a comprehensive reading board scheme so that the community can directly order from a PCB supplier to easily replicate our tactile sensor.</p>
+</div>
+<figure class="ltx_table" id="A1.SS1.SSS2.tab1">
+<div class="ltx_flex_figure ltx_flex_table">
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure class="ltx_figure ltx_figure_panel ltx_align_middle" id="A1.F7" style="width:172.5pt;"><img alt="Refer to caption" class="ltx_graphics ltx_figure_panel ltx_img_portrait" height="321" id="A1.SS1.SSS2.g1" loading="lazy" src="../media/2410.24091/physical_experiment.png" style="aspect-ratio:238/321;" width="238"/>
+<figcaption class="ltx_caption">图 7：触觉物理特性评估实验</figcaption>
+</figure></div><div class="ltx_flex_cell ltx_flex_size_2">
+<figure class="ltx_figure ltx_figure_panel ltx_minipage ltx_align_middle" id="A1.SS1.SSS2.fig2" style="width:172.5pt;">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_2"><img alt="[Uncaptioned image]" class="ltx_graphics ltx_figure_panel ltx_img_landscape" height="108" id="A1.SS1.SSS2.g2" loading="lazy" src="../media/2410.24091/reading_board_pcb.png" style="aspect-ratio:238/108;" width="238"/></div><div class="ltx_flex_cell ltx_flex_size_2">
+<figure class="ltx_figure ltx_figure_panel" id="A1.F8">
+<figcaption class="ltx_caption">图 8：触觉读取板设计。</figcaption>
+</figure></div><div class="ltx_flex_break"></div><div class="ltx_flex_cell ltx_flex_size_2"><img alt="[Uncaptioned image]" class="ltx_graphics ltx_figure_panel ltx_img_landscape" height="179" id="A1.SS1.SSS2.g3" loading="lazy" src="../media/2410.24091/sensor_order.png" style="aspect-ratio:238/179;" width="238"/></div><div class="ltx_flex_cell ltx_flex_size_2">
+<figure class="ltx_figure ltx_figure_panel" id="A1.F9">
+<figcaption class="ltx_caption">图 9：触觉传感器顺序可视化。</figcaption>
+</figure></div></div>
+</figure></div></div>
+</figure>
+</section>
+</section>
+<section class="ltx_subsection" id="A1.SS2">
+<h3 class="ltx_title ltx_title_subsection">A. 2 触觉硬件评估实验</h3>
+<section class="ltx_subsubsection" id="A1.SS2.SSS1">
+<h4 class="ltx_title ltx_title_subsubsection">A. 2.1 物理特性</h4>
+<figure class="ltx_figure" id="A1.F10"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="229" id="A1.F10.g1" loading="lazy" src="../media/2410.24091/physical.png" style="aspect-ratio:476/229;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 10：物理特性实验结果。部分 (a) 展示了各传感器在所受力作用下的性能表现。部分 (b) 则展示了触觉传感器垫在不同正常力下的稳定性。每个热图以 8、<math alttext="\times" class="ltx_Math" display="inline" id="A1.F10.m2" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>、8 网格形式呈现触觉传感器垫的读数，其中每个数字代表四个传感器单元的总和。部分 (c) 则通过单一图表呈现部分 (b) 的结果，并展示了平均值与标准差。</figcaption>
+</figure>
+<div class="ltx_para ltx_noindent" id="A1.SS2.SSS1.p1">
+<p class="ltx_p" id="A1.SS2.SSS1.p1.1">为了研究我们的触觉传感器的物理特性，我们设计了两项实验。如图 <a class="ltx_ref" href="#A1.F7" title="Figure 7 ‣ A.1.2 Reading Board Design ‣ A.1 Tactile Sensor Manufactory ‣ Appendix A Tactile Sensor Hardware ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">7</span></a> 所示，我们使用力计对触觉传感器表面施加特定力。第一项实验旨在观察单个触觉传感器单元对施加力的反应。第二项实验则旨在验证整个传感器垫的一致性，以展现触觉传感器垫不同区域之间的差异。</p><p class="source-paragraph" lang="en">To investigate the physical characteristics of our tactile sensors, we designed two experiments. As illustrated in Fig. 7 , we use a force gauge to apply specific force on the tactile sensor surface. The first experiment tests how individual tactile sensor units react to applied force. The second experiment aims to test the consistency of the entire sensor pad, showcasing the variance between different regions on the tactile sensor pad.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A1.SS2.SSS1.p2">
+<p class="ltx_p" id="A1.SS2.SSS1.p2.1">单个传感器性能。我们首先从一个传感器垫中的 256 个传感器中随机选取 10 个传感器。对于每个选中的传感器，我们逐步增加正压力，范围从 0 到 12 N，并相应地记录触觉读数。每个传感器平均生成 24 个数据点。这种方法使我们能够观察单个传感器对不同力水平的响应，并确定其饱和阈值。如图 <a class="ltx_ref" href="#A1.F10" title="Figure 10 ‣ A.2.1 Physical Characteristics ‣ A.2 Tactile Hardware Evaluation Experiment ‣ Appendix A Tactile Sensor Hardware ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">10</span></a> (a) 所示，我们绘制了触觉读数与正压力的关系图，发现饱和区域出现在正压力超过 9 N 时。 10 个传感器的拟合曲线以黑线表示。此外，我们对 x 轴（正压力）采用了对数刻度，使得从 1 N 到 9 N 的正压力区间近似呈线性。 如图 <a class="ltx_ref" href="#A1.F10" title="Figure 10 ‣ A.2.1 Physical Characteristics ‣ A.2 Tactile Hardware Evaluation Experiment ‣ Appendix A Tactile Sensor Hardware ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">10</span></a> (a) 所示，该区域被蓝色背景突出显示。</p><p class="source-paragraph" lang="en">Individual Sensor Performance. We began by randomly selecting 10 sensors from a total of 256 sensors in one sensor pad. For each selected sensor, we applied a normal force incrementally, ranging from 0 to 12 N, and recorded the stable tactile reading accordingly. Each sensor generated an average of 24 data points. This method allowed us to observe the individual sensor’s response to varying force levels and identify its saturation thresholds. As shown in Fig. 10 (a), we plot tactile reading versus normal force and identified that the saturation zone begins when the normal force exceeds 9 N. The fitting curve for the 10 sensors is depicted in the black line. Additionally, we applied a logarithmic scale to the x-axis (normal force), resulting in an approximately linear region for normal forces from 1 N to 9 N. The region is highlighted with a blue background, as illustrated in Fig. 10 (a).</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A1.SS2.SSS1.p3">
+<p class="ltx_p" id="A1.SS2.SSS1.p3.1">触觉传感器垫一致性。在实验的第二部分中，我们使用了 <math alttext="16\times 16" class="ltx_Math" display="inline" id="A1.SS2.SSS1.p3.m1" intent=":literal"><semantics><mrow><mn>16</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">16\times 16</annotation></semantics></math> 触觉传感器垫，并将其划分为 <math alttext="8\times 8" class="ltx_Math" display="inline" id="A1.SS2.SSS1.p3.m2" intent=":literal"><semantics><mrow><mn>8</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>8</mn></mrow><annotation encoding="application/x-tex">8\times 8</annotation></semantics></math> 个模块，每个模块包含 4 个传感器（<math alttext="2\times 2" class="ltx_Math" display="inline" id="A1.SS2.SSS1.p3.m3" intent=":literal"><semantics><mrow><mn>2</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">2\times 2</annotation></semantics></math> 矩阵区域）。通过力计以 <math alttext="176.7\text{ mm}^{2}" class="ltx_Math" display="inline" id="A1.SS2.SSS1.p3.m4" intent=":literal"><semantics><mrow><mn>176.7</mn><mo lspace="0em" rspace="0em">​</mo><msup><mtext> mm</mtext><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">176.7\text{ mm}^{2}</annotation></semantics></math> 的圆形接触面积对每个模块施加均匀载荷。对于每个 <math alttext="2\times 2" class="ltx_Math" display="inline" id="A1.SS2.SSS1.p3.m5" intent=":literal"><semantics><mrow><mn>2</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">2\times 2</annotation></semantics></math> 模块，我们收集了来自各个传感器的四个触觉读数之和，从而生成了在整个传感器垫上特定载荷条件下传感器响应的热图。针对四种不同的载荷条件（1 N、3 N、5 N 和 11 N），我们进行了全面评估，以详细展示不同力下的分辨率。对于每种力条件，每个模块测量一次，共得到每种条件下的 64 个数据点。 我们随后根据图 <a class="ltx_ref" href="#A1.F10" title="Figure 10 ‣ A.2.1 Physical Characteristics ‣ A.2 Tactile Hardware Evaluation Experiment ‣ Appendix A Tactile Sensor Hardware ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">10</span></a> (b) 所示，为每种力条件生成了热图。我们计算了这些数据点的均值和标准差，并去除了异常值。最后，如图 <a class="ltx_ref" href="#A1.F10" title="Figure 10 ‣ A.2.1 Physical Characteristics ‣ A.2 Tactile Hardware Evaluation Experiment ‣ Appendix A Tactile Sensor Hardware ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">10</span></a> (c) 所示，我们基于 4 组 64 触觉读数生成了箱形图，从而证明了整个传感器的一致性以及触觉传感器的稳定性能。</p><p class="source-paragraph" lang="en">Tactile Sensor Pad Consistency. In the second part of the experiment, we used a 16 × 16 tactile sensor pad and divided it into 8 × 8 blocks, with each block comprising 4 sensors ( 2 × 2 matrix area). Uniform loading was applied across each block using the force gauge with a circular contacting area of 176.7 ​ mm 2 . For each 2 × 2 block, we collected the sum of the four tactile readings from individual sensors, enabling us to generate a heat map that visualizes the sensor response under specific loading conditions across the entire pad. Four different loading conditions (1 N, 3 N, 5 N, and 11 N) were applied to comprehensively assess the overall performance, providing a detailed representation of the resolution under varying forces. For each force condition, we measured once for each block, resulting in a total of 64 data points per condition. We then generate a heatmap for each force condition as shown in Fig. 10 (b). We calculated the mean and standard deviation for these data points and removed outliers. Finally, as illustrated in Fig. 10 (c), we generated a box plot from 4 sets of 64 tactile readings, demonstrating its consistency across the entire sensor and the stable functionality of the tactile sensors.</p>
+</div>
+</section>
+<section class="ltx_subsubsection" id="A1.SS2.SSS2">
+<h4 class="ltx_title ltx_title_subsubsection">A. 2.2 6 - DoF 物体姿态估计</h4>
+<div class="ltx_para ltx_noindent" id="A1.SS2.SSS2.p1">
+<p class="ltx_p" id="A1.SS2.SSS2.p1.1">在主要论文中，我们证明了密集、连续的触觉信息在精细操作任务中的有效性。为了更全面地了解我们所提出的传感器捕获的信息，我们在 6 - DoF 物体姿态估计方面进行了额外实验。这些实验表明，这些传感器能够嵌入关于物体几何形态和局部接触模式的信息，这对于需要稳健且适应性强的抓取能力以及精准的手部重新定位行为的操作任务至关重要。</p><p class="source-paragraph" lang="en">In the main paper, we demonstrated the effectiveness of dense, continuous tactile information for fine-grained manipulation tasks. To gain a more comprehensive understanding of the information captured by our proposed sensors, we conducted additional experiments on 6-DoF object pose estimation. These experiments revealed that the sensors embed information about object geometry and local contact patterns, which is crucial for manipulation tasks requiring robust and adaptive grasping as well as precise in-hand reorientation behavior.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A1.SS2.SSS2.p2">
+<p class="ltx_p" id="A1.SS2.SSS2.p2.1">具体来说，我们将该任务定义为仅依靠触觉观测数据，在无需任何视觉输入的情况下，估算物体的 6 - DoF 姿态。我们假设物体的几何结构已知，并将其 3 D 点云称为 <math alttext="P^{\text{obj}}\in\mathbb{R}^{N\times 3}" class="ltx_Math" display="inline" id="A1.SS2.SSS2.p2.m1" intent=":literal"><semantics><mrow><msup><mi>P</mi><mtext>obj</mtext></msup><mo>∈</mo><msup><mi>ℝ</mi><mrow><mi>N</mi><mo lspace="0.222em" rspace="0.222em">×</mo><mn>3</mn></mrow></msup></mrow><annotation encoding="application/x-tex">P^{\text{obj}}\in\mathbb{R}^{N\times 3}</annotation></semantics></math>。通过根据激活值对触觉点云进行筛选得到的触觉观测数据，则被记为 <math alttext="P^{\text{tactile}}\in\mathbb{R}^{M\times 3}" class="ltx_Math" display="inline" id="A1.SS2.SSS2.p2.m2" intent=":literal"><semantics><mrow><msup><mi>P</mi><mtext>tactile</mtext></msup><mo>∈</mo><msup><mi>ℝ</mi><mrow><mi>M</mi><mo lspace="0.222em" rspace="0.222em">×</mo><mn>3</mn></mrow></msup></mrow><annotation encoding="application/x-tex">P^{\text{tactile}}\in\mathbb{R}^{M\times 3}</annotation></semantics></math>。我们的目标是在 3 D 空间、<math alttext="\mathbf{T}\in\mathbb{SE}(3)" class="ltx_Math" display="inline" id="A1.SS2.SSS2.p2.m3" intent=":literal"><semantics><mrow><mi>𝐓</mi><mo>∈</mo><mrow><mi>𝕊</mi><mo lspace="0em" rspace="0em">​</mo><mi>𝔼</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mn>3</mn><mo stretchy="false">)</mo></mrow></mrow></mrow><annotation encoding="application/x-tex">\mathbf{T}\in\mathbb{SE}(3)</annotation></semantics></math> 中追踪物体的姿态。</p><p class="source-paragraph" lang="en">Specifically, we define the task as estimating the 6-DoF pose of an object using only tactile observations, without any visual input. We assume that the object geometry is known and denote its 3D point cloud as P obj ∈ ℝ N × 3 . The tactile observation, obtained by filtering the tactile-based point cloud according to the activation value, is denoted as P tactile ∈ ℝ M × 3 .
+Our objective is to track the pose of the object in the 3D space, 𝐓 ∈ 𝕊 ​ 𝔼 ​ ( 3 ) , where,</p>
+<div class="table-scroll"><table class="ltx_equationgroup ltx_eqn_table" id="A1.E1">
+<tbody>
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline" id="A1.E1X">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math alttext="\displaystyle\mathbf{T}" class="ltx_Math" display="inline" id="A1.E1X.m2" intent=":literal"><semantics><mi>𝐓</mi><annotation encoding="application/x-tex">\displaystyle\mathbf{T}</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_left ltx_eqn_cell"><math alttext="\displaystyle=\begin{bmatrix}\mathbf{R}&amp;\mathbf{t}\\
+0^{T}&amp;1\end{bmatrix}\in\mathbb{SE}(3)," class="ltx_Math" display="inline" id="A1.E1X.m3" intent=":literal"><semantics><mrow><mrow><mphantom></mphantom><mo>=</mo><mrow><mo>[</mo><mtable columnspacing="5pt" rowspacing="0pt"><mtr><mtd><mi>𝐑</mi></mtd><mtd><mi>𝐭</mi></mtd></mtr><mtr><mtd><msup><mn>0</mn><mi>T</mi></msup></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>]</mo></mrow><mo>∈</mo><mrow><mi>𝕊</mi><mo lspace="0em" rspace="0em">​</mo><mi>𝔼</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mn>3</mn><mo stretchy="false">)</mo></mrow></mrow></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\displaystyle=\begin{bmatrix}\mathbf{R}&amp;\mathbf{t}\\
+0^{T}&amp;1\end{bmatrix}\in\mathbb{SE}(3),</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equationgroup ltx_align_right">(1)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="A1.SS2.SSS2.p2.2">其中包含欧几里得群 <math alttext="\mathbb{SE}(3):=\{\mathbf{R},\mathbf{t}\ |\ \mathbf{R}\in\mathbb{SO}^{3},\mathbf{t}\in\mathbb{R}^{3}\}" class="ltx_math_unparsed" display="inline" id="A1.SS2.SSS2.p2.m4" intent=":literal"><semantics><mrow><mi>𝕊</mi><mi>𝔼</mi><mrow><mo stretchy="false">(</mo><mn>3</mn><mo stretchy="false">)</mo></mrow><mo>:=</mo><mrow><mo stretchy="false">{</mo><mi>𝐑</mi><mo>,</mo><mi>𝐭</mi><mo fence="false" lspace="0.500em" rspace="0.667em" stretchy="false">|</mo><mi>𝐑</mi><mo>∈</mo><mi>𝕊</mi><msup><mi>𝕆</mi><mn>3</mn></msup><mo>,</mo><mi>𝐭</mi><mo>∈</mo><msup><mi>ℝ</mi><mn>3</mn></msup><mo stretchy="false">}</mo></mrow></mrow><annotation encoding="application/x-tex">\mathbb{SE}(3):=\{\mathbf{R},\mathbf{t}\ |\ \mathbf{R}\in\mathbb{SO}^{3},\mathbf{t}\in\mathbb{R}^{3}\}</annotation></semantics></math>。</p><p class="source-paragraph" lang="en">in which the Euclidean group 𝕊 𝔼 ( 3 ) := { 𝐑 , 𝐭 | 𝐑 ∈ 𝕊 𝕆 3 , 𝐭 ∈ ℝ 3 } .</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A1.SS2.SSS2.p3">
+<p class="ltx_p" id="A1.SS2.SSS2.p3.1">我们采用粒子滤波策略 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib66" title="">66</a>]</cite> 来解决姿态跟踪问题。首先定义我们的观测函数 <math alttext="P^{\text{obs}}=f(\mathbf{T})" class="ltx_Math" display="inline" id="A1.SS2.SSS2.p3.m1" intent=":literal"><semantics><mrow><msup><mi>P</mi><mtext>obs</mtext></msup><mo>=</mo><mrow><mi>f</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><mi>𝐓</mi><mo stretchy="false">)</mo></mrow></mrow></mrow><annotation encoding="application/x-tex">P^{\text{obs}}=f(\mathbf{T})</annotation></semantics></math>，然后按如下方式定义权重函数 <math alttext="w=g(P^{\text{obs}},P^{\text{tactile}})" class="ltx_Math" display="inline" id="A1.SS2.SSS2.p3.m2" intent=":literal"><semantics><mrow><mi>w</mi><mo>=</mo><mrow><mi>g</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><msup><mi>P</mi><mtext>obs</mtext></msup><mo>,</mo><msup><mi>P</mi><mtext>tactile</mtext></msup><mo stretchy="false">)</mo></mrow></mrow></mrow><annotation encoding="application/x-tex">w=g(P^{\text{obs}},P^{\text{tactile}})</annotation></semantics></math>：</p><p class="source-paragraph" lang="en">We solve the pose-tracking problem using particle filtering [ 66 ] . We first define our observation function P obs = f ⁡ ( 𝐓 ) and then the weighting functions w = g ⁡ ( P obs , P tactile ) as follows:</p>
+<div class="table-scroll"><table class="ltx_equationgroup ltx_eqn_table" id="A1.E2">
+<tbody>
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline" id="A1.E2X">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math alttext="\displaystyle f(\mathbf{T})" class="ltx_Math" display="inline" id="A1.E2X.m2" intent=":literal"><semantics><mrow><mi>f</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><mi>𝐓</mi><mo stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\displaystyle f(\mathbf{T})</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_left ltx_eqn_cell"><math alttext="\displaystyle=\mathbf{R}P^{\text{obj}}+\mathbf{t}," class="ltx_Math" display="inline" id="A1.E2X.m3" intent=":literal"><semantics><mrow><mrow><mphantom></mphantom><mo>=</mo><mrow><mrow><mi>𝐑</mi><mo lspace="0em" rspace="0em">​</mo><msup><mi>P</mi><mtext>obj</mtext></msup></mrow><mo>+</mo><mi>𝐭</mi></mrow></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\displaystyle=\mathbf{R}P^{\text{obj}}+\mathbf{t},</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="2"><span class="ltx_tag ltx_tag_equationgroup ltx_align_right">(2)</span></td></tr>
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline" id="A1.E2Xa">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math alttext="\displaystyle g(P^{\text{obs}},P^{\text{tactile}})" class="ltx_Math" display="inline" id="A1.E2Xa.m2" intent=":literal"><semantics><mrow><mi>g</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><msup><mi>P</mi><mtext>obs</mtext></msup><mo>,</mo><msup><mi>P</mi><mtext>tactile</mtext></msup><mo stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\displaystyle g(P^{\text{obs}},P^{\text{tactile}})</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_left ltx_eqn_cell"><math alttext="\displaystyle=\sum_{p_{i}\in P^{\text{tactile}}}\min_{p_{j}\in P^{\text{obs}}}||p_{i}-p_{j}||^{2}." class="ltx_Math" display="inline" id="A1.E2Xa.m3" intent=":literal"><semantics><mrow><mrow><mphantom></mphantom><mo>=</mo><mrow><mstyle displaystyle="true"><munder><mo movablelimits="false">∑</mo><mrow><msub><mi>p</mi><mi>i</mi></msub><mo>∈</mo><msup><mi>P</mi><mtext>tactile</mtext></msup></mrow></munder></mstyle><mrow><munder><mi>min</mi><mrow><msub><mi>p</mi><mi>j</mi></msub><mo>∈</mo><msup><mi>P</mi><mtext>obs</mtext></msup></mrow></munder><mo>⁡</mo><msup><mrow><mo stretchy="false">‖</mo><mrow><msub><mi>p</mi><mi>i</mi></msub><mo>−</mo><msub><mi>p</mi><mi>j</mi></msub></mrow><mo stretchy="false">‖</mo></mrow><mn>2</mn></msup></mrow></mrow></mrow><mo lspace="0em">.</mo></mrow><annotation encoding="application/x-tex">\displaystyle=\sum_{p_{i}\in P^{\text{tactile}}}\min_{p_{j}\in P^{\text{obs}}}||p_{i}-p_{j}||^{2}.</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="A1.SS2.SSS2.p3.2">观测函数利用 <math alttext="\mathbf{T}" class="ltx_Math" display="inline" id="A1.SS2.SSS2.p3.m3" intent=":literal"><semantics><mi>𝐓</mi><annotation encoding="application/x-tex">\mathbf{T}</annotation></semantics></math> 对物体模型点云进行变换，而权重函数则计算接触点与观测点之间的距离。在实践中，我们通过指数函数对权重进行缩放，以促进收敛。基于观测函数与权重函数，我们采用标准粒子滤波器来确定物体的姿态。</p><p class="source-paragraph" lang="en">The observation function transforms the object model point cloud using 𝐓 , while the weighting function calculates the distance from the contact points to the observation points. In practice, we scale the weights using an exponential function to facilitate convergence. Given the observation and weighting functions, we employ a standard particle filter to determine the object’s pose.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A1.SS2.SSS2.p4">
+<p class="ltx_p" id="A1.SS2.SSS2.p4.1">一些示例结果展示在图 <a class="ltx_ref" href="#A1.F11" title="Figure 11 ‣ A.2.2 6-DoF Object Pose Estimation ‣ A.2 Tactile Hardware Evaluation Experiment ‣ Appendix A Tactile Sensor Hardware ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">11</span></a> 中。在右侧机器人与物体接触之前，我们只能依赖左侧机器人的触觉信号。因此，存在许多合理的解决方案。尽管根据单侧触觉信号得出的姿态估计属于合理解决方案之一，但估计结果仍然不够准确。当右侧机器人与物体接触时，我们的姿态估计与视觉观察结果高度一致。此外，当物体在手中旋转时，物体姿态也能被准确追踪。</p><p class="source-paragraph" lang="en">Some example results are shown in Figure 11 . Before the right-side robot makes contact with the object, we can only rely on the tactile signals from the left-side robot. Therefore, there are a lot of plausible solutions. Although our estimated pose is one of the plausible solutions given the one-side tactile signal, the estimation is still inaccurate. When the right-side robot contacts the object, our estimated pose aligns well with visual observation. Also, when the object is rotating in the hand, the object pose is tracked accurately.</p>
+</div>
+<figure class="ltx_figure" id="A1.F11"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="210" id="A1.F11.g1" loading="lazy" src="../media/2410.24091/pos_est.png" style="aspect-ratio:476/210;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 11：姿态估计。在本实验中，我们在没有视觉信息的情况下进行物体姿态估计。可以看出，随着触觉信号更加完整，我们的姿态估计精度也更高。我们还能追踪物体在旋转过程中的姿态变化。通过这种估计结果，我们证明了我们的硬件可用于手持姿态估计及其他视觉触觉任务。</figcaption>
+</figure>
+</section>
+</section>
+</section>
+<section class="ltx_appendix" id="A2">
+<h2 class="ltx_title ltx_title_appendix">附录 B 模仿学习实验细节</h2>
+<section class="ltx_subsection" id="A2.SS1">
+<h3 class="ltx_title ltx_title_subsection">B. 1 系统概述</h3>
+<div class="ltx_para ltx_noindent" id="A2.SS1.p1">
+<p class="ltx_p" id="A2.SS1.p1.1">如图 <a class="ltx_ref" href="#A2.F12" title="Figure 12 ‣ B.1 System Overview ‣ Appendix B Experiment details for Imitation Learning ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">12</span></a> 所示，我们采用了一种双手遥操作系统，该系统在四个机器人手指上配备了三台 Realsense 摄像头和四个触觉传感器垫。通过多线程 ROS（机器人操作系统）节点，我们实现了触觉信号的高效传输。该节点会捕获触觉信号，并以 30 Hz 的频率将其发布。所有数据，包括来自摄像头和触觉传感器的数据，均通过多线程处理方式收集。每个接收到的数据帧都会进行时间戳标记，在完整处理完一个场景后，我们会将所有数据与这些时间戳进行对齐。这种同步对于保持多模态数据集的一致性至关重要，有助于实现触觉反馈与视觉数据之间的精准时间对齐。为了应对来自三台摄像头的繁重处理任务，我们会在 10 Hz 的时间点进行数据收集，以确保数据的稳定性。 我们设置了一台顶视相机（Realsense 455）以覆盖整个工作区域，并放置了另外两台相机（Realsense 435）靠近工作区域，以便获取更详细的信息。当使用多台相机的点云数据时，我们会整合所有相机的数据。而对于仅使用单台相机的基线方法，则仅使用顶视相机。</p><p class="source-paragraph" lang="en">As shown in Fig. 12 , We employ a bimanual teleoperation system with three Realsense cameras and four tactile sensor pads on four robot fingers. Our tactile signal communication is facilitated by a multi-threaded ROS (Robot Operating System) node. This node captures tactile signals and publishes them at a frequency of 30 Hz. All data, including that from cameras and tactile sensors, is collected through multi-threading. Each data frame received is timestamped, and after an episode is completed, we align all data with these timestamps. This synchronization is crucial for maintaining the consistency of the multimodal dataset, enabling accurate temporal alignment between tactile feedback and visual data. To manage the heavy load of processing frames from three cameras, we collect data at 10 Hz to ensure consistency.
+We set a top camera (Realsense 455) to cover the entire workspace and positioned two other cameras (Realsense 435) close to the workspace to capture more detailed information. When using point cloud data from multiple cameras, we incorporate data from all cameras. For the baseline method using a single camera, we use only the top camera.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS1.p2">
+<p class="ltx_p" id="A2.SS1.p2.1">我们还实现了实时触觉信息反馈，如图 <a class="ltx_ref" href="#A2.F12" title="Figure 12 ‣ B.1 System Overview ‣ Appendix B Experiment details for Imitation Learning ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">12</span></a> (a) 所示。在数据收集过程中，触觉信号会在操作员的屏幕上以可视化形式呈现，从而帮助其评估接触程度是否足以实现安全抓取。此外，在策略部署过程中，这种可视化方式使我们能够实时观察触觉信息与机器人运动之间的关系。</p><p class="source-paragraph" lang="en">We also implement real-time tactile information feedback, as shown in Fig. 12 (a). During data collection, tactile signals are visually displayed on the operator’s screen, enabling them to assess the adequacy of contact for secure grasping. Additionally, during the policy rollout, this visualization helps us see in real-time how tactile information relates to robot motion.</p>
+</div>
+<figure class="ltx_figure" id="A2.F12"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="376" id="A2.F12.g1" loading="lazy" src="../media/2410.24091/system_overview.png" style="aspect-ratio:476/376;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 12：系统概览。我们在四个机器人手指上安装了四个触觉传感器，并安装了三台 Realsense 摄像头以覆盖工作区域。用于该任务的所有物体均展示在工作区域内。此外，我们还安装了一块背景屏幕以显示触觉反馈。</figcaption>
+</figure>
+</section>
+<section class="ltx_subsection" id="A2.SS2">
+<h3 class="ltx_title ltx_title_subsection">B. 2 实验设置细节</h3>
+<div class="ltx_para ltx_noindent" id="A2.SS2.p1">
+<p class="ltx_p" id="A2.SS2.p1.1">在本节中，我们将详细讨论主论文中描述的四项任务的相关信息。每项任务包含四个步骤，如图 <a class="ltx_ref" href="#A2.F14" title="Figure 14 ‣ B.2.2 Details for the Fruit Preparation Task ‣ B.2 Experiment Setup Details ‣ Appendix B Experiment details for Imitation Learning ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">14</span></a> 所示。我们将分别探讨每个步骤的动作及评估指标，并重点说明这些步骤如何体现了我们的触觉传感器的性能。典型的故障案例则展示在图 <a class="ltx_ref" href="#A2.F13" title="Figure 13 ‣ B.2.2 Details for the Fruit Preparation Task ‣ B.2 Experiment Setup Details ‣ Appendix B Experiment details for Imitation Learning ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">13</span></a> 中，并将在后续章节中进行讨论。</p><p class="source-paragraph" lang="en">In this section, we discuss the detailed information of the four tasks described in the main paper. Each task consists of four steps, as illustrated in Fig 14 . We will discuss the motions and evaluation metrics for each step, and highlight how these steps demonstrate the capabilities of our tactile sensors. The typical failure cases are shown in Fig. 13 and will be discussed in the following sections.</p>
+</div>
+<section class="ltx_subsubsection" id="A2.SS2.SSS1">
+<h4 class="ltx_title ltx_title_subsubsection">B. 2.1 蛋蒸任务细节</h4>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS1.p1">
+<p class="ltx_p" id="A2.SS2.SSS1.p1.1">步骤 1：打开鸡蛋托盘。机器人使用右手打开鸡蛋托盘，这一动作与现实中鸡蛋常被托盘遮挡的情况相类似。保持这种真实场景有助于反映日常生活，避免任务过于简单化。评估指标：机器人必须充分打开托盘，使手指能够抓住鸡蛋。若无法充分打开托盘，后续任务将失败。在数据收集与策略部署过程中，鸡蛋托盘的初始位置将在 7 - 10 cm 的区域内随机生成。</p><p class="source-paragraph" lang="en">Step 1: Open Egg Tray. The robot uses its right hand to open the egg tray, which mirrors the common scenario where the egg is often occluded by the tray. This realistic setup is maintained to reflect daily life, avoiding task simplification. Evaluation Metrics: The robot must open the tray sufficiently to allow its fingers to grasp the egg. Failure to open the tray adequately will result in the subsequent task failing. The initial position of the egg tray will be randomized within an area of 7-10 cm during both data collection and policy rollout.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS1.p2">
+<p class="ltx_p" id="A2.SS2.SSS1.p2.1">步骤 2：抓取鸡蛋。机器人用右手抓取托盘中的鸡蛋。这一动作十分复杂，需要机器人逐步增加力量，并在严重遮挡的情况下小心地握住鸡蛋。采用视觉-触觉策略的机器人若手部没有稳定的触觉信号，会重新尝试；而仅依赖视觉的策略则可能在严重遮挡的情况下继续执行下一目标，如图 <a class="ltx_ref" href="#A2.F13" title="Figure 13 ‣ B.2.2 Details for the Fruit Preparation Task ‣ B.2 Experiment Setup Details ‣ Appendix B Experiment details for Imitation Learning ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">13</span></a> (a) 所示。评估指标：机器人可以重新尝试抓取鸡蛋，但如果未抓住鸡蛋就进入下一阶段，或是在从托盘到蒸煮机的过渡过程中鸡蛋掉落，则该步骤失败。此外，在鸡蛋托盘中停留的时间过长也被视为失败。</p><p class="source-paragraph" lang="en">Step 2: Grasp Egg. The robot uses its right hand to grasp the egg in the tray. This motion is complex, requiring the robot to slowly increase the force and carefully grasp the egg despite heavy occlusion. The robot with a visuo-tactile policy will retry if there is no stable tactile signal in hand, while a vision-only policy may proceed to the next goal due to heavy occlusion as shown in Fig. 13 (a). Evaluation Metrics: The robot can reattempt to grasp the egg, but the step fails if it moves to the next stage without the egg or if the egg falls during the transition from the tray to the steaming machine. Additionally, prolonged time spent in the egg tray will also be considered a failure.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS1.p3">
+<p class="ltx_p" id="A2.SS2.SSS1.p3.1">步骤 3：放置鸡蛋。机器人需将鸡蛋安全地放入已装有两个鸡蛋的蒸锅内。在手动放置鸡蛋时，必须避免导致其他鸡蛋掉落。此步骤凸显了我们的柔性薄传感器在狭窄空间中执行精细任务的能力。当机器人手离开蒸锅时，触觉信息确保鸡蛋与夹持器之间无接触，从而指示机器人进入下一阶段。相比之下，仅依赖视觉的策略可能会让机器人无法判断能否安全移动，从而延长其在蒸锅内的停留时间，增加其他鸡蛋掉落的风险。评估指标：机器人可以在蒸锅内的任何位置放置鸡蛋，但如果未能将鸡蛋放入蒸锅或导致其他鸡蛋掉落，则该步骤失败。</p><p class="source-paragraph" lang="en">Step 3: Place Egg. The robot needs to safely place the egg in the steaming machine, which already contains two eggs. It must avoid causing the other eggs to fall while placing the egg in-hand. This step highlights our flexible thin sensor’s capability to perform fine-grained tasks in narrow spaces. As the robot hand exits the steaming machine, tactile information ensures there is no contact between the egg and the gripper, signaling the robot to proceed to the next stage. In contrast, a vision-only policy may cause confusion about whether the robot can move out safely, potentially prolonging its stay in the steamer and increasing the risk of dislodging the other eggs. Evaluation Metrics: The robot can place the egg anywhere inside the steaming machine, but the step fails if the robot does not place the egg in the steaming machine or if it causes the other eggs to fall to the ground.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS1.p4">
+<p class="ltx_p" id="A2.SS2.SSS1.p4.1">步骤 4：覆盖蒸煮机。机器人需用左手抓住蒸煮机的盖子，并将其安全放置内部。由于蒸煮机把手的形状特殊，此任务具有挑战性，如图 <a class="ltx_ref" href="#A2.F13" title="Figure 13 ‣ B.2.2 Details for the Fruit Preparation Task ‣ B.2 Experiment Setup Details ‣ Appendix B Experiment details for Imitation Learning ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">13</span></a> (a) 所示。机器人必须对把手施加适当的力量：既足以将其抬起，又不会导致盖子翻转并掉落到地面。此步骤展示了我们的触觉传感器如何使机器人能够执行精细的抓取操作，类似于人类对物体施加合适且稳定的力量以进行抓取的能力。评估指标：机器人可以多次尝试抓取盖子。如果盖子被稳稳地放置在蒸煮机上，则视为任务成功。 如果在过程中封面翻转或掉落，则视为失败。</p><p class="source-paragraph" lang="en">Step 4: Cover the Steaming Machine. The robot needs to use its left hand to grasp the cover of the steaming machine and place it safely inside. This task is challenging due to the unique shape of the steaming machine’s handle, as shown in Fig. 13 (a). The robot must apply a precise amount of force to the handle: sufficient to lift it but not so much that the cover flips and falls to the ground. The robot must apply a precise amount of force to the handle: sufficient to lift it but not so much that the cover flips and falls to the ground. This step showcases how our tactile sensor enables the robot to perform fine-grained grasping manipulations, similar to a human’s ability to apply suitable and stable force to grasp objects. Evaluation Metrics: The robot is allowed multiple attempts to grasp the cover. The task is considered successful if the cover is securely placed on the steaming machine. It is considered a failure if the cover flips or falls during the process.</p>
+</div>
+</section>
+<section class="ltx_subsubsection" id="A2.SS2.SSS2">
+<h4 class="ltx_title ltx_title_subsubsection">B. 2.2 水果处理任务的细节</h4>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS2.p1">
+<p class="ltx_p" id="A2.SS2.SSS2.p1.1">步骤 1：抓取并放置盘子。机器人需要使用左手抓取盘子，并将其放在桌子上。此步骤由于盘子的位置不同，引入了额外的随机性和变异性，从而增加了任务的复杂性。评估指标：如果机器人能够抓取盘子并将其放在桌子上，则视为任务完成。</p><p class="source-paragraph" lang="en">Step 1: Grasp and Place the Plate. The robot needs to use its left hand to grasp and place the plate on the table. This step introduces additional randomization and variance due to the varying positions of the plates, increasing the task’s complexity. Evaluation Metrics: The task is considered successful if the robot grasps the plate and places it on the table.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS2.p2">
+<p class="ltx_p" id="A2.SS2.SSS2.p2.1">步骤 2：打开塑料袋。机器人需要使用双手协同操作以打开袋子。塑料袋是透明的，通常会给点云数据带来额外的噪声。评估指标：如果机器人能够打开袋子到足以让夹爪进入的程度，则视为任务完成。</p><p class="source-paragraph" lang="en">Step 2: Open Plastic Bag. The robot needs to use its two hands to cooperate together to open the bag. The plastic bag is transparent and usually adds additional noise to the point cloud. Evaluation Metrics: The task is considered successful if the robot opens the bag wide enough for the gripper to get in.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS2.p3">
+<p class="ltx_p" id="A2.SS2.SSS2.p3.1">步骤 3：抓取水果。机器人需使用右手进入塑料袋中并抓住水果。此步骤是该任务中最为重要且困难的部分。首先，如图 <a class="ltx_ref" href="#A2.F14" title="Figure 14 ‣ B.2.2 Details for the Fruit Preparation Task ‣ B.2 Experiment Setup Details ‣ Appendix B Experiment details for Imitation Learning ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">14</span></a>（任务 2：水果准备）所示，机器人与被操控物体在塑料袋中严重遮挡，导致无法通过视觉信息观察关键细节。我们的视觉-触觉策略会多次尝试抓取，直到获得稳定的触觉信息以固定葡萄，而仅依赖视觉的策略通常只尝试一次动作，无论是否有葡萄存在，因此抓取成功与否都是随机事件。其次，葡萄通常聚集在一起，机器人需施加适当的力以避免损坏水果。 我们的视觉-触觉策略能够成功抓取袋中的单个或多个葡萄，而仅依赖视觉的策略在机器人抓取多个葡萄时可能会损坏葡萄（如图 <a class="ltx_ref" href="#A2.F13" title="Figure 13 ‣ B.2.2 Details for the Fruit Preparation Task ‣ B.2 Experiment Setup Details ‣ Appendix B Experiment details for Imitation Learning ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">13</span></a> (b) 所示）。因为该策略是通过调整夹持器关节状态来实现抓取，而非利用与力相关的信息。第三，这项任务也体现了我们的传感器具有类人般的灵巧操作能力；采用触觉整合式夹持器的机器人足够薄，能够进入葡萄之间的缝隙，从而更轻松地抓取成簇的葡萄。评估指标：当机器人成功从塑料袋中抓取水果时，该任务即视为成功；如果机器人损坏了葡萄或在没有葡萄的情况下移动到下一阶段，则视为失败。 如果机器人长时间停留在包中而不移动，该策略也会失效，这种情况在仅基于视觉的策略中尤为常见，因为该策略在物体状态以及高遮挡条件下的机器人末端执行器方面会出现困惑。</p><p class="source-paragraph" lang="en">Step 3: Grasp the fruit. The robot needs to use its right hand to get inside the plastic bag and grasp the fruit. This step is the most important and difficult in this task. First, as shown in Fig. 14 (Task 2: Fruit Preparation), the robot and manipulated objects are highly occluded in the bag, making it impossible for visual information to observe critical details. Our visuo-tactile policy will grasp multiple times until there is stable tactile information to secure the grapes, while a vision-only policy typically attempts the motion once regardless of the presence of grapes, making the grasping success a random event. Second, the grapes are usually clustered together, requiring the robot to apply suitable force to avoid damaging the fruit. Our visuo-tactile policy can successfully grasp single or multiple grapes from the bag, while a vision-only policy may break the grapes when the robot grasps multiple grapes (as shown in Fig. 13 (b)). since it aligns the gripper joint states instead of using force-related information. Third, this task also showcases our sensors’ human-like dexterous manipulation; our tactile-integrated gripper is thin enough to get into the gaps between grapes, making it easier to grasp the grapes in a cluster. Evaluation Metrics: The task is considered successful when the robot successfully grasps the fruit out of the plastic bag. The task is considered a failure if the robot breaks the grapes or moves to the next stage without the grapes. The policy also fails if the robot stays in the bag for a long time without moving, which usually happens with the vision-only policy that is confused about the states of the objects and the robot end-effector under high occlusion.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS2.p4">
+<p class="ltx_p" id="A2.SS2.SSS2.p4.1">步骤 4：放置葡萄。机器人需要将葡萄放在盘子上。如果机器人用力过大抓取葡萄，导致葡萄卡在夹持器内，任务就会失败。评估指标：如果机器人成功将葡萄放在盘子上并回到初始位置，则视为任务完成。</p><p class="source-paragraph" lang="en">Step 4: Place grape. The robot needs to place the grapes on the plate. The task may fail if the robot uses too much force to grasp the grapes, causing them to stick in the gripper and resulting in failure. Evaluation Metrics: The task is considered successful if the robot successfully places the grapes on the plate and returns to the initial position.</p>
+</div>
+<figure class="ltx_figure" id="A2.F13"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="229" id="A2.F13.g1" loading="lazy" src="../media/2410.24091/failure_cases.png" style="aspect-ratio:476/229;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 13：失败案例。我们展示了基线方法在四个任务中的典型失败案例，并分析了这些失败的原因，以凸显任务的复杂性以及在这些步骤中触觉反馈的重要性。</figcaption>
+</figure>
+<figure class="ltx_figure" id="A2.F14"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_portrait" height="653" id="A2.F14.g1" loading="lazy" src="../media/2410.24091/representation_quantative_result.png" style="aspect-ratio:476/653;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 14：触觉表征的量化结果。在此我们展示了共四项任务。对于每项任务，第一行展示真实图像；第二行在统一的 3 D 空间中可视化我们的视觉-触觉点，以说明触觉点如何能够推断物体与接触区域之间的空间关系。第三行则提供 2 D 图像，以便清晰呈现触觉信号。</figcaption>
+</figure>
+</section>
+<section class="ltx_subsubsection" id="A2.SS2.SSS3">
+<h4 class="ltx_title ltx_title_subsubsection">B. 2.3 六位键集任务细节</h4>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS3.p1">
+<p class="ltx_p" id="A2.SS2.SSS3.p1.1">步骤 1：右手抓取。机器人需使用右手握住六角钥匙的尾部，并将其稳定地抬至空中中部。六角钥匙的初始位置较为困难，这反映了日常生活中常见的场景——只有钥匙的尾部可触及，因此需要额外调整才能正确插入六角钥匙。图 <a class="ltx_ref" href="#A2.F13" title="Figure 13 ‣ B.2.2 Details for the Fruit Preparation Task ‣ B.2 Experiment Setup Details ‣ Appendix B Experiment details for Imitation Learning ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">13</span></a> (c) 所示为基线方法的典型失败案例，即机器人无法稳定抓取，导致提升过程中出现显著滑动。即使六角钥匙仍被手持，这种滑动也会引发后续任务失败。实验过程中发现，首次抓取时存在持续的轻微滑动，导致六角钥匙的持握姿态发生变化，从而增加了后续步骤的复杂性。评估指标：机器人能够成功抓取六角钥匙，且不存在显著滑动。</p><p class="source-paragraph" lang="en">Step 1: Right Hand Grasp. The robot needs to use its right hand to grasp the tail of the hex key and lift it stably to the middle of the air. The initial position of the hex key is tricky, but it reflects a common daily life scenario where only the tail of the hex key is accessible, requiring additional adjustments to insert the hex key properly. A typical failure case of baselines, shown in Fig. 13 (c), occurs when the robot does not secure a stable grasp, resulting in significant slippage during the lifting process. Even if the hex key remains in-hand, this slippage can cause subsequent task failures. One observation during the experiment is the consistent small slippage during the first grasp, leading to variations in the hex key’s in-hand pose, which adds complexity to the following steps. Evaluation Metrics: The robot successfully grasps the hex key without significant slippage.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS3.p2">
+<p class="ltx_p" id="A2.SS2.SSS3.p2.1">步骤 2：左手抓取。机器人需要使用左手握住六角钥匙的头部，以进行下一步调整。评估指标：机器人左手成功抓取了六角钥匙。</p><p class="source-paragraph" lang="en">Step 2: Left Hand Grasp. The robot needs to use its left hand to grasp the head of the hex key to ensure the following adjustment step. Evaluation Metrics: The robot left hand successfully grasp the hex key.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS3.p3">
+<p class="ltx_p" id="A2.SS2.SSS3.p3.1">步骤 3：手部调整。机器人的左右手需协同工作，以调整六角钥匙的位置，使其处于适合后续插入的姿势。我们的目标是将六角钥匙调整至与机器人手指垂直的位置，从而简化后续插入操作。仅依赖视觉信息的策略通常无法正确调整位置，如图 <a class="ltx_ref" href="#A2.F13" title="Figure 13 ‣ B.2.2 Details for the Fruit Preparation Task ‣ B.2 Experiment Setup Details ‣ Appendix B Experiment details for Imitation Learning ‣ 3D-ViTac: Learning Fine-Grained Manipulationwith Visuo-Tactile Sensing"><span class="ltx_text ltx_ref_tag">13</span></a> (c) 所示，导致无法完成后续插入。评估指标：机器人的双臂必须协同工作以调整六角钥匙的姿势。最终姿势应具有足够长的尾部，且六角钥匙应几乎与机器人手指垂直。</p><p class="source-paragraph" lang="en">Step 3: In-hand Adjustment. The robot’s left and right hands need to cooperate to adjust the hex key’s position so that it is in a ready pose for the following insertion. Our goal is to adjust the hex key to be perpendicular to the robot’s fingers, making the subsequent insertion task easier. The vision-only policy usually fails to adjust the position correctly, shown in Fig 13 (c), making the following insertion impossible. Evaluation Metrics: The robot’s two arms must cooperate to adjust the hex key’s pose. The final pose should have a sufficiently long tail, and the hex key should be almost perpendicular to the robot’s fingers.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS3.p4">
+<p class="ltx_p" id="A2.SS2.SSS3.p4.1">步骤 4：插入操作。此步骤较为复杂，因为手中六角钥匙的姿势会发生变化，即使机器人在最后一步成功调整了六角钥匙的位置也是如此。一个有效的策略可以隐式地参考手中六角钥匙的位置，并进行必要的调整以完成插入操作。评估指标：机器人能够成功将六角钥匙插入孔中，而非将其放在桌上或插入过程中卡住。</p><p class="source-paragraph" lang="en">Step 4: Insertion. This step is complex because the pose of the hex key in hand varies, even if the robot successfully adjusts the hex key’s position in the last step. A successful policy can implicitly reference the hex key’s position in hand and make the necessary adjustments for insertion. Evaluation Metrics: The robot successfully inserts the hex key into the hole rather than placing it on the table or getting stuck during the insertion process.</p>
+</div>
+</section>
+<section class="ltx_subsubsection" id="A2.SS2.SSS4">
+<h4 class="ltx_title ltx_title_subsubsection">B. 2.4 三明治服务任务的细节</h4>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS4.p1">
+<p class="ltx_p" id="A2.SS2.SSS4.p1.1">步骤 1：握住服务勺。机器人需用右手握住勺子，并将其举向空中。评估指标：勺子能够平稳地被举至空中，无滑动现象。</p><p class="source-paragraph" lang="en">Step 1: Grasp Serving Spoon. The robot needs to use its right hand to grasp the spoon and lift it into the air. Evaluation Metrics: The spoon is successfully lifted into the air with minimal slippage.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS4.p2">
+<p class="ltx_p" id="A2.SS2.SSS4.p2.1">步骤 2：倾斜锅具。为了在下一步成功获取鸡蛋，机器人的左手需握住锅柄并倾斜锅具。夹持器不应施加过大力量，以确保锅柄在机器人手中不会旋转。评估指标：机器人的左手必须成功握住锅柄，并将其倾斜到特定角度。</p><p class="source-paragraph" lang="en">Step 2: Tilt Pot. In order to successfully obtain the egg in the next step, the robot’s left hand needs to grasp the pot’s handle and tilt the pot. The gripper should not exert excessive force to ensure that the handle does not rotate within the robot’s hand. Evaluation Metrics: The robot’s left hand must successfully grasp the handle and then tilt it to a certain angle.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS4.p3">
+<p class="ltx_p" id="A2.SS2.SSS4.p3.1">步骤 3：取煎蛋。机器人的两只手需要协同操作以取出煎蛋。右手将用勺子触及锅底，并移动至鸡蛋下方。在此过程中，勺子会在手中被动旋转。我们的视觉触觉策略能够明确跟踪勺子的状态，而传统策略则因勺子在手中的旋转而失效。评估指标：机器人成功使用勺子取出了煎蛋。</p><p class="source-paragraph" lang="en">Step 3: Get Fried Egg. The robot’s two hands need to cooperate to retrieve the fried egg. The right hand will use the spoon to reach the bottom of the pot and maneuver beneath the egg. During this process, the spoon will passively rotate in the hand. Our visuo-tactile policy can explicitly track the states of the spoon, while the baseline policy often fails due to the spoon’s rotation in the hand. Evaluation Metrics: The robot successfully retrieves the fried egg with the spoon.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS2.SSS4.p4">
+<p class="ltx_p" id="A2.SS2.SSS4.p4.1">步骤 4：放置煎蛋。机器人需将勺子移动到面包顶部，并倾斜勺子以将煎蛋放在面包上。当勺子在手中的位置发生变化时，机器人无法成功完成倾斜动作，从而导致故障。我们的视觉-触觉策略能够应对这些变化，并相应调整动作。评估指标：机器人成功将煎蛋放在面包顶部。</p><p class="source-paragraph" lang="en">Step 4: Replace Fried Egg. The robot needs to move the spoon to the top of the bread and tilt it to place the egg on the bread. A typical failure occurs when the robot does not perform a successful tilt motion due to changes in the spoon’s position within the hand. Our visuo-tactile policy can account for these changes and adjust the motion accordingly. Evaluation Metrics: The robot successfully places the fried egg on top of the bread.</p>
+</div>
+</section>
+</section>
+<section class="ltx_subsection" id="A2.SS3">
+<h3 class="ltx_title ltx_title_subsection">B. 3 单臂实验</h3>
+<div class="ltx_para ltx_noindent" id="A2.SS3.p1">
+<p class="ltx_p" id="A2.SS3.p1.1">灯泡取放： (i) 旋转。机器人定位灯泡，旋转其位置，然后从底座上将其取走。 (ii) 放置。机器人将取到的灯泡小心地放在桌面上。</p><p class="source-paragraph" lang="en">Light Bulb Retrieval: (i) Rotate. The robot locates the light bulb, rotates it, and retrieves it from the base. (ii) Relocation. The robot places the retrieved light bulb carefully on the table.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A2.SS3.p2">
+<p class="ltx_p" id="A2.SS3.p2.1">插销插入过程：(i) 抓取。机器人从桌面上抓取一个插销。(ii) 插入。机器人将插销插入一个孔中。</p><p class="source-paragraph" lang="en">Peg Insertion: (i) Grasp. The robot grasps a peg from the table. (ii) Insertion. The robot inserts the peg into a hole.</p>
+</div>
+<figure class="ltx_table" id="A2.T3">
+<div class="ltx_inline-block ltx_transformed_outer" id="A2.T3.2" style="width:345.0pt;height:73pt;vertical-align:-34.8pt;"><span class="ltx_transformed_inner" style="transform:translate(-84.5pt,17.9pt) scale(0.671166018088241,0.671166018088241) ;">
+<div class="table-scroll"><table class="ltx_tabular ltx_align_middle" id="A2.T3.2.1">
+<tr class="ltx_tr" id="A2.T3.2.1.1">
+<td class="ltx_td ltx_align_center" colspan="5" id="A2.T3.2.1.1.1">单臂任务</td></tr>
+<tr class="ltx_tr" id="A2.T3.2.1.2">
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t" id="A2.T3.2.1.2.1" rowspan="2">模式</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t" colspan="2" id="A2.T3.2.1.2.2">灯泡检索（30 演示）</td>
+<td class="ltx_td ltx_align_center ltx_border_t" colspan="2" id="A2.T3.2.1.2.3">插销插入机制（30 演示）</td></tr>
+<tr class="ltx_tr" id="A2.T3.2.1.3">
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.3.1">旋转</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="A2.T3.2.1.3.2">迁移</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.3.3">抓取</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.3.4">插入</td></tr>
+<tr class="ltx_tr" id="A2.T3.2.1.4">
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t" id="A2.T3.2.1.4.1">RGB 仅</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A2.T3.2.1.4.2">0.85</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t" id="A2.T3.2.1.4.3">0.85</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A2.T3.2.1.4.4">1.00</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A2.T3.2.1.4.5">0.30</td></tr>
+<tr class="ltx_tr" id="A2.T3.2.1.5">
+<td class="ltx_td ltx_align_left ltx_border_r" id="A2.T3.2.1.5.1">RGB 带触觉图像</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.5.2">0.95</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="A2.T3.2.1.5.3">0.95</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.5.4">1.00</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.5.5">0.65</td></tr>
+<tr class="ltx_tr" id="A2.T3.2.1.6">
+<td class="ltx_td ltx_align_left ltx_border_r" id="A2.T3.2.1.6.1">PC. 仅限</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.6.2">0.85</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="A2.T3.2.1.6.3">0.85</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.6.4">1.00</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.6.5">0.65</td></tr>
+<tr class="ltx_tr" id="A2.T3.2.1.7">
+<td class="ltx_td ltx_align_left ltx_border_r" id="A2.T3.2.1.7.1">带触觉点功能的 PC（我们的产品）</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.7.2"><span class="ltx_text ltx_font_bold" id="A2.T3.2.1.7.2.1">1.00</span></td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="A2.T3.2.1.7.3"><span class="ltx_text ltx_font_bold" id="A2.T3.2.1.7.3.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.7.4"><span class="ltx_text ltx_font_bold" id="A2.T3.2.1.7.4.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.7.5"><span class="ltx_text ltx_font_bold" id="A2.T3.2.1.7.5.1">0.85</span></td></tr>
+<tr class="ltx_tr" id="A2.T3.2.1.8">
+<td class="ltx_td ltx_align_left ltx_border_r" id="A2.T3.2.1.8.1">我们的研究（采用新传感器组）</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.8.2"><span class="ltx_text ltx_font_bold" id="A2.T3.2.1.8.2.1">1.00</span></td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="A2.T3.2.1.8.3"><span class="ltx_text ltx_font_bold" id="A2.T3.2.1.8.3.1">1.00</span></td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.8.4">/</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.8.5">/</td></tr>
+<tr class="ltx_tr" id="A2.T3.2.1.9">
+<td class="ltx_td ltx_align_left ltx_border_r" id="A2.T3.2.1.9.1">我们的方案（传感器位置略有调整）</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.9.2">0.95</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="A2.T3.2.1.9.3">0.90</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.9.4">/</td>
+<td class="ltx_td ltx_align_center" id="A2.T3.2.1.9.5">/</td></tr>
+</table></div>
+</span></div>
+<figcaption class="ltx_caption">表 3：与基线模型的对比。我们针对 20 个episode对我们的单臂策略进行了评估，每个任务的最佳表现已用粗体标出。经过归一化处理后，我们的传感器在不同设备上的读数具有重复性。尽管不同传感器之间的读数可能存在轻微差异，但归一化后的力模式与分布几乎完全相同。</figcaption>
+</figure>
+</section>
+<section class="ltx_subsection" id="A2.SS4">
+<h3 class="ltx_title ltx_title_subsection">B. 4 学习细节</h3>
+<div class="ltx_para ltx_noindent" id="A2.SS4.p1">
+<p class="ltx_p" id="A2.SS4.p1.1">我们采用 Pointnet++ 作为学习主干网络。针对点云数据，我们采用分层特征提取与处理机制。我们使用三个集合抽象层：第一层集合抽象层以 0.04 半径处理 64 点，并以 16 样本通过多层感知器（MLP）进行处理，该感知器包含 [64、64、128] 层；第二层集合抽象层以 0.08 半径处理 16 点，并以 32 样本通过 MLP 进行处理，该模块包含 [128、128、256] 层；第三层集合抽象层作为全局抽象层，其维度为 [MLP、[256、512、1024]。为了进行进一步的特征处理，我们采用全连接层：第一全连接层将 1024 特征转换为 512，第二全连接层则将 512 特征缩减为 256。 我们禁用了批量归一化层。</p><p class="source-paragraph" lang="en">We use Pointnet++ as the learning backbone. we employ hierarchical feature extraction and processing for point cloud data. We use three set abstraction layers: the first set abstraction layer processes 64 points with a 0.04 radius and 16 samples using a multi-layer perceptron (MLP) with layers [64, 64, 128]; the second set abstraction layer processes 16 points with a 0.08 radius and 32 samples using an MLP with layers [128, 128, 256]; the third set abstraction layer serves as a global abstraction layer with an MLP of [256, 512, 1024]. For further feature processing, we use fully connected layers: the first fully connected layer transforms 1024 features to 512, and the second fully connected layer reduces 512 features to 256. We disable batch normalization layers.</p>
+</div>
+</section>
+</section><div about="" class="ltx_rdf" content="Anonymous Submission" property="dcterms:creator"></div>
+<div about="" class="ltx_rdf" content="Contact-Rich Manipulation, Multi-Modal Perception, Tactile Sensing, Imitation Learning" property="dcterms:subject"></div>
+<div about="" class="ltx_rdf" content="Proceedings of the \@conferenceordinal\/ Conference on Robot Learning (CoRL \@conferenceyear)" property="dcterms:subject"></div>
+<div about="" class="ltx_rdf" content="3D-ViTac: Learning Fine-Grained Manipulation with Visuo-Tactile Sensing" property="dcterms:title"></div>
+</article></main>
+</html>

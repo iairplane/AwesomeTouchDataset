@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>可迁移触觉 Transformer｜跨多种传感器与任务的表征学习</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a><label class="language-toggle"><input type="checkbox" id="show-original"> 显示英文段落</label></nav><div class="paper-meta">
+        <p class="original-title" lang="en">Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks</p>
+        <p>Zhao, Jialiang · Ma, Yuxiang · Wang, Lirui · Adelson, Edward H. · arXiv:2406.13640v3</p>
+        <p>正文与附录为机器译稿，中文标题和摘要已对照原文校订。公式、参考文献及图内文字保留原样。</p><p><a href="https://arxiv.org/html/2406.13640v3">英文 HTML</a> · <a href="https://arxiv.org/pdf/2406.13640v3">英文 PDF</a> · <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p><p>本中文译稿采用与原文相同的授权。</p>
+        </div><details class="contents"><summary>章节目录</summary><ul><li><a href="#S1">1 引言</a></li><li><a href="#S2">2 相关研究</a></li><li><a href="#S3">3 FoTa 数据集</a></li><li><a href="#S4">4 具有异质触觉的学习 T3</a></li><li><a href="#S5">5 实验与讨论</a></li><li><a href="#S5.SS1">5.1 预训练的必要性</a></li><li><a href="#S5.SS2">5.2 Zero-shot 预训练 T3 的可迁移性至新传感器或新任务</a></li><li><a href="#S5.SS3">5.3 T3 在长视距操控任务中</a></li><li><a href="#S6">6 局限性与未来研究工作</a></li><li><a href="#S7">7 结论</a></li><li><a href="#bib">参考文献</a></li><li><a href="#A1">附录 A 附录</a></li><li><a href="#A1.SS1">A. 1 注意力图的可视化</a></li><li><a href="#A1.SS2">A. 2 在 FoTa 数据集中汇总的公共数据集</a></li><li><a href="#A1.SS3">A. 3 数据格式</a></li><li><a href="#A1.SS4">A. 4 数据收集平台</a></li><li><a href="#A1.SS5">A. 5 网络配置</a></li></ul></details><article class="ltx_document ltx_authors_1line" lang="zh-CN">
+<h1 class="ltx_title ltx_title_document">可迁移触觉 Transformer｜跨多种传感器与任务的表征学习</h1>
+<div class="ltx_authors">
+<span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Jialiang Zhao
+</span><span class="ltx_author_notes"><span class="ltx_author_notes_content">
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_contact_name">Affiliation: </span><span class="ltx_text ltx_font_typewriter" id="id1">{alanzhao,adelson}@csail.mit.edu</span>
+</span></span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Yuxiang Ma
+</span><span class="ltx_author_notes"><span class="ltx_author_notes_content">
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_contact_name">Affiliation: </span><span class="ltx_text ltx_font_typewriter" id="id2">{yxma20,liruiw}@mit.edu</span>
+</span></span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Lirui Wang
+</span><span class="ltx_author_notes"><span class="ltx_author_notes_content">
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_contact_name">Affiliation: </span><span class="ltx_text ltx_font_typewriter" id="id3">{yxma20,liruiw}@mit.edu</span>
+</span></span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Edward H. AdelsonMIT CSAIL
+</span><span class="ltx_author_notes"><span class="ltx_author_notes_content">
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_contact_name">Affiliation: </span><span class="ltx_text ltx_font_typewriter" id="id4">{alanzhao,adelson}@csail.mit.edu</span>
+</span></span></span></span></div>
+<div class="ltx_abstract" id="abstract1"><h6 class="ltx_title ltx_title_abstract">摘要</h6>
+<p class="ltx_p" id="abstract1.1">本文提出 T3，即可迁移触觉 Transformer，一个能扩展到多种传感器与任务的触觉表征学习框架。相机式触觉感知的异构性较强，传感器形态各异，现有数据集也面向不同任务。T3 针对这一问题设计。T3 以传感器专用编码器、共享 Transformer 主干和任务专用解码器，提取不同传感器与任务组合中的共通潜在信息。预训练 T3 使用新建的基础触觉数据集 FoTa。该数据集汇集多个开源数据集，包含逾 3 百万个数据点，来自 13 种传感器，覆盖 11 项任务。 FoTa 是当时触觉感知领域规模最大、种类最丰富的数据集，并以统一格式公开。跨传感器和跨任务实验表明，在 FoTa 上预训练的 T3 能在部分传感器与任务组合中实现 zero-shot 迁移，也可以用少量特定领域数据继续微调。网络规模扩大时，性能随之提升。T3 也可充当长时程接触密集操作的触觉编码器。亚毫米级多针电子元件插装实验表明，采用 T3 的策略，其成功率较从头训练触觉编码器的策略高 25%，较无触觉感知的策略高 53%。数据、代码和模型检查点已在 <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://t3.alanz.info" title="">https://t3.alanz.info</a> 公开。</p><p class="source-paragraph" lang="en">This paper presents T3 : Transferable Tactile Transformers, a framework for tactile representation learning that scales across multi-sensors and multi-tasks. T3 is designed to overcome the contemporary issue that camera-based tactile sensing is extremely heterogeneous , i.e. sensors are built into different form factors, and existing datasets were collected for disparate tasks. T3 captures the shared latent information across different sensor-task pairings by constructing a shared trunk transformer with sensor-specific encoders and task-specific decoders.
+The pre-training of T3 utilizes a novel Foundation Tactile ( FoTa ) dataset, which is aggregated from several open-sourced datasets and it contains over 3 million data points gathered from 13 sensors and 11 tasks. FoTa is the largest and most diverse dataset in tactile sensing to date and it is made publicly available in a unified format.
+Across various sensors and tasks, experiments show that T3 pre-trained with FoTa achieved zero-shot transferability in certain sensor-task pairings, can be further fine-tuned with small amounts of domain-specific data, and its performance scales with bigger network sizes. T3 is also effective as a tactile encoder for long horizon contact-rich manipulation.
+Results from sub-millimeter multi-pin electronics insertion tasks show that T3 achieved a task success rate 25% higher than that of policies trained with tactile encoders trained from scratch, or 53% higher than without tactile sensing.
+Data, code, and model checkpoints are open-sourced at https://t3.alanz.info .</p>
+</div>
+<div class="ltx_para" id="p1">
+<div class="table-scroll"><table class="ltx_tabular ltx_centering ltx_align_top" id="p1.1">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="p1.1.1">
+<td class="ltx_td ltx_align_center" id="p1.1.1.1"><span class="ltx_rule" style="width:0.0pt;height:24.0pt;--ltx-bg-color:black;display:inline-block;"></span></td></tr>
+</tbody>
+</table></div>
+</div>
+<section class="ltx_section" id="S1">
+<h2 class="ltx_title ltx_title_section">1 引言</h2>
+<div class="ltx_para ltx_noindent" id="S1.p1">
+<p class="ltx_p" id="S1.p1.1">触觉感知方式在机器人学领域越来越受到重视，它能够提供重要的精细接触信息，有助于实现灵活且接触丰富的操作任务，例如机器人抓取任务 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib1" title="">1</a>, <a class="ltx_ref" href="#bib.bib2" title="">2</a>]</cite> 和织物操作任务 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib3" title="">3</a>, <a class="ltx_ref" href="#bib.bib4" title="">4</a>]</cite>。基于摄像头的触觉感知方式 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib5" title="">5</a>]</cite> 是一种通过将摄像头嵌入软弹性体下方来捕捉与环境之间的精细交互的技术，因其高分辨率与低成本而成为最流行的触觉感知方法之一。然而，基于摄像头的触觉传感器具有极大的异质性，目前尚未出现被机器人学界广泛采用的统一传感器设计。不同的触觉传感器在摄像头形状、类型与数量、安装位置以及照明颜色等方面存在显著差异。 这种固有的异质性使得机器人学家难以构建一种通用型触觉编码器，使其能够在不同的传感器和下游任务中通用应用。</p><p class="source-paragraph" lang="en">The tactile sensing modality has gained increasing popularity within the robotics community, by providing important fine-grained contact information for dexterous and contact-rich manipulation tasks, such as robot grasping [ 1 , 2 ] and fabric manipulation [ 3 , 4 ] .
+Camera-based tactile sensing [ 5 ] , a sensing method that operates by embedding a camera beneath a soft elastomer to capture the fine-grained interactions with the environment, is among the most popular methods of tactile sensing for its higher resolution and lower cost.
+However, camera-based tactile sensors are extremely heterogeneous , and there has not been a converged sensor design widely adopted by the robotics community.
+Different tactile sensors can differ significantly in shapes, types and numbers of cameras, placement and colors of illumination, etc.
+Such inherent heterogeneity hinders roboticists from building a general-purpose tactile encoder that is transferable across different sensors and downstream tasks.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S1.p2">
+<p class="ltx_p" id="S1.p2.1">现有的学习架构与数据集都专注于特定的传感器-任务组合，当遇到新出现的传感器或任务时，往往需要从头开始进行数据收集与编码器训练。在长期视角的触觉操作任务中，这一问题对学习效率的负面影响更为显著，因为触觉编码器的训练所依赖的奖励信号更为稀疏。从直观角度来看，尽管不同的触觉传感器产生的触觉图像差异巨大，且不同任务从触觉输入中获取的信息也各不相同，但由于传感器与任务之间的触觉感知具有内在相似性，因此应该存在可共享的潜在信息。因此，设计一种能够提取此类共享潜在表示并将其跨不同传感器-任务组合之间传递的架构，在技术上可行，且在实践上也是非常必要的。</p><p class="source-paragraph" lang="en">Existing learning architectures and datasets focus on one specific sensor-task pairing, and when it comes to a newly emerged sensor or task, data recollection and training an encoder from scratch are often required.
+This issue harms learning efficiency in a more significant way in longer horizon tactile manipulation tasks, where the training of the tactile encoder is guided by a more sparse reward.
+Intuitively, although different tactile sensors produce vastly different tactile images and various tasks extract different information from a tactile input, there should be shareable latent information due to the inherent similarities in tactile sensing across sensors and tasks.
+Therefore, it is both technically viable and practically desirable to design an architecture capable of extracting such shared latent representations and transferring them across different sensor-task pairings.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S1.p3">
+<p class="ltx_p" id="S1.p3.1">从异构触觉输入中学习与多模态表示学习具有许多相似之处。近期在多模态基础模型领域的研究表明，这些模型具有弥合不同模态之间差异并学习共同潜在表示的能力，例如在感知领域表现为 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib6" title="">6</a>, <a class="ltx_ref" href="#bib.bib7" title="">7</a>, <a class="ltx_ref" href="#bib.bib8" title="">8</a>]</cite>，在机器人操作领域则表现为 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib9" title="">9</a>, <a class="ltx_ref" href="#bib.bib10" title="">10</a>]</cite>。然而，学习此类基础模型通常需要时间上对齐的多模态输入，或能够描述不同模态输入之间相似性的距离函数。在异构触觉学习中，硬件层面的差异往往使得从不同本体收集的图像难以进行对齐。</p><p class="source-paragraph" lang="en">Learning from heterogeneous tactile inputs shares many similarities with multi-modal representation learning.
+Recent works in multi-modal foundation models have demonstrated the potential capability to bridge the gap between different modalities and learning a common latent representation, such as in the perception domain [ 6 , 7 , 8 ] as well as the robotic manipulation domain [ 9 , 10 ] .
+However, learning such foundation models often requires temporally aligned multi-modal inputs or a distance function that describes the resemblance between inputs from different modalities.
+In heterogeneous tactile learning , the hardware-level disparity often makes it ill-defined to align images collected from different embodiments.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S1.p4">
+<p class="ltx_p" id="S1.p4.1">在本研究中，我们致力于解决非对齐触觉数据下的异构触觉学习问题，旨在构建一种可扩展的表征，使其能够在不同传感器和任务之间共享。我们首先整合现有的开源触觉数据集，并构建 Foundation Tactile（FoTa）数据集，据作者所知，这是目前最大且最多样化的触觉数据集。随后，我们提出了可迁移触觉变换器（Transferable Tactile Transformers）。 T3 ) 以学习跨多传感器与多任务之间的共享表征。 T3 采用传感器专用编码器、共享主干结构及任务专用解码器构建。我们的实验表明…… T3 使用 FoTa 进行预训练后可达到合理的效果 zero-shot 在可转移性方面，该模型可通过小型领域特定数据集进行进一步微调，且其性能也会随着网络规模的增大而提升。 我们还证明，T3 可作为触觉编码器，用于长距离操作策略，配合 3 基于行为克隆的亚毫米级电子元件植入任务。总之，本文提出了以下方案：</p><p class="source-paragraph" lang="en">In this work, we tackle the problem of heterogeneous tactile learning using unaligned tactile data, with the goal of learning a scalable representation that can be shared across different sensors and tasks.
+We first aggregate existing open-sourced tactile datasets and assemble the Foundation Tactile ( FoTa ) dataset, which is the largest and most diverse tactile dataset so far to the best of the authors’ knowledge.
+We then propose Transferable Tactile Transformers ( T3 ) to learn a shared representation across multi-sensors and multi-tasks. T3 is constructed with sensor-specific encoders, a shared trunk, and task-specific decoders.
+Our experiments show that T3 pre-trained with FoTa achieves reasonable zero-shot transferability, it can be further fine-tuned with small domain-specific datasets, and its performance scales with bigger network sizes.
+We also demonstrate that T3 can be used as a tactile encoder for longer-horizon manipulation policies with 3 behavior cloning-based sub-millimeter level electronics insertion tasks.
+In summary, this paper proposes:</p>
+</div>
+<section class="ltx_paragraph" id="S1.SS0.SSS0.Px1">
+<h5 class="ltx_title ltx_title_paragraph">基础触觉基础（FoTa）：</h5>
+<div class="ltx_para ltx_noindent" id="S1.SS0.SSS0.Px1.p1">
+<p class="ltx_p" id="S1.SS0.SSS0.Px1.p1.1">一个包含 <math alttext="3,083,452" class="ltx_Math" display="inline" id="S1.SS0.SSS0.Px1.p1.m1" intent=":literal"><semantics><mn>3,083,452</mn><annotation encoding="application/x-tex">3,083,452</annotation></semantics></math> 触觉图像的数据集，该图像由 13 传感器采集，用于 11 任务，并以统一格式呈现。该数据集与多个最大的开源触觉数据集以及作者自行收集的额外数据进行了整合。</p><p class="source-paragraph" lang="en">a dataset containing 3,083,452 tactile images collected with 13 sensors for 11 tasks in a unified format.
+It is aggregated with several of the largest open-sourced tactile datasets and additional data collected in-house by the authors.</p>
+</div>
+</section>
+<section class="ltx_paragraph" id="S1.SS0.SSS0.Px2">
+<h5 class="ltx_title ltx_title_paragraph">可转移触觉变换器（T3）：</h5>
+<div class="ltx_para ltx_noindent" id="S1.SS0.SSS0.Px2.p1">
+<p class="ltx_p" id="S1.SS0.SSS0.Px2.p1.1">一种神经网络框架，可在 FoTa 中的所有传感器和任务之间学习共享表征。该框架提供预训练权重，我们证明 T3 可以通过少量微调数据轻松被微调至新任务或新传感器。</p><p class="source-paragraph" lang="en">a neural network framework that learns a shared representation across all sensors and tasks in FoTa . Pre-trained weights are provided, and we demonstrate that T3 can be easily fine-tuned to a new task or a new sensor with few fine-tuning data.</p>
+</div>
+<figure class="ltx_figure" id="S1.F1"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="159" id="S1.F1.g1" loading="lazy" src="../media/2406.13640/network_.png" style="aspect-ratio:476/159;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 1：可迁移触觉变换器的架构示意图（T3）。T3 通过传感器特定编码器与任务特定解码器之间的共享主干结构，在异构触觉传感器与下游任务之间学习出统一的表示。编码器与共享主干均采用变换器模块构建。解码器架构则根据任务类型进行选择：对于如掩码自编码重建这样的生成任务，使用变换器；对于分类任务，使用 MLP；对于姿态估计任务，则使用 CNN 与 MLP。</figcaption>
+</figure>
+</section>
+</section>
+<section class="ltx_section" id="S2">
+<h2 class="ltx_title ltx_title_section">2 相关研究</h2>
+<section class="ltx_paragraph" id="S2.SS0.SSS0.Px1">
+<h5 class="ltx_title ltx_title_paragraph">基于摄像头的触觉传感器</h5>
+<div class="ltx_para ltx_noindent" id="S2.SS0.SSS0.Px1.p1">
+<p class="ltx_p" id="S2.SS0.SSS0.Px1.p1.1">基于摄像头的触觉传感器通常采用柔软弹性体作为接触介质，并包含反射层、照明光源以及一个或多个摄像头，用于捕捉弹性体的形变，从而能够获得接触表面的详细图像。基于摄像头的触觉传感器在设计上具有极大的多样性，例如单色 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib11" title="">11</a>]</cite> 与彩色 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib12" title="">12</a>, <a class="ltx_ref" href="#bib.bib13" title="">13</a>, <a class="ltx_ref" href="#bib.bib14" title="">14</a>]</cite> 的照明方式，有无标记的 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib15" title="">15</a>, <a class="ltx_ref" href="#bib.bib16" title="">16</a>, <a class="ltx_ref" href="#bib.bib17" title="">17</a>]</cite> 等不同的形态，以及平面 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib12" title="">12</a>, <a class="ltx_ref" href="#bib.bib13" title="">13</a>]</cite>、圆顶形 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib18" title="">18</a>, <a class="ltx_ref" href="#bib.bib14" title="">14</a>]</cite>、手指形 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib19" title="">19</a>, <a class="ltx_ref" href="#bib.bib20" title="">20</a>]</cite>、柔顺型 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib21" title="">21</a>, <a class="ltx_ref" href="#bib.bib22" title="">22</a>]</cite>、多连接型 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib23" title="">23</a>]</cite> 甚至手掌形 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib24" title="">24</a>]</cite> 等不同的结构形式。这种多样性和差异性使得研究人员能够在多种应用中使用这些传感器，例如缺陷检测 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib25" title="">25</a>]</cite> 和机器人工具使用 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib9" title="">9</a>]</cite> 等场景。 然而，它们也构成了利用机器学习对传感器所提供信息进行编码的重大障碍。独特的传感器-任务组合通常需要重新收集数据并重新训练神经网络。</p><p class="source-paragraph" lang="en">Camera-based tactile sensors are often constructed with a soft elastomer as the contact medium, a reflective layer, a light source to provide illumination, and one or more than one camera to capture the deformation of the elastomer, which therefore provides a detailed view of the contact surface.
+Specific design choices in camera-based tactile sensors are highly diverse, such as monochrome [ 11 ] v.s. colored [ 12 , 13 , 14 ] in illumination, with v.s. without markers [ 15 , 16 , 17 ] , and different form factors such as flat [ 12 , 13 ] , dome-shaped [ 18 , 14 ] , finger-shaped [ 19 , 20 ] , compliant [ 21 , 22 ] , multi-linked [ 23 ] or even palm-shaped [ 24 ] .
+Such diversity and disparity have enabled researchers to use those sensors across a spectrum of applications such as in defect inspection [ 25 ] and robotic tool-using [ 9 ] .
+Nevertheless, they also add a substantial barrier in leveraging machine learning to encode the information coming from those sensors.
+A unique sensor-task pairing often requires data re-collection and neural network re-training.</p>
+</div>
+</section>
+<section class="ltx_paragraph" id="S2.SS0.SSS0.Px2">
+<h5 class="ltx_title ltx_title_paragraph">触觉操作数据集</h5>
+<div class="ltx_para ltx_noindent" id="S2.SS0.SSS0.Px2.p1">
+<p class="ltx_p" id="S2.SS0.SSS0.Px2.p1.1">近年来，多项大规模触觉感知数据集已被发布，这些数据集致力于解决视觉-触觉跨模态推理 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib26" title="">26</a>, <a class="ltx_ref" href="#bib.bib27" title="">27</a>, <a class="ltx_ref" href="#bib.bib28" title="">28</a>]</cite>、物体或材料分类 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib28" title="">28</a>, <a class="ltx_ref" href="#bib.bib29" title="">29</a>, <a class="ltx_ref" href="#bib.bib4" title="">4</a>]</cite>、如机器人抓取稳定性分析 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib2" title="">2</a>]</cite> 或形状重建 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib30" title="">30</a>]</cite> 等复杂任务。这些数据集还涵盖了与多种物体的交互，包括家庭用品和玩具 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib2" title="">2</a>, <a class="ltx_ref" href="#bib.bib26" title="">26</a>, <a class="ltx_ref" href="#bib.bib27" title="">27</a>, <a class="ltx_ref" href="#bib.bib28" title="">28</a>, <a class="ltx_ref" href="#bib.bib30" title="">30</a>]</cite>、织物和衣物 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib4" title="">4</a>]</cite>，以及木材和碎石等自然物体 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib29" title="">29</a>]</cite>。从数据量来看，其中一些数据集包含超过一百万张图像 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib26" title="">26</a>, <a class="ltx_ref" href="#bib.bib30" title="">30</a>]</cite>，使得可用的触觉图像总数与 ImageNet- 1 K <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib31" title="">31</a>]</cite> 相当。</p><p class="source-paragraph" lang="en">Several large-scale tactile sensing datasets have been released in recent years tackling visual-tactile cross-modality reasoning [ 26 , 27 , 28 ] , object or material classification [ 28 , 29 , 4 ] , longer horizon tasks such as robotic grasping stability analysis [ 2 ] , or shape reconstruction [ 30 ] .
+Those datasets also cover interactions with a wide variety of objects, including household objects and toys [ 2 , 26 , 27 , 28 , 30 ] , fabrics and clothes [ 4 ] , natural objects such as wood and gravel [ 29 ] .
+Quantity-wise, several of those datasets contain well over a million images [ 26 , 30 ] , making the total number of available tactile images on par with ImageNet-1K [ 31 ] .</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S2.SS0.SSS0.Px2.p2">
+<p class="ltx_p" id="S2.SS0.SSS0.Px2.p2.1">在使用现有的开源触觉数据集时，数据量通常并非问题，但一个显著缺陷是上述所有数据集在传感器与任务方面均缺乏多样性。绝大多数触觉数据集都是仅通过一种特定的触觉传感器收集而成的。受此限制，即使能够从某个数据集中训练出性能良好的触觉编码器，该预训练的编码器也无法应用于其他传感器。为了像 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib32" title="">32</a>, <a class="ltx_ref" href="#bib.bib33" title="">33</a>]</cite> 在自然图像领域那样学习通用的触觉感知表示，拥有大量且多样化的触觉数据集以及多种传感器与任务组合是必不可少的。</p><p class="source-paragraph" lang="en">While quantity is often not an issue when using existing open-sourced tactile datasets, one significant drawback is that all the aforementioned datasets lack diversity in terms of sensors and tasks.
+The vast majority of tactile datasets were collected entirely with only one specific tactile sensor. With this constraint, even if a sufficiently well-performing tactile encoder can be trained from one dataset, such a pre-trained encoder will not be able to transfer to another sensor.
+In order to learn a general-purpose representation for tactile sensing like [ 32 , 33 ] does in the natural image domain, a large and diverse tactile dataset with a wide variety of sensor-task pairings is a prerequisite.</p>
+</div>
+</section>
+<section class="ltx_paragraph" id="S2.SS0.SSS0.Px3">
+<h5 class="ltx_title ltx_title_paragraph">基于异构数据的表示学习</h5>
+<div class="ltx_para ltx_noindent" id="S2.SS0.SSS0.Px3.p1">
+<p class="ltx_p" id="S2.SS0.SSS0.Px3.p1.1">从不同的数据领域中学习，例如将多感官反馈作为输入，或针对不同任务预测输出，一直是机器人学习领域的研究热点。许多现有研究将触觉、视觉以及偶尔的其他模态（如机器人状态和声音）结合起来，通过每种模态经过特定模态编码器处理，然后将其串联起来，再通过解码器网络进行处理，以预测最终输出 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib34" title="">34</a>, <a class="ltx_ref" href="#bib.bib15" title="">15</a>, <a class="ltx_ref" href="#bib.bib35" title="">35</a>, <a class="ltx_ref" href="#bib.bib9" title="">9</a>, <a class="ltx_ref" href="#bib.bib36" title="">36</a>]</cite>。除了基于学习的神经网络外，使用分析工具（如因子图或凸优化）来整合多个领域的预测结果也是常见的做法 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib37" title="">37</a>]</cite>。</p><p class="source-paragraph" lang="en">Learning from heterogeneous data domains, such as taking multi-sensory feedback as inputs or predicting outputs for different tasks, has been an active area of research, especially in the robot learning domain.
+Many existing works combine tactile, vision, and occasionally other modalities such as robot states and sound, by passing each modality through one modality-specific encoder, then concatenating them and passing them through a decoder network to predict the final output [ 34 , 15 , 35 , 9 , 36 ] .
+Apart from learning-driven neural networks, it is also common to use analytical tools, such as factor graphs or convex optimization, to combine predictions from multiple domains [ 37 ] .</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S2.SS0.SSS0.Px3.p2">
+<p class="ltx_p" id="S2.SS0.SSS0.Px3.p2.1">另一类多模态机器人学习分支能够主动分析不同领域之间的关系，并将这些领域相互连接，从而学习出可共享的潜在表示。大量研究探索了使用对比学习来整合时间上对齐的多模态数据 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib6" title="">6</a>, <a class="ltx_ref" href="#bib.bib10" title="">10</a>, <a class="ltx_ref" href="#bib.bib38" title="">38</a>]</cite>。为了实现视觉与触觉的融合，Chen等人设计了多模态自注意力机制 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib39" title="">39</a>]</cite> 以学习共享表示；而Li等人则提出了跨模态生成对抗网络，能够从视觉图像预测触觉图像，反之亦然 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib26" title="">26</a>]</cite>。Bachmann等人将掩蔽自编码技术应用于对齐的 RGB 图像、深度图及语义分割数据，从而在三个领域之间学习出共享表示 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib7" title="">7</a>]</cite>。 然而，尽管跨模态表征学习与异构触觉表征学习具有许多共同点，但一个重要区别在于，异构触觉表征学习缺乏针对不同任务由不同传感器收集的对齐数据。从不同硬件设备采集到的两种触觉图像之间的相似性往往难以明确界定，而这正是许多自监督学习技术的先决条件。因此，设计一种能够从非对齐触觉数据中学习并生成可跨不同触觉传感器及不同任务转移的表征的新架构显得十分必要。</p><p class="source-paragraph" lang="en">Another branch of multi-modal robot learning actively reasons the relationship among heterogeneous domains and cross-links them to learn a shareable latent representation.
+Extensive research has explored using contrastive learning to join temporally aligned modalities [ 6 , 10 , 38 ] . To connect vision and touch, Chen et al. designed a multi-modal self-attention mechanism [ 39 ] to learn a shared representation, while Li et al. proposed a cross-modal Generative Adversarial Network and were able to predict tactile images from visual images and vice versa [ 26 ] .
+Bachmann et al. applied masked auto-encoding (MAE) on aligned RGB images, depth maps, and semantic segmentation and learned a shared representation across three domains [ 7 ] .
+However, although cross-modality representation learning shares a lot of commonalities with heterogeneous tactile representation learning, one significant difference is that heterogeneous tactile representation learning lacks aligned data collected with different sensors for different tasks.
+It is often ill-defined to infer the resemblance of two tactile images collected from different hardware, which is a prerequisite for many self-supervised learning techniques.
+It is therefore desirable to devise a new architecture that is able to learn from unaligned tactile data and produce a representation that is transferable across different tactile sensors and different tasks.</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S3">
+<h2 class="ltx_title ltx_title_section">3 FoTa 数据集</h2>
+<figure class="ltx_figure" id="S3.F2"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="280" id="S3.F2.g1" loading="lazy" src="../media/2406.13640/data_pie_plots.png" style="aspect-ratio:476/280;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 2：FOTa数据集可视化图。(a) 我们展示了 FOTa 数据集中各组成数据集、传感器及任务的混合与分布情况。请注意，并非所有任务都在 T3 的训练中被使用。(b) 我们展示了 FOTa 中每个组成传感器所生成的触觉图像。请注意，在 T3 的训练中，相似的传感器共享相同的编码器。例如，GelSight17 变体 { 1 - 4 } 使用相同的编码器，而 GelSight 变体 { 1 - 2 } 也使用相同的编码器。</figcaption>
+</figure>
+<div class="ltx_para ltx_noindent" id="S3.p1">
+<p class="ltx_p" id="S3.p1.1">我们通过整合现有公共数据集以及新增内部收集的数据，构建了一个庞大的触觉数据集。FOTa 数据集以统一的 I/O 高效 WebDataset <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib40" title="">40</a>]</cite> 格式呈现。这是迄今为止最庞大且最多样化的触觉感知数据集，其中 13 触觉传感器上收集了 <math alttext="3,083,452" class="ltx_Math" display="inline" id="S3.p1.m1" intent=":literal"><semantics><mn>3,083,452</mn><annotation encoding="application/x-tex">3,083,452</annotation></semantics></math> 数据点，且 11 任务提供了高质量标签。FOTa 中的成分混合情况如图 <a class="ltx_ref" href="#S3.F2" title="Figure 2 ‣ 3 The FoTa Dataset ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">2</span></a>.a 所示，各传感器的示例触觉图像则见于图 <a class="ltx_ref" href="#S3.F2" title="Figure 2 ‣ 3 The FoTa Dataset ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">2</span></a>.b。关于 FoTa 中整合的公共数据集及其预处理方法的详细信息和统计数据，请参见附录 <a class="ltx_ref" href="#A1.SS2" title="A.2 Public datasets aggregated in the FoTa dataset ‣ Appendix A Appendix ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">A.2</span></a>。</p><p class="source-paragraph" lang="en">We provide a large tactile dataset by aggregating existing public datasets as well as adding new data collected in-house.
+The FoTa dataset is provided in a unified, I/O efficient WebDataset [ 40 ] format.
+It is by far the largest and most diverse dataset for tactile perception, with 3,083,452 data points collected on 13 tactile sensors, and high-quality labels are provided for 11 tasks.
+Mixture of constituents of FoTa is illustrated in Fig. 2 .a, and example tactile images from each sensor are shown in Fig. 2 .b.
+Details and statistics about public datasets aggregated in FoTa as well as the pre-processing method are provided in Appendix A.2 .</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.p2">
+<p class="ltx_p" id="S3.p2.1">除了整合公开可用的触觉数据集外，我们还添加了由多种新近推出的触觉传感器收集的新数据，包括 GelSight Finray <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib5" title="">5</a>]</cite>、GelSight Svelte <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib19" title="">19</a>]</cite>、GelSight Wedge <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib13" title="">13</a>]</cite>、DenseTact 2.0 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib14" title="">14</a>]</cite> 以及 GelSight 360 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib18" title="">18</a>]</cite>。这些新数据也被用于最终的性能基准测试，以及所提出学习框架的可迁移性测试。我们构建了两个平台以收集这些额外的数据。</p><p class="source-paragraph" lang="en">Besides aggregating publicly available tactile datasets, we add new data collected with several recently emerged tactile sensors including GelSight Finray [ 5 ] , GelSight Svelte [ 19 ] , GelSight Wedge [ 13 ] , DenseTact 2.0 [ 14 ] , and GelSight 360 [ 18 ] .
+Those new data were also used for final performance benchmarking as well as transferability testing for the proposed learning framework.
+Two platforms were built to collect these additional data.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.p3">
+<p class="ltx_p" id="S3.p3.1">A 7 - DoF 机器人平台通过连接来收集触觉数据 2 用于平行颚式夹爪的触觉传感器 7 - DoF Franka Emika 熊猫机器人臂，并指令该机器人臂探索位于已知位置的物体。机器人的姿态 <math alttext="SE(3)" class="ltx_Math" display="inline" id="S3.p3.m1" intent=":literal"><semantics><mrow><mi>S</mi><mo lspace="0em" rspace="0em">​</mo><mi>E</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mn>3</mn><mo stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">SE(3)</annotation></semantics></math> 每个步骤都会被记录，随后转化为传感器的坐标框架。对象标识符及名称同样会被记录。</p><p class="source-paragraph" lang="en">A 7-DoF robotic platform collects tactile data by attaching 2 tactile sensors to a parallel jaw gripper of a 7-DoF Franka Emika Panda robot arm and commanding the robot arm to explore an object that is fixed at a known location.
+Robot pose in S ​ E ​ ( 3 ) is recorded for each step and then transformed into the sensor’s coordinate frame.
+Object IDs as well as names are also recorded.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.p4">
+<p class="ltx_p" id="S3.p4.1">一个 3 - DoF 框架平台由桌面 3 轴 CNC 机床构建。六个 3 不同纹理的 D 打印探针被连接至力/扭矩传感器，该传感器随后被连接到 CNC 的 Z 轴。在数据收集过程中，传感器被固定在一个已知位置，而 CNC 机器则对传感器的整个感应表面进行探测。每个触觉图像帧的平移姿态、探测力以及探针编号都会被记录下来。</p><p class="source-paragraph" lang="en">A 3-DoF gantry platform is built with a desktop 3-axis CNC mill.
+Six 3D printed probes with different textures are attached to a force/torque sensor, which is then attached to the Z axis of the CNC.
+During data collection, a sensor is fixed at a known location, and the CNC machine probes the entire sensing surface of the sensor.
+Translational poses, probing forces, and probe IDs are recorded for each tactile image frame.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.p5">
+<p class="ltx_p" id="S3.p5.1">这两个系统在附录 <a class="ltx_ref" href="#A1.SS4" title="A.4 Data collection platforms ‣ Appendix A Appendix ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">A.4</span></a> 中进行了更详细的介绍。</p><p class="source-paragraph" lang="en">The two systems are introduced in more detail in Appendix A.4 .</p>
+</div>
+</section>
+<section class="ltx_section" id="S4">
+<h2 class="ltx_title ltx_title_section">4 具有异质触觉的学习 T3</h2>
+<div class="ltx_para ltx_noindent" id="S4.p1">
+<p class="ltx_p" id="S4.p1.1">我们提出了可迁移触觉变换器（T3）作为骨干网络，以从多种触觉传感器中学习，并为多种下游任务生成输出。</p><p class="source-paragraph" lang="en">We propose Transferable Tactile Transformers ( T3 ) as the backbone network to learn from diverse tactile sensors and produce outputs for diverse downstream tasks.</p>
+</div>
+<section class="ltx_paragraph" id="S4.SS0.SSS0.Px1">
+<h5 class="ltx_title ltx_title_paragraph">网络架构</h5>
+<div class="ltx_para ltx_noindent" id="S4.SS0.SSS0.Px1.p1">
+<p class="ltx_p" id="S4.SS0.SSS0.Px1.p1.1">训练数据集包含来自不同传感器 <math alttext="N_{s}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m1" intent=":literal"><semantics><msub><mi>N</mi><mi>s</mi></msub><annotation encoding="application/x-tex">N_{s}</annotation></semantics></math> 的输入数据以及 <math alttext="N_{t}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m2" intent=":literal"><semantics><msub><mi>N</mi><mi>t</mi></msub><annotation encoding="application/x-tex">N_{t}</annotation></semantics></math> 不同的任务。T3 由 <math alttext="N_{s}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m3" intent=":literal"><semantics><msub><mi>N</mi><mi>s</mi></msub><annotation encoding="application/x-tex">N_{s}</annotation></semantics></math> 编码器 <math alttext="\{Enc_{1},...,Enc_{N_{s}}\}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m4" intent=":literal"><semantics><mrow><mo stretchy="false">{</mo><mrow><mi>E</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mn>1</mn></msub></mrow><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><mrow><mi>E</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><msub><mi>N</mi><mi>s</mi></msub></msub></mrow><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">\{Enc_{1},...,Enc_{N_{s}}\}</annotation></semantics></math> 构成，每个触觉传感器对应一个编码器；同时还有 <math alttext="N_{t}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m5" intent=":literal"><semantics><msub><mi>N</mi><mi>t</mi></msub><annotation encoding="application/x-tex">N_{t}</annotation></semantics></math> 解码器 <math alttext="\{Dec_{1},...,Dec_{N_{t}}\}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m6" intent=":literal"><semantics><mrow><mo stretchy="false">{</mo><mrow><mi>D</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mn>1</mn></msub></mrow><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><mrow><mi>D</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><msub><mi>N</mi><mi>t</mi></msub></msub></mrow><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">\{Dec_{1},...,Dec_{N_{t}}\}</annotation></semantics></math>，每个解码器负责一个下游任务；此外还有一个共享的主干网络，记为 <math alttext="Trunk" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m7" intent=":literal"><semantics><mrow><mi>T</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">Trunk</annotation></semantics></math>。在训练与推理过程中，我们确保每一批数据都来自相同的传感器-任务组合。对于从传感器 <math alttext="i" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m9" intent=":literal"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> 收集到的用于任务 <math alttext="j" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m10" intent=":literal"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math> 的数据点 <math alttext="(X_{i},Y_{j})" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m8" intent=":literal"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>,</mo><msub><mi>Y</mi><mi>j</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(X_{i},Y_{j})</annotation></semantics></math>，相应的编码器 <math alttext="Enc_{i}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m11" intent=":literal"><semantics><mrow><mi>E</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">Enc_{i}</annotation></semantics></math> 与解码器 <math alttext="Dec_{j}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px1.p1.m12" intent=":literal"><semantics><mrow><mi>D</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">Dec_{j}</annotation></semantics></math> 会连接到主干网络。T3 中的各个网络组件可以采用不同的架构。实际上，我们使用 ViT <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib41" title="">41</a>]</cite> 构建主干网络及编码器，因为它们在自然图像领域具有出色的学习能力与可扩展性。 对于解码器，我们采用 ViT 用于生成任务（MAE 重建任务），ResNet+ MLP 用于姿态估计任务，而 MLP 则用于分类任务。关于网络配置的更多细节，请参见附录 <a class="ltx_ref" href="#A1.SS5" title="A.5 Network configurations ‣ Appendix A Appendix ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">A.5</span></a>。</p><p class="source-paragraph" lang="en">A training dataset contains inputs from N s different sensors and N t distinguished tasks. T3 is constructed with N s encoders { E ​ n ​ c 1 , … , E ​ n ​ c N s } , one for each individual tactile sensor; N t decoders { D ​ e ​ c 1 , … , D ​ e ​ c N t } , each responsible for one downstream task; and one shared trunk, denoted as T ​ r ​ u ​ n ​ k .
+During both training and inference, we ensure that one batch of data always comes from the same sensor-task pairing.
+For a given pair of data point ( X i , Y j ) that is collected from sensor i for task j , the corresponding encoder E ​ n ​ c i and decoder D ​ e ​ c j are attached to the trunk.
+The constituent network components of T3 can take different architectures. In practice, we use ViT [ 41 ] in the trunk and encoders for its proven learning capacity and scalability in the natural image domain.
+For decoders, we use ViT for generative tasks (reconstruction for MAE), ResNet+MLP for pose estimation tasks, and MLP for classification tasks.
+More details about network configurations are discussed in Appendix A.5 .</p>
+</div>
+</section>
+<section class="ltx_paragraph" id="S4.SS0.SSS0.Px2">
+<h5 class="ltx_title ltx_title_paragraph">学习目标</h5>
+<div class="ltx_para ltx_noindent" id="S4.SS0.SSS0.Px2.p1">
+<p class="ltx_p" id="S4.SS0.SSS0.Px2.p1.1">对于每个任务 <math alttext="j\in[1,N_{t}]" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px2.p1.m1" intent=":literal"><semantics><mrow><mi>j</mi><mo>∈</mo><mrow><mo stretchy="false">[</mo><mrow><mn>1</mn><mo>,</mo><msub><mi>N</mi><mi>t</mi></msub></mrow><mo stretchy="false">]</mo></mrow></mrow><annotation encoding="application/x-tex">j\in[1,N_{t}]</annotation></semantics></math>，我们定义了一个损失函数 <math alttext="L_{j}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px2.p1.m2" intent=":literal"><semantics><msub><mi>L</mi><mi>j</mi></msub><annotation encoding="application/x-tex">L_{j}</annotation></semantics></math>。不同任务所需的触觉图像输入数量各不相同。例如，如物体分类和材料分类等任务仅需一个触觉图像即可完成，而姿态估计任务则需要两个触觉图像，即 <math alttext="X^{1},X^{2}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px2.p1.m3" intent=":literal"><semantics><mrow><msup><mi>X</mi><mn>1</mn></msup><mo>,</mo><msup><mi>X</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">X^{1},X^{2}</annotation></semantics></math>，因为预测目标是两个实例之间的相对姿态。我们分别将每个单独的触觉图像通过编码器与主干网络处理，然后将其拼接在一起，再通过解码器进行处理。数据对 <math alttext="(X_{i},Y_{j})" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px2.p1.m4" intent=":literal"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>,</mo><msub><mi>Y</mi><mi>j</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(X_{i},Y_{j})</annotation></semantics></math> 或 <math alttext="([X_{i}^{1},X_{i}^{2}],Y_{j})" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px2.p1.m5" intent=":literal"><semantics><mrow><mo stretchy="false">(</mo><mrow><mo stretchy="false">[</mo><mrow><msubsup><mi>X</mi><mi>i</mi><mn>1</mn></msubsup><mo>,</mo><msubsup><mi>X</mi><mi>i</mi><mn>2</mn></msubsup></mrow><mo stretchy="false">]</mo></mrow><mo>,</mo><msub><mi>Y</mi><mi>j</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">([X_{i}^{1},X_{i}^{2}],Y_{j})</annotation></semantics></math> 之间的损失则通过相应方式计算。</p><p class="source-paragraph" lang="en">For each task j ∈ [ 1 , N t ] , we define a loss function L j .
+Different tasks require different numbers of tactile images as inputs.
+For example, tasks like object classification and material classification only require one tactile image to perform, while the pose estimation task requires two tactile images, e.g. X 1 , X 2 , because the prediction goal is the relative pose between the two instances.
+We pass each individual tactile image through the encoder and trunk separately, and we then concatenate them together before passing them through the decoder.
+The loss between a data pair ( X i , Y j ) or ( [ X i 1 , X i 2 ] , Y j ) is calculated as</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E1">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="\begin{split}&amp;loss(X_{i},Y_{j})=L_{j}(Y_{j},Dec_{j}(Trunk(Enc_{i}(X_{i}))))\\
+&amp;loss([X_{i}^{1},X_{i}^{2}],Y_{j})=L_{j}(Y_{j},Dec_{j}(Trunk(Enc_{i}(X_{i}^{1}))\oplus Trunk(Enc_{i}(X_{i}^{2}))))\end{split}" class="ltx_Math" display="block" id="S4.E1.m1" intent=":literal"><semantics><mtable columnspacing="0pt" displaystyle="true" rowspacing="0pt"><mtr><mtd></mtd><mtd class="ltx_align_left" columnalign="left"><mrow><mrow><mi>l</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>s</mi><mo lspace="0em" rspace="0em">​</mo><mi>s</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>,</mo><msub><mi>Y</mi><mi>j</mi></msub><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><msub><mi>L</mi><mi>j</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msub><mi>Y</mi><mi>j</mi></msub><mo>,</mo><mrow><mi>D</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mi>j</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mrow><mi>T</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>k</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mrow><mi>E</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mi>i</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">)</mo></mrow></mrow></mrow></mtd></mtr><mtr><mtd></mtd><mtd class="ltx_align_left" columnalign="left"><mrow><mrow><mi>l</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>s</mi><mo lspace="0em" rspace="0em">​</mo><mi>s</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mrow><mo stretchy="false">[</mo><mrow><msubsup><mi>X</mi><mi>i</mi><mn>1</mn></msubsup><mo>,</mo><msubsup><mi>X</mi><mi>i</mi><mn>2</mn></msubsup></mrow><mo stretchy="false">]</mo></mrow><mo>,</mo><msub><mi>Y</mi><mi>j</mi></msub><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><msub><mi>L</mi><mi>j</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msub><mi>Y</mi><mi>j</mi></msub><mo>,</mo><mrow><mi>D</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mi>j</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mrow><mrow><mi>T</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>k</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mrow><mi>E</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mi>i</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msubsup><mi>X</mi><mi>i</mi><mn>1</mn></msubsup><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">)</mo></mrow></mrow><mo>⊕</mo><mrow><mi>T</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>k</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mrow><mi>E</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mi>i</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msubsup><mi>X</mi><mi>i</mi><mn>2</mn></msubsup><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">)</mo></mrow></mrow></mrow><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">)</mo></mrow></mrow></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{split}&amp;loss(X_{i},Y_{j})=L_{j}(Y_{j},Dec_{j}(Trunk(Enc_{i}(X_{i}))))\\
+&amp;loss([X_{i}^{1},X_{i}^{2}],Y_{j})=L_{j}(Y_{j},Dec_{j}(Trunk(Enc_{i}(X_{i}^{1}))\oplus Trunk(Enc_{i}(X_{i}^{2}))))\end{split}</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="S4.SS0.SSS0.Px2.p1.2">其中，<math alttext="\oplus" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px2.p1.m6" intent=":literal"><semantics><mo>⊕</mo><annotation encoding="application/x-tex">\oplus</annotation></semantics></math> 表示连接操作。</p><p class="source-paragraph" lang="en">where ⊕ denotes concatenation.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS0.SSS0.Px2.p2">
+<p class="ltx_p" id="S4.SS0.SSS0.Px2.p2.1">T3的训练过程分为两个预训练阶段和一个可选的微调阶段。预训练被分为两个阶段，旨在提高数据利用率，并实现局部细粒度理解与全局语义理解。1阶段侧重于使用自监督学习进行更精细的像素级理解，能够充分利用 FoTa 数据集中的所有数据。2阶段则侧重于语义理解，需要特定的任务标签，而此类标签仅存在于 FoTa 数据集的某一部分中。</p><p class="source-paragraph" lang="en">The training process of T3 is split into two pre-training phases and one optional fine-tuning phase.
+Pre-training is divided into two phases to improve data utilization and to attain both local fine-grained understanding and global semantic understanding.
+Phase 1 focuses on more pixel-level understanding using self-supervised learning, and it is able to utilize all data from the FoTa dataset.
+Phase 2 focuses on semantic understanding and it requires suitable task labels that only a subset of the FoTa dataset possesses.</p>
+</div>
+</section>
+<section class="ltx_paragraph" id="S4.SS0.SSS0.Px3">
+<h5 class="ltx_title ltx_title_paragraph">预训练 I：基于遮蔽自动编码的自监督学习 (MAE)</h5>
+<div class="ltx_para ltx_noindent" id="S4.SS0.SSS0.Px3.p1">
+<p class="ltx_p" id="S4.SS0.SSS0.Px3.p1.1">MAE 最初被提出作为一种用于自然图像的自监督预训练技术 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib42" title="">42</a>]</cite>，如今在音频处理 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib8" title="">8</a>]</cite>、点云处理 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib43" title="">43</a>]</cite> 以及多模态表示学习 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib7" title="">7</a>]</cite> 等领域也获得了广泛应用。其运作机制为：首先随机遮蔽原始输入中的某一部分，然后构建解码器以重建缺失部分。使用 MAE 进行预训练的神经网络在多种领域中的表现均优于未使用 MAE 训练的神经网络。此预训练阶段能够充分利用 FoTa 中的所有数据，包括未标记数据（例如机器人抓取过程中沉淀期收集的中间触觉图像 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib2" title="">2</a>]</cite>），或难以定义损失函数的有语义标签的数据（例如场景的自然语言描述 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib27" title="">27</a>]</cite>）。</p><p class="source-paragraph" lang="en">MAE was first proposed as a self-supervised pre-training technique for natural images [ 42 ] and it has gained increased popularity in other domains such as audio processing [ 8 ] , point-cloud processing [ 43 ] , and multi-modal representation learning [ 7 ] .
+It operates by first randomly masking out a certain portion of the original inputs, then it constructs a decoder to reconstruct the missing portion.
+Neural networks that were pre-trained with MAE have been shown to be able to outperform ones that were trained without MAE in various domains.
+This pre-training stage is able to utilize all data in FoTa , including unlabeled data (e.g. intermediate tactile images collected during the settling period of a robot grasp in [ 2 ] ), or data with semantic labels for which loss functions are hard to define (e.g. natural language description of a scene in [ 27 ] ).</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS0.SSS0.Px3.p2">
+<p class="ltx_p" id="S4.SS0.SSS0.Px3.p2.1">在此预训练阶段，一个用于重建部分掩蔽图像的解码器 <math alttext="Dec_{0}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px3.p2.m1" intent=":literal"><semantics><mrow><mi>D</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">Dec_{0}</annotation></semantics></math> 被所有领域共享。<math alttext="Dec_{0}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px3.p2.m2" intent=":literal"><semantics><mrow><mi>D</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">Dec_{0}</annotation></semantics></math> 由 <math alttext="8" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px3.p2.m3" intent=":literal"><semantics><mn>8</mn><annotation encoding="application/x-tex">8</annotation></semantics></math> 视觉Transformer 块构成 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib41" title="">41</a>]</cite>。损失函数 <math alttext="L_{0}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px3.p2.m4" intent=":literal"><semantics><msub><mi>L</mi><mn>0</mn></msub><annotation encoding="application/x-tex">L_{0}</annotation></semantics></math> 为按像素归一化的 L2 损失，遵循 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib42" title="">42</a>]</cite> 原则。</p><p class="source-paragraph" lang="en">In this pre-training stage, one decoder D ​ e ​ c 0 that is designed to reconstruct partially masked images is shared by all domains. D ​ e ​ c 0 is constructed with 8 VisionTransformer blocks [ 41 ] .
+The loss L 0 is L2 pixel-wise loss normalized within each patch, following [ 42 ] .</p>
+</div>
+</section>
+<section class="ltx_paragraph" id="S4.SS0.SSS0.Px4">
+<h5 class="ltx_title ltx_title_paragraph">预训练 II：从公共数据集中提炼标签的监督学习</h5>
+<div class="ltx_para ltx_noindent" id="S4.SS0.SSS0.Px4.p1">
+<p class="ltx_p" id="S4.SS0.SSS0.Px4.p1.1">在此阶段，T3 在 FoTa 数据集中选定的任务标签的指导下进行训练。针对每个独立的任务 <math alttext="j\in[1,N_{t}]" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px4.p1.m1" intent=":literal"><semantics><mrow><mi>j</mi><mo>∈</mo><mrow><mo stretchy="false">[</mo><mrow><mn>1</mn><mo>,</mo><msub><mi>N</mi><mi>t</mi></msub></mrow><mo stretchy="false">]</mo></mrow></mrow><annotation encoding="application/x-tex">j\in[1,N_{t}]</annotation></semantics></math>，定义了相应的解码器 <math alttext="Dec_{j}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px4.p1.m2" intent=":literal"><semantics><mrow><mi>D</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>c</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">Dec_{j}</annotation></semantics></math> 和损失函数 <math alttext="L_{j}" class="ltx_Math" display="inline" id="S4.SS0.SSS0.Px4.p1.m3" intent=":literal"><semantics><msub><mi>L</mi><mi>j</mi></msub><annotation encoding="application/x-tex">L_{j}</annotation></semantics></math>。我们为本次训练阶段定义了 10 任务。</p><p class="source-paragraph" lang="en">In this stage, T3 is trained under supervision from selected task labels in the FoTa dataset.
+For each individual task j ∈ [ 1 , N t ] , a decoder D ​ e ​ c j and a loss function L j is defined.
+We define 10 tasks for this training stage.</p>
+<ul class="ltx_itemize" id="S4.I1">
+<li class="ltx_item" id="S4.I1.i1" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">•</span>
+<div class="ltx_para ltx_noindent" id="S4.I1.i1.p1">
+<p class="ltx_p" id="S4.I1.i1.p1.1">分类任务包括 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib2" title="">2</a>, <a class="ltx_ref" href="#bib.bib29" title="">29</a>]</cite> 的物体分类、<cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib30" title="">30</a>]</cite> 的材料分类，以及 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib4" title="">4</a>]</cite> 的织物平滑度、毛糙度与纺织类型分类。这些解码器的实现方式均为 MLP 神经网络，而每个 <math alttext="L_{j}" class="ltx_Math" display="inline" id="S4.I1.i1.p1.m1" intent=":literal"><semantics><msub><mi>L</mi><mi>j</mi></msub><annotation encoding="application/x-tex">L_{j}</annotation></semantics></math> 则采用交叉熵损失函数。</p><p class="source-paragraph" lang="en">Classification tasks include object classification for [ 2 , 29 ] , material classification for [ 30 ] , and fabric smoothness, fuzziness, textile type classification for [ 4 ] . Decoders for each of them are defined as MLP neural networks, and each L j is a cross-entropy loss function.</p>
+</div></li>
+<li class="ltx_item" id="S4.I1.i2" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">•</span>
+<div class="ltx_para" id="S4.I1.i2.p1">
+<p class="ltx_p" id="S4.I1.i2.p1.1">回归任务包括 <math alttext="SE(3)" class="ltx_Math" display="inline" id="S4.I1.i2.p1.m1" intent=":literal"><semantics><mrow><mi>S</mi><mo lspace="0em" rspace="0em">​</mo><mi>E</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mn>3</mn><mo stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">SE(3)</annotation></semantics></math> 两个重叠触觉图像之间的相对姿态估计 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib13" title="">13</a>, <a class="ltx_ref" href="#bib.bib44" title="">44</a>, <a class="ltx_ref" href="#bib.bib45" title="">45</a>]</cite> (结合 ResNet+) MLP 解码器，以及拉普拉斯方差（一种描述触觉图像中信息量的度量指标，更多细节见附录） <a class="ltx_ref" href="#A1.SS2" title="A.2 Public datasets aggregated in the FoTa dataset ‣ Appendix A Appendix ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">A.2</span></a> ) 估计方法 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib26" title="">26</a>]</cite> (与) MLP 解码器。每种损失 <math alttext="L_{j}" class="ltx_Math" display="inline" id="S4.I1.i2.p1.m2" intent=":literal"><semantics><msub><mi>L</mi><mi>j</mi></msub><annotation encoding="application/x-tex">L_{j}</annotation></semantics></math> 这是一种均方误差损失函数。</p><p class="source-paragraph" lang="en">Regression tasks include S ​ E ​ ( 3 ) relative pose estimation bewteen two overlapped tactile images for [ 13 , 44 , 45 ] (with ResNet+MLP decoders), and variance of Laplacian (a metric describing the amount of information contained in tactile images, more details in Appendix A.2 ) estimation for [ 26 ] (with MLP decoders).
+Each loss L j is a mean squared error loss function.</p>
+</div></li>
+</ul>
+</div>
+</section>
+<section class="ltx_paragraph" id="S4.SS0.SSS0.Px5">
+<h5 class="ltx_title ltx_title_paragraph">微调：基于任务特定数据的监督学习</h5>
+<div class="ltx_para ltx_noindent" id="S4.SS0.SSS0.Px5.p1">
+<p class="ltx_p" id="S4.SS0.SSS0.Px5.p1.1">在此阶段，T3 通过针对特定下游任务及用户计划使用的特定传感器收集的数据进行进一步微调。如果预训练数据集中已存在传感器与任务配对关系，则此阶段可省略。从架构层面来看，T3 的配置与预训练 II 阶段相同，但仅包含一个目标任务和传感器。</p><p class="source-paragraph" lang="en">In this phase, T3 is further fine-tuned with data collected for the specific downstream task with the specific sensor that the user aims to use.
+This stage can be optional if the sensor-task pairing already exists in the pre-training dataset.
+Architecture-wise, T3 is configured the same way as it is in Pre-training II but with only one target task and sensor.</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S5">
+<h2 class="ltx_title ltx_title_section">5 实验与讨论</h2>
+<div class="ltx_para ltx_noindent" id="S5.p1">
+<p class="ltx_p" id="S5.p1.1">在本节中，我们将讨论 T3 在多种消融实验及基准测试中的评估表现。对于预训练 I 和 II 阶段，我们使用了 FoTa 数据集中的所有数据，但排除了内部制造的架台系统收集的数据，包括物体分类任务以及 3 D 姿态估计任务。因此，这些数据未被用于基础模型的预训练，仅用于评估与微调。本节的目的是回答以下问题：</p><p class="source-paragraph" lang="en">In this section we discuss the evaluation performance of T3 with numerous ablations and benchmarks.
+For both pre-training I and II, we use all data from the FoTa dataset except data collected on the gantry system in-house, including the object classification task and the 3D pose estimation task. Those data are therefore not included for pre-training the foundation model and are set aside for evaluation and fine-tuning only.
+We aim to answer the following questions in this section:</p>
+<ul class="ltx_itemize" id="S5.I1">
+<li class="ltx_item" id="S5.I1.i1" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">•</span>
+<div class="ltx_para ltx_noindent" id="S5.I1.i1.p1">
+<p class="ltx_p" id="S5.I1.i1.p1.1">如何高效训练？预训练能提升性能多少？第 <a class="ltx_ref" href="#S5.SS1" title="5.1 The worthiness of pre-training ‣ 5 Experiments and Discussions ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">5.1</span></a> 节。</p><p class="source-paragraph" lang="en">How to train efficiently and how much does pre-training improve performance? Sec. 5.1 .</p>
+</div></li>
+<li class="ltx_item" id="S5.I1.i2" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">•</span>
+<div class="ltx_para ltx_noindent" id="S5.I1.i2.p1">
+<p class="ltx_p" id="S5.I1.i2.p1.1">预训练的 T3 和 zero-shot 是否可应用于新任务及/或新传感器？第 <a class="ltx_ref" href="#S5.SS2" title="5.2 Zero-shot transferability of pre-trained T3 to new sensors or tasks ‣ 5 Experiments and Discussions ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">5.2</span></a> 节。</p><p class="source-paragraph" lang="en">Is pre-trained T3 zero-shot transferable to new tasks and / or sensors? Sec. 5.2 .</p>
+</div></li>
+<li class="ltx_item" id="S5.I1.i3" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">•</span>
+<div class="ltx_para" id="S5.I1.i3.p1">
+<p class="ltx_p" id="S5.I1.i3.p1.1">FOTa 是否能在长周期机器人任务中带来有意义的改进？第 <a class="ltx_ref" href="#S5.SS3" title="5.3 T3 in long-horizon manipulation tasks ‣ 5 Experiments and Discussions ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">5.3</span></a> 节。</p><p class="source-paragraph" lang="en">Does FoTa provide meaningful improvements in longer-horizon robotic tasks? Sec. 5.3 .</p>
+</div></li>
+</ul>
+</div>
+<figure class="ltx_figure" id="S5.F3"><object class="ltx_graphics ltx_centering ltx_img_landscape" data="2406.13640v3/all_figures_.svg" height="314" id="S5.F3.g1" style="aspect-ratio:476/314;" type="image/svg+xml" width="476"></object>
+<figcaption class="ltx_caption ltx_centering">图 3：T3 任务性能与可迁移性实验研究。(a) 使用 4 网络规模（微小、小型、中等、大型）、3 训练方案（从零训练、基于预训练 1 微调、基于预训练 2 微调）以及 2 微调数据量（半数据与全数据）下的评估性能。(b) 预训练过程中不同掩码比例下的评估性能 I。(c) 分类任务上的可迁移性测试。(d) 姿态估计任务上的可迁移性测试。</figcaption>
+</figure>
+<section class="ltx_subsection" id="S5.SS1">
+<h3 class="ltx_title ltx_title_subsection">5.1 预训练的必要性</h3>
+<div class="ltx_para ltx_noindent" id="S5.SS1.p1">
+<p class="ltx_p" id="S5.SS1.p1.1">本节的微调与评估任务属于对象分类任务（6类别），涉及2传感器（GelSight楔形件、GelSight Mini）以及每个传感器约3,300个数据点。报告了这两个传感器平均的顶级1分类准确率。</p><p class="source-paragraph" lang="en">The fine-tuning and evaluation task for this section is an object classification task (6 categories) for 2 sensors (GelSight Wedge, GelSight Mini) with around 3,300 data points for each sensor.
+Averaged top-1 classification accuracy from the two sensors is reported.</p>
+</div>
+<section class="ltx_paragraph" id="S5.SS1.SSS0.Px1">
+<h5 class="ltx_title ltx_title_paragraph">预训练的效果以及缩放行为对不同网络规模的影响</h5>
+<div class="ltx_para ltx_noindent" id="S5.SS1.SSS0.Px1.p1">
+<p class="ltx_p" id="S5.SS1.SSS0.Px1.p1.1">我们针对以下所有组合进行了分类实验：(a) 4 网络变体：小型 -12 M、小型 -45 M、中等规模 -174 M 和大型 -308 M；(b) 3 训练方案：从零开始训练、基于预训练 I 进行微调，以及基于预训练 I 与 II 进行微调；(c) 2 训练数据量：一半数据（约 1,650 训练数据）和全部数据（约 3,300 训练数据）。所有 24 实验均使用与训练集独立的验证数据集进行测试。评估准确率如图 <a class="ltx_ref" href="#S5.F3" title="Figure 3 ‣ 5 Experiments and Discussions ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">3</span></a> .a 所示。我们观察到：(a) 预训练显著提升了所有网络配置下的评估性能，中位数提升幅度为 24%；(b) 随着网络规模增大，评估性能也得到提升，其中大型网络的分类准确率比小型网络高 19%。 然而，中规模与大规模模型之间的性能差异并不显著。(c) 当使用一半的微调数据进行微调时，预训练网络的表现优于从头开始训练的模型；且较大的预训练模型表现也优于较小的预训练模型。实际上，对于中规模与大规模模型而言，使用一半数据进行微调与使用全部数据进行微调之间的性能差异非常微小，这表明这些模型具有更好的泛化能力，因此仅需较少的数据即可完成对新任务的微调。</p><p class="source-paragraph" lang="en">We conducted the classification experiment with all combinations of the following:
+(a) 4 network variations: tiny -12M, small -45M, medium -174M, and large -308M;
+(b) 3 training schemes: train from scratch, fine-tune from pre-training I, and fine-tune from pre-training I &amp; II;
+(c) 2 amounts of training data: half data (approx. 1,650 training data) and full data (approx. 3,300 training data).
+All 24 experiments were tested on the same validation dataset, which was separated from the training set.
+The evaluation accuracy is shown in Fig. 3 .a.
+We observed that:
+(a) Pre-training significantly improved the evaluation performance with all network configurations with an median improvement of 24%.
+(b) The evaluation performance improved with larger networks, where large ’s classification accuracy was 19% higher than that of tiny .
+However, the performance difference between medium and large was insignificant.
+(c) When fine-tuned with half of the fine-tuning data, pre-trained networks performed better than trained from scratch networks, and larger pre-trained models performed better than smaller pre-trained models.
+In fact, for medium and large , the performances between fine-tuned with half data and fine-tuned with full data were very close, signaling those models generalized better thus they require less data to fine-tune to a novel task.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS1.SSS0.Px1.p2">
+<p class="ltx_p" id="S5.SS1.SSS0.Px1.p2.1">更高质量的分析，包括编码器注意力图与主干注意力图的可视化结果，均见于附录。<a class="ltx_ref" href="#A1.SS1" title="A.1 Visualization of attention maps ‣ Appendix A Appendix ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">A.1</span></a>。</p><p class="source-paragraph" lang="en">More qualitatively analysis, including visualizations of the encoder attention maps and the trunk attention maps, can be found in Appendix. A.1 .</p>
+</div>
+</section>
+<section class="ltx_paragraph" id="S5.SS1.SSS0.Px2">
+<h5 class="ltx_title ltx_title_paragraph">预训练阶段中的遮蔽比率</h5>
+<div class="ltx_para ltx_noindent" id="S5.SS1.SSS0.Px2.p1">
+<p class="ltx_p" id="S5.SS1.SSS0.Px2.p1.1">我们在 MAE 重建预训练阶段测试了不同掩蔽比例下的 8，并在 8 测试样本上进行了相同的预训练 II 阶段及微调阶段。评估结果如图 <a class="ltx_ref" href="#S5.F3" title="Figure 3 ‣ 5 Experiments and Discussions ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">3</span></a>.b 所示。我们观察到性能差异较小，范围介于 85% ( <math alttext="mr=30\%" class="ltx_Math" display="inline" id="S5.SS1.SSS0.Px2.p1.m1" intent=":literal"><semantics><mrow><mrow><mi>m</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi></mrow><mo>=</mo><mrow><mn>30</mn><mo>%</mo></mrow></mrow><annotation encoding="application/x-tex">mr=30\%</annotation></semantics></math> ) 到 89% ( <math alttext="mr=80\%" class="ltx_Math" display="inline" id="S5.SS1.SSS0.Px2.p1.m2" intent=":literal"><semantics><mrow><mrow><mi>m</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi></mrow><mo>=</mo><mrow><mn>80</mn><mo>%</mo></mrow></mrow><annotation encoding="application/x-tex">mr=80\%</annotation></semantics></math> ) 之间，其中 80% 的掩蔽比例取得了最佳性能。</p><p class="source-paragraph" lang="en">We tested 8 different masking ratios in the MAE reconstruction pre-training stage, and we performed the same Pre-training II stage as well as the fine-tuning stage on the 8 tests.
+The evaluation results are reported in Fig. 3 .b.
+We observe a small performance variance, ranging from 85% ( m ​ r = 30 % ) to 89% ( m ​ r = 80 % ), and a masking ratio of 80% yielded the highest performance.</p>
+</div>
+</section>
+</section>
+<section class="ltx_subsection" id="S5.SS2">
+<h3 class="ltx_title ltx_title_subsection">5.2 Zero-shot 预训练 T3 的可迁移性至新传感器或新任务</h3>
+<div class="ltx_para ltx_noindent" id="S5.SS2.p1">
+<p class="ltx_p" id="S5.SS2.p1.1">我们测试了预训练后的 T3 在有无微调的情况下能否被迁移到新的传感器或下游任务中。我们选择了两个新的传感器（GelSight Svelte、DensetTact2. 0）以及两个已见过的数据集任务（物体分类、两个重叠触觉图像之间的姿态估计）。这两个已见过的数据集任务是通过 GelSight Wedge、GelSight Finray 和 GelSight Mini 的数据进行预训练的。在实验中，我们使用 GelSight Wedge 的预训练编码器作为 GelSight Svelte 的编码器，并用 GelSight Mini 的编码器替代 DensetTact2. 0 的编码器。4 组合的相关结果分别展示在图 <a class="ltx_ref" href="#S5.F3" title="Figure 3 ‣ 5 Experiments and Discussions ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">3</span></a>.c 和图 <a class="ltx_ref" href="#S5.F3" title="Figure 3 ‣ 5 Experiments and Discussions ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">3</span></a>.d 中。Zero-shot 的迁移仅在物体分类任务中带来了微小的改进，但相较于数据集平均值，在姿态估计任务中则表现出显著的提升。 我们进一步使用少量 2,000 数据点对网络进行微调。经过微调后，分类准确率立即提升到了 17% 水平，而 DenseTact2 的姿态估计均方根误差（RMSE）则降低了 5.5mm 和 0。在 GelSight Svelte 传感器上，微调前后的姿态估计误差几乎相同，且接近最优状态。这些结果表明，在某些传感器与任务配对中可以实现零迁移性，并且通过最小的微调就能获得更好的效果。</p><p class="source-paragraph" lang="en">We tested to what extent a pre-trained T3 can be transferred to a new sensor or downstream task with and without fine-tuning.
+We picked two novel sensors (GelSight Svelte, DensetTact2.0) and two seen tasks (object classification, pose estimation between two overlapped tactile images).
+The two seen tasks were pre-trained with data from GelSight Wedge, GelSight Finray, and GelSight Mini.
+During this experiment, we use the encoder pre-trained for GelSight Wedge as the encoder for GelSight Svelte, and GelSight Mini’s encoder in place of DenseTact2.0’s encoder.
+Results on the 4 combinations are shown in Fig. 3 .c and Fig. 3 .d.
+Zero-shot transfer yielded only minor improvements over random guesses in the object classification task; however, it demonstrated significant improvement over dataset averages in the pose estimation task.
+We further fine-tuned the networks with a small amount of 2,000 data points.
+The classification accuracy immediately bounced up to 17% with fine-tuning, and the pose estimation root mean squared error (RMSE) was reduced by 5.5mm for DenseTact2.0.
+On the GelSight Svelte sensor, the pose estimation errors before and after fine-tuning were nearly identical and close to optimal.
+These results indicate that zero-transferability can be achieved in certain sensor-task pairings, and that better outcomes can be attained with minimal fine-tuning.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S5.SS3">
+<h3 class="ltx_title ltx_title_subsection">5.3 T3 在长视距操控任务中</h3>
+<div class="ltx_para ltx_noindent" id="S5.SS3.p1">
+<p class="ltx_p" id="S5.SS3.p1.1">在接触丰富的操作任务中，触觉感知特别具有帮助作用。大量人类研究表明，触觉对于人类完成精细操作任务至关重要，例如手术 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib46" title="">46</a>, <a class="ltx_ref" href="#bib.bib47" title="">47</a>]</cite>。然而，由于缺乏预训练的触觉编码器，目前最先进的触觉操作研究通常都采用从零开始训练触觉编码器，并使用特定传感器与任务组合收集的新数据。在长距离多模态操作任务中，从零开始训练往往效率低下，因为轨迹奖励较少，且需要训练的组件数量较多（例如不同模态编码器与策略网络），尤其是在许多强化学习和行为克隆应用中，如 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib48" title="">48</a>, <a class="ltx_ref" href="#bib.bib9" title="">9</a>]</cite>。</p><p class="source-paragraph" lang="en">Tactile sensing can be especially helpful in contact-rich manipulation tasks. Numerous human studies have shown that the sense of touch is important for humans to perform delicate manipulation tasks such as surgery [ 46 , 47 ] .
+However, most state-of-the-art tactile manipulation research opted to train a tactile encoder from scratch, with fresh data collected with the specific sensor-task pairing, due to the lack of a pre-trained tactile encoder.
+In the case of long-horizon multi-modal manipulation tasks, training from scratch is often inefficient, due to the sparseness of trajectory rewards and the number of components that need to be trained (e.g. modality encoders and policy networks) especially in many reinforcement learning and behavior cloning applications such as [ 48 , 9 ]</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS3.p2">
+<p class="ltx_p" id="S5.SS3.p2.1">为了探究预训练的 T3 是否有助于填补这一空白，我们设计了一项基于行为克隆的机器人精密插入任务。该任务的目标是将 3 电子元件插入 PCB 中：包括 3 引脚切换开关、12 引脚双叠式 USB 接口以及 17 引脚 VGA 连接器，这些元件需插入具有对应安装孔位的 PCB 中。此任务需要极高的精度，因为 PCB 上的孔与元件引脚之间的间隙仅为 <math alttext="0.4mm" class="ltx_Math" display="inline" id="S5.SS3.p2.m1" intent=":literal"><semantics><mrow><mn>0.4</mn><mo lspace="0em" rspace="0em">​</mo><mi>m</mi><mo lspace="0em" rspace="0em">​</mo><mi>m</mi></mrow><annotation encoding="application/x-tex">0.4mm</annotation></semantics></math>。实现这种精度需要通过触觉反馈下的主动探索。在实际应用中，由于遮挡现象严重，仅依赖视觉识别往往不足。</p><p class="source-paragraph" lang="en">To investigate whether a pre-trained T3 helps to bridge this gap, we designed a robotic precision insertion task with behavior cloning.
+The goal of this task is to insert 3 electronics parts: a 3-pin toggle switch, a 12-pin double-stack USB port, and a 17-pin VGA connector, onto a PCB with corresponding mounting holes to each component.
+This task requires high precision, where the clearance between the holes on the PCB and the pins on the parts is only 0.4 ​ m ​ m .
+Achieving this precision requires active exploration with tactile feedback.
+In real-world applications, relying on vision alone is often insufficient due to heavy occlusion.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS3.p3">
+<p class="ltx_p" id="S5.SS3.p3.1">我们的实验装置由两个 GelSight 楔形触觉传感器组成，这些传感器安装在平行钳口夹持器上，该夹持器连接于 7 - DoF Franka Emika Panda 机器人的末端执行器上；此外还包括固定在工作台已知位置的 PCB 板、 3 电子元件，以及工作台侧面的 RGB 摄像头。该装置的示意图见图 <a class="ltx_ref" href="#S5.F4" title="Figure 4 ‣ 5.3 T3 in long-horizon manipulation tasks ‣ 5 Experiments and Discussions ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">4</span></a> a，各部件示意图见图 <a class="ltx_ref" href="#S5.F4" title="Figure 4 ‣ 5.3 T3 in long-horizon manipulation tasks ‣ 5 Experiments and Discussions ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">4</span></a> b。数据收集是通过以“引导模式”控制机器人来实现的，即处于零刚度控制状态；人类操作员手动抓取并移动末端执行器，直至部件完全插入。在数据收集与推理过程中，插座位置保持不变，我们在每次插入前对手持部件的姿态和夹持器起始姿态进行随机化处理，这两种随机化均来自 3 D 零均值、<math alttext="1mm" class="ltx_Math" display="inline" id="S5.SS3.p3.m1" intent=":literal"><semantics><mrow><mn>1</mn><mo lspace="0em" rspace="0em">​</mo><mi>m</mi><mo lspace="0em" rspace="0em">​</mo><mi>m</mi></mrow><annotation encoding="application/x-tex">1mm</annotation></semantics></math> 标准差正态分布。</p><p class="source-paragraph" lang="en">Our experiment setup consists of two GelSight Wedge tactile sensors mounted on a parallel jaw gripper, which is attached to the end-effector of a 7-DoF Franka Emika Panda robot, a PCB board fixed at a known location on the workbench, the 3 electronics parts, and a RGB camera on the side of the workbench.
+An illustration of the setup is shown in Fig. 4 a and the parts are shown in Fig. 4 .b.
+Data is collected by controlling the robot in "guide mode", i.e. under zero stiffness control, and a human operator manually grabs and moves the end-effector until the part is fully inserted.
+At both data collection and inference time, the sockets are fixed, and we add randomizations to the part-in-hand pose and gripper starting pose before each insertion, both generated from a 3D zero-mean, 1 ​ m ​ m standard deviation normal distribution.</p>
+</div>
+<figure class="ltx_figure" id="S5.F4"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="178" id="S5.F4.g1" loading="lazy" src="../media/2406.13640/roboot.png" style="aspect-ratio:476/178;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 4：现实世界亚毫米级机器人插入任务。(a) 硬件配置。(b) 3评估电子元件及其在PCB上的安装位置。(c) 每个任务的插入成功率及平均步数。使用 T3触觉编码器训练的策略实现了最高的成功率和最短的平均序列长度。</figcaption>
+</figure>
+<div class="ltx_para ltx_noindent" id="S5.SS3.p4">
+<p class="ltx_p" id="S5.SS3.p4.1">我们进行训练并开展评估 3 策略：无触觉输入的基线策略，由从头训练的神经网络编码的触觉输入策略，以及由神经网络编码的触觉输入策略 T3 . 除了触觉输入外，还有 3 策略可以访问由某系统编码的相同机器人状态模式 MLP ，以及由预训练的 ResNet18 编码的外部视觉模态。所有三种策略均以当前步骤的观测数据作为输入，并预测结果 3 - DoF 机器人在下一个时间步执行的动作。在推理阶段，机器人执行预测的动作。 3 - DoF 约化动作 2Hz 高达 30 步骤。如果机器人成功将组件插入其中，则该行为视为成功。 30 步骤。成功episode的成功率以及成功episode所采取的平均步骤数 15 各episode在图中有所呈现 <a class="ltx_ref" href="#S5.F4" title="Figure 4 ‣ 5.3 T3 in long-horizon manipulation tasks ‣ 5 Experiments and Discussions ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">4</span></a> .c.</p><p class="source-paragraph" lang="en">We train and evaluate 3 policies: a baseline policy without tactile input, a policy with tactile input encoded by a neural network trained from scratch, and a policy with tactile input encoded by T3 .
+Besides tactile inputs, all 3 policies have access to the same robot state modality encoded by a MLP, and external vision modality encoded by a pre-trained ResNet18.
+All three policies take observations of the current step as inputs and predict a 3-DoF action which the robot executes at the next time step.
+At inference time, the robot executes predicted 3-DoF actions in about 2Hz for up to 30 steps.
+An episode is deemed successful if the robot successfully inserts the component within 30 steps.
+The success rate and the average steps taken of successful episodes across 15 episodes are reported in Fig. 4 .c.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.SS3.p5">
+<p class="ltx_p" id="S5.SS3.p5.1">研究结果表明，( 1 )，触觉方式对于该电子元件插入任务至关重要，仅依赖视觉策略在插入两个难度较大的部件时均未能通过所有测试；( 2 ) 采用预训练的 T3 作为触觉编码器来实施该策略，进一步提升了整体性能，且三个部件的任务成功率均有所提高；( 3 ) T3 还有助于减少插入部件所需的触觉探索步骤数量。</p><p class="source-paragraph" lang="en">The results show that (1) the tactile modality is vital for this electronics insertion task, where the vision-only policy failed all tests to insert the two more challenging parts; (2) using a pre-trained T3 as the tactile encoder for this policy helped further improve the overall performance, where the task success rate is higher across all three parts; (3) T3 also helped to reduce the number of tactile exploration steps needed to insert a part.</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S6">
+<h2 class="ltx_title ltx_title_section">6 局限性与未来研究工作</h2>
+<div class="ltx_para ltx_noindent" id="S6.p1">
+<p class="ltx_p" id="S6.p1.1">当前训练流程的一个局限性是 FoTa 数据集存在不平衡问题。收集的数据为 2 最流行的传感器数量超过 50% 占整个数据集的比例。因此，训练出的策略也可能倾向于那些更受欢迎的传感器。另一个限制是，当前的架构存在…… T3 专注于单张图像编码 T3 在预训练 II 和微调阶段，通过明确的标签进行训练。使用稀疏或隐式标签对触觉图像序列进行表征学习，可能成为本研究的未来方向。此外， T3 目前仅限于学习基于摄像头的触觉传感器的表征。扩展 FoTa 数据集及... T3 非相机式传感器的框架设计是未来的另一研究方向。</p><p class="source-paragraph" lang="en">One limitation of the current training pipeline is that the FoTa dataset is unbalanced.
+Data collected with the 2 most popular sensors constitutes over 50% of the entire dataset.
+Therefore, the trained policy could also be biased towards those more popular sensors.
+Another limitation is that the current architecture of T3 focuses on per-image encoding and T3 is trained with explicit labels during pre-training II and fine-tuning.
+Representation learning on tactile image sequences with sparse or implicit labels can be a future direction of this work.
+Furthermore, T3 is currently limited to learning representations for camera-based tactile sensors.
+Extending the FoTa dataset and the T3 framwork to non-camera-based sensors is another future line of work.</p>
+</div>
+</section>
+<section class="ltx_section" id="S7">
+<h2 class="ltx_title ltx_title_section">7 结论</h2>
+<div class="ltx_para ltx_noindent" id="S7.p1">
+<p class="ltx_p" id="S7.p1.1">本文提出了 T3，这是一个基于摄像头的触觉感知框架，能够跨多种传感器与任务进行迁移；同时还有 FoTa 触觉数据集，该数据集在数据量及传感器与下游任务多样性方面均处于最高水平。实验表明，使用 FoTa 预训练的 T3 在多种任务中的表现得到了提升，包括长视距操作任务，例如亚毫米级电子元件插入操作；而 T3 在无需大量微调的情况下即可成功迁移到新的传感器-任务组合中。</p><p class="source-paragraph" lang="en">This paper presents T3 , a large camera-based tactile sensing framework that transfers across multiple sensors and tasks; and FoTa , a tactile dataset that is by far the largest in quantity and most diverse in sensors and downstream tasks.
+Experiments show that T3 pre-trained with FoTa improves performance for various tasks, including longer-horizon manipulation tasks such as sub-millimeter electronics insertion, and that T3 transfers to a new sensor-task pairing with little fine-tuning.</p>
+</div>
+
+<section class="ltx_subsubsection" id="S7.SS0.SSSx1">
+<h4 class="ltx_title ltx_title_subsubsection">致谢</h4>
+<div class="ltx_para ltx_noindent" id="S7.SS0.SSSx1.p1">
+<p class="ltx_p" id="S7.SS0.SSSx1.p1.1">作者感谢 Kaiming He 在网络架构与训练相关方面的诸多见解与讨论。本论文部分由丰田研究所和亚马逊科学中心资助。作者还感谢斯坦福 ARMLab 的 Won Kyung Do 为本文中的实验提供了 DenseTact2. 0 模型。</p><p class="source-paragraph" lang="en">The authors thank Kaiming He for the many insights and discussions around network architecture and training. This paper is partially funded by Toyota Research Institute and Amazon Science Hub. The authors also thank Won Kyung Do from the Stanford ARMLab for providing a DenseTact2.0 for the experiments conducted in the paper.</p>
+</div>
+</section>
+</section>
+<section class="ltx_bibliography" id="bib">
+<h2 class="ltx_title ltx_title_bibliography">参考文献</h2>
+<ul class="ltx_biblist">
+<li class="ltx_bibitem" id="bib.bib1"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[1]</span>
+<span class="ltx_bibblock">
+R. Calandra, A. Owens, D. Jayaraman, J. Lin, W. Yuan, J. Malik, E. H. Adelson, and S. Levine, “More than a feeling: Learning to grasp and regrasp using vision and touch,” <em class="ltx_emph ltx_font_italic" id="bib.bib1.1">IEEE Robotics and Automation Letters</em>, vol. 3, no. 4, pp. 3300–3307, 2018.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib2"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[2]</span>
+<span class="ltx_bibblock">
+R. Calandra, A. Owens, M. Upadhyaya, W. Yuan, J. Lin, E. H. Adelson, and S. Levine, “The feeling of success: Does touch sensing help predict grasp outcomes?” <em class="ltx_emph ltx_font_italic" id="bib.bib2.1">arXiv preprint arXiv:1710.05512</em>, 2017.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib3"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[3]</span>
+<span class="ltx_bibblock">
+N. Sunil, S. Wang, Y. She, E. Adelson, and A. R. Garcia, “Visuotactile affordances for cloth manipulation with local control,” in <em class="ltx_emph ltx_font_italic" id="bib.bib3.1">Conference on Robot Learning</em>. PMLR, 2023, pp. 1596–1606.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib4"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[4]</span>
+<span class="ltx_bibblock">
+W. Yuan, Y. Mo, S. Wang, and E. Adelson, “Active clothing material perception using tactile sensing and deep learning,” 2018.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib5"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[5]</span>
+<span class="ltx_bibblock">
+S. Q. Liu and E. H. Adelson, “Gelsight fin ray: Incorporating tactile sensing into a soft compliant robotic gripper,” in <em class="ltx_emph ltx_font_italic" id="bib.bib5.1">2022 IEEE 5th International Conference on Soft Robotics (RoboSoft)</em>. IEEE, 2022, pp. 925–931.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib6"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[6]</span>
+<span class="ltx_bibblock">
+R. Girdhar, A. El-Nouby, Z. Liu, M. Singh, K. V. Alwala, A. Joulin, and I. Misra, “Imagebind: One embedding space to bind them all,” in <em class="ltx_emph ltx_font_italic" id="bib.bib6.1">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</em>, 2023, pp. 15 180–15 190.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib7"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[7]</span>
+<span class="ltx_bibblock">
+R. Bachmann, D. Mizrahi, A. Atanov, and A. Zamir, “Multimae: Multi-modal multi-task masked autoencoders,” 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib8"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[8]</span>
+<span class="ltx_bibblock">
+P.-Y. Huang, H. Xu, J. Li, A. Baevski, M. Auli, W. Galuba, F. Metze, and C. Feichtenhofer, “Masked autoencoders that listen,” in <em class="ltx_emph ltx_font_italic" id="bib.bib8.1">NeurIPS</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib9"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[9]</span>
+<span class="ltx_bibblock">
+L. Wang, J. Zhao, Y. Du, E. H. Adelson, and R. Tedrake, “Poco: Policy composition from and for heterogeneous robot learning,” <em class="ltx_emph ltx_font_italic" id="bib.bib9.1">arXiv preprint arXiv:2402.02511</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib10"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[10]</span>
+<span class="ltx_bibblock">
+R. Shah, R. Martín-Martín, and Y. Zhu, “Mutex: Learning unified policies from multimodal task specifications,” <em class="ltx_emph ltx_font_italic" id="bib.bib10.1">arXiv preprint arXiv:2309.14320</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib11"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[11]</span>
+<span class="ltx_bibblock">
+Z. Si, G. Zhang, Q. Ben, B. Romero, Z. Xian, C. Liu, and C. Gan, “Difftactile: A physics-based differentiable tactile simulator for contact-rich robotic manipulation,” <em class="ltx_emph ltx_font_italic" id="bib.bib11.1">arXiv preprint arXiv:2403.08716</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib12"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[12]</span>
+<span class="ltx_bibblock">
+S. Dong, W. Yuan, and E. H. Adelson, “Improved gelsight tactile sensor for measuring geometry and slip,” in <em class="ltx_emph ltx_font_italic" id="bib.bib12.1">2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>. IEEE, Sept. 2017. [Online]. Available: <a class="ltx_ref ltx_url" href="http://dx.doi.org/10.1109/IROS.2017.8202149" title="">http://dx.doi.org/10.1109/IROS.2017.8202149</a>
+</span></li>
+<li class="ltx_bibitem" id="bib.bib13"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[13]</span>
+<span class="ltx_bibblock">
+S. Wang, Y. She, B. Romero, and E. Adelson, “Gelsight wedge: Measuring high-resolution 3d contact geometry with a compact robot finger,” in <em class="ltx_emph ltx_font_italic" id="bib.bib13.1">2021 IEEE International Conference on Robotics and Automation (ICRA)</em>. IEEE, 2021, pp. 6468–6475.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib14"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[14]</span>
+<span class="ltx_bibblock">
+W. K. Do and M. Kennedy, “Densetact: Optical tactile sensor for dense shape reconstruction,” in <em class="ltx_emph ltx_font_italic" id="bib.bib14.1">2022 International Conference on Robotics and Automation (ICRA)</em>. IEEE, 2022, pp. 6188–6194.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib15"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[15]</span>
+<span class="ltx_bibblock">
+J. Li, S. Dong, and E. Adelson, “Slip detection with combined tactile and visual information,” in <em class="ltx_emph ltx_font_italic" id="bib.bib15.1">2018 IEEE International Conference on Robotics and Automation (ICRA)</em>. IEEE, 2018, pp. 7772–7777.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib16"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[16]</span>
+<span class="ltx_bibblock">
+W. Yuan, R. Li, M. A. Srinivasan, and E. H. Adelson, “Measurement of shear and slip with a gelsight tactile sensor,” in <em class="ltx_emph ltx_font_italic" id="bib.bib16.1">2015 IEEE International Conference on Robotics and Automation (ICRA)</em>. IEEE, 2015, pp. 304–311.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib17"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[17]</span>
+<span class="ltx_bibblock">
+A. Yamaguchi and C. G. Atkeson, “Combining finger vision and optical tactile sensing: Reducing and handling errors while cutting vegetables,” in <em class="ltx_emph ltx_font_italic" id="bib.bib17.1">2016 IEEE-RAS 16th International Conference on Humanoid Robots (Humanoids)</em>. IEEE, 2016, pp. 1045–1051.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib18"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[18]</span>
+<span class="ltx_bibblock">
+M. H. Tippur and E. H. Adelson, “Gelsight360: An omnidirectional camera-based tactile sensor for dexterous robotic manipulation,” in <em class="ltx_emph ltx_font_italic" id="bib.bib18.1">2023 IEEE International Conference on Soft Robotics (RoboSoft)</em>. IEEE, 2023, pp. 1–8.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib19"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[19]</span>
+<span class="ltx_bibblock">
+J. Zhao and E. H. Adelson, “Gelsight svelte: A human finger-shaped single-camera tactile robot finger with large sensing coverage and proprioceptive sensing,” in <em class="ltx_emph ltx_font_italic" id="bib.bib19.1">2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>. IEEE, 2023, pp. 8979–8984.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib20"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[20]</span>
+<span class="ltx_bibblock">
+H. Sun, K. J. Kuchenbecker, and G. Martius, “A soft thumb-sized vision-based sensor with accurate all-round force perception,” <em class="ltx_emph ltx_font_italic" id="bib.bib20.1">Nature Machine Intelligence</em>, vol. 4, no. 2, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib21"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[21]</span>
+<span class="ltx_bibblock">
+S. Q. Liu, Y. Ma, and E. H. Adelson, “Gelsight baby fin ray: A compact, compliant, flexible finger with high-resolution tactile sensing,” in <em class="ltx_emph ltx_font_italic" id="bib.bib21.1">2023 IEEE International Conference on Soft Robotics (RoboSoft)</em>. IEEE, 2023, pp. 1–8.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib22"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[22]</span>
+<span class="ltx_bibblock">
+Y. Ma, A. Agarwal, S. Q. Liu, W. Yuan, and E. H. Adelson, “Scalable simulation-guided compliant tactile finger design,” in <em class="ltx_emph ltx_font_italic" id="bib.bib22.1">2024 IEEE 7th International Conference on Soft Robotics (RoboSoft)</em>. IEEE, 2024, pp. 1068–1074.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib23"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[23]</span>
+<span class="ltx_bibblock">
+Y. Ma, J. Zhao, and E. Adelson, “Gellink: A compact multi-phalanx finger with vision-based tactile sensing and proprioception,” <em class="ltx_emph ltx_font_italic" id="bib.bib23.1">arXiv preprint arXiv:2403.14887</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib24"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[24]</span>
+<span class="ltx_bibblock">
+F. Zhao, B. Huang, M. Li, M. Li, Z. Fu, Z. Lei, and M. Li, “A novel tactile palm for robotic object manipulation,” 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib25"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[25]</span>
+<span class="ltx_bibblock">
+J. Jiang, G. Cao, D. F. Gomes, and S. Luo, “Vision-guided active tactile perception for crack detection and reconstruction,” in <em class="ltx_emph ltx_font_italic" id="bib.bib25.1">2021 29th Mediterranean Conference on Control and Automation (MED)</em>. IEEE, 2021, pp. 930–936.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib26"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[26]</span>
+<span class="ltx_bibblock">
+Y. Li, J.-Y. Zhu, R. Tedrake, and A. Torralba, “Connecting touch and vision via cross-modal prediction,” in <em class="ltx_emph ltx_font_italic" id="bib.bib26.1">The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</em>, June 2019.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib27"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[27]</span>
+<span class="ltx_bibblock">
+L. Fu, G. Datta, H. Huang, W. C.-H. Panitch, J. Drake, J. Ortiz, M. Mukadam, M. Lambeta, R. Calandra, and K. Goldberg, “A touch, vision, and language dataset for multimodal alignment,” <em class="ltx_emph ltx_font_italic" id="bib.bib27.1">arXiv preprint arXiv:2402.13232</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib28"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[28]</span>
+<span class="ltx_bibblock">
+S. Suresh, Z. Si, J. G. Mangelson, W. Yuan, and M. Kaess, “Efficient shape mapping through dense touch and vision,” <em class="ltx_emph ltx_font_italic" id="bib.bib28.1">arXiv preprint arXiv:2109.09884</em>, 2021.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib29"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[29]</span>
+<span class="ltx_bibblock">
+F. Yang, C. Ma, J. Zhang, J. Zhu, W. Yuan, and A. Owens, “Touch and go: Learning from human-collected vision and touch,” <em class="ltx_emph ltx_font_italic" id="bib.bib29.1">arXiv preprint arXiv:2211.12498</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib30"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[30]</span>
+<span class="ltx_bibblock">
+R. Gao, Z. Si, Y.-Y. Chang, S. Clarke, J. Bohg, L. Fei-Fei, W. Yuan, and J. Wu, “Objectfolder 2.0: A multisensory object dataset for sim2real transfer,” in <em class="ltx_emph ltx_font_italic" id="bib.bib30.1">Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</em>, 2022, pp. 10 598–10 608.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib31"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[31]</span>
+<span class="ltx_bibblock">
+J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei, “Imagenet: A large-scale hierarchical image database,” in <em class="ltx_emph ltx_font_italic" id="bib.bib31.1">2009 IEEE conference on computer vision and pattern recognition</em>. Ieee, 2009, pp. 248–255.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib32"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[32]</span>
+<span class="ltx_bibblock">
+K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for image recognition,” in <em class="ltx_emph ltx_font_italic" id="bib.bib32.1">Proceedings of the IEEE conference on computer vision and pattern recognition</em>, 2016, pp. 770–778.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib33"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[33]</span>
+<span class="ltx_bibblock">
+A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell, P. Mishkin, J. Clark, <em class="ltx_emph ltx_font_italic" id="bib.bib33.1">et al.</em>, “Learning transferable visual models from natural language supervision,” in <em class="ltx_emph ltx_font_italic" id="bib.bib33.2">International conference on machine learning</em>. PMLR, 2021, pp. 8748–8763.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib34"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[34]</span>
+<span class="ltx_bibblock">
+H. Li, Y. Zhang, J. Zhu, S. Wang, M. A. Lee, H. Xu, E. Adelson, L. Fei-Fei, R. Gao, and J. Wu, “See, hear, and feel: Smart sensory fusion for robotic manipulation,” <em class="ltx_emph ltx_font_italic" id="bib.bib34.1">arXiv preprint arXiv:2212.03858</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib35"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[35]</span>
+<span class="ltx_bibblock">
+H. Qi, B. Yi, S. Suresh, M. Lambeta, Y. Ma, R. Calandra, and J. Malik, “General in-hand object rotation with vision and touch,” in <em class="ltx_emph ltx_font_italic" id="bib.bib35.1">Conference on Robot Learning</em>. PMLR, 2023, pp. 2549–2564.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib36"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[36]</span>
+<span class="ltx_bibblock">
+L. Wang, X. Chen, J. Zhao, and K. He, “Scaling proprioceptive-visual learning with heterogeneous pre-trained transformers,” <em class="ltx_emph ltx_font_italic" id="bib.bib36.1">arXiv</em>, 2024. [Online]. Available: <a class="ltx_ref ltx_url" href="https://arxiv.org/abs/2409.20537" title="">https://arxiv.org/abs/2409.20537</a>
+</span></li>
+<li class="ltx_bibitem" id="bib.bib37"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[37]</span>
+<span class="ltx_bibblock">
+J. Zhao, M. Bauza, and E. H. Adelson, “Fingerslam: Closed-loop unknown object localization and reconstruction from visuo-tactile feedback,” in <em class="ltx_emph ltx_font_italic" id="bib.bib37.1">2023 IEEE International Conference on Robotics and Automation (ICRA)</em>. IEEE, 2023, pp. 8033–8039.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib38"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[38]</span>
+<span class="ltx_bibblock">
+V. Dave, F. Lygerakis, and E. Rueckert, “Multimodal visual-tactile representation learning through self-supervised contrastive pre-training,” <em class="ltx_emph ltx_font_italic" id="bib.bib38.1">arXiv preprint arXiv:2401.12024</em>, 2024.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib39"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[39]</span>
+<span class="ltx_bibblock">
+Y. Chen, M. Van der Merwe, A. Sipos, and N. Fazeli, “Visuo-tactile transformers for manipulation,” in <em class="ltx_emph ltx_font_italic" id="bib.bib39.1">6th Annual Conference on Robot Learning</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib40"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[40]</span>
+<span class="ltx_bibblock">
+T. W. developer team, “Webdataset,” <a class="ltx_ref ltx_url" href="https://github.com/webdataset/webdataset" title="">https://github.com/webdataset/webdataset</a>, 2020, [Online].
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib41"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[41]</span>
+<span class="ltx_bibblock">
+A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai, T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly, <em class="ltx_emph ltx_font_italic" id="bib.bib41.1">et al.</em>, “An image is worth 16x16 words: Transformers for image recognition at scale,” <em class="ltx_emph ltx_font_italic" id="bib.bib41.2">arXiv preprint arXiv:2010.11929</em>, 2020.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib42"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[42]</span>
+<span class="ltx_bibblock">
+K. He, X. Chen, S. Xie, Y. Li, P. Dollár, and R. Girshick, “Masked autoencoders are scalable vision learners,” in <em class="ltx_emph ltx_font_italic" id="bib.bib42.1">Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</em>, 2022, pp. 16 000–16 009.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib43"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[43]</span>
+<span class="ltx_bibblock">
+Y. Pang, W. Wang, F. E. Tay, W. Liu, Y. Tian, and L. Yuan, “Masked autoencoders for point cloud self-supervised learning,” in <em class="ltx_emph ltx_font_italic" id="bib.bib43.1">European conference on computer vision</em>. Springer, 2022, pp. 604–621.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib44"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[44]</span>
+<span class="ltx_bibblock">
+M. Lambeta, P.-W. Chou, S. Tian, B. Yang, B. Maloon, V. R. Most, D. Stroud, R. Santos, A. Byagowi, G. Kammerer, <em class="ltx_emph ltx_font_italic" id="bib.bib44.1">et al.</em>, “Digit: A novel design for a low-cost compact high-resolution tactile sensor with application to in-hand manipulation,” <em class="ltx_emph ltx_font_italic" id="bib.bib44.2">IEEE Robotics and Automation Letters</em>, vol. 5, no. 3, pp. 3838–3845, 2020.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib45"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[45]</span>
+<span class="ltx_bibblock">
+G. Inc., “GelSight Mini,” <a class="ltx_ref ltx_url" href="https://www.gelsight.com/gelsightmini/" title="">https://www.gelsight.com/gelsightmini/</a>, 2022, [Online].
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib46"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[46]</span>
+<span class="ltx_bibblock">
+M. Eltaib and J. Hewit, “Tactile sensing technology for minimal access surgery—-a review,” <em class="ltx_emph ltx_font_italic" id="bib.bib46.1">Mechatronics</em>, vol. 13, no. 10, pp. 1163–1177, 2003.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib47"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[47]</span>
+<span class="ltx_bibblock">
+S. Schostek, C.-N. Ho, D. Kalanovic, and M. O. Schurr, “Artificial tactile sensing in minimally invasive surgery–a new technical approach,” <em class="ltx_emph ltx_font_italic" id="bib.bib47.1">Minimally invasive therapy &amp; allied technologies</em>, vol. 15, no. 5, pp. 296–304, 2006.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib48"><span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">[48]</span>
+<span class="ltx_bibblock">
+S. Dong, D. K. Jha, D. Romeres, S. Kim, D. Nikovski, and A. Rodriguez, “Tactile-rl for insertion: Generalization to objects of unknown geometry,” 2021.
+
+</span></li>
+</ul>
+</section>
+
+<section class="ltx_appendix" id="A1">
+<h2 class="ltx_title ltx_title_appendix">附录 A 附录</h2>
+<section class="ltx_subsection" id="A1.SS1">
+<h3 class="ltx_title ltx_title_subsection">A. 1 注意力图的可视化</h3>
+<figure class="ltx_figure" id="A1.F5">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_figure_panel ltx_img_landscape" height="151" id="A1.F5.g1" loading="lazy" src="../media/2406.13640/attn_comb.png" style="aspect-ratio:476/151;" width="476"/></div></div>
+<figcaption class="ltx_caption ltx_centering">图 5：预训练模型 T3 的编码器与主干网络自注意力权重可视化图。</figcaption><div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1">
+<p class="ltx_p ltx_figure_panel ltx_align_center" id="A1.F5.4">顶部：原始触觉图像。中间：作为掩模的原始图像上的编码器注意力权重。底部：作为掩模的原始图像上的主干注意力权重。</p><p class="source-paragraph" lang="en">Top: the original tactile images.
+Middle: encoder attention weights applied on the original images as masks.
+Bottom: trunk attention weights applied on the original images as masks</p></div></div>
+</figure>
+<div class="ltx_para ltx_noindent" id="A1.SS1.p1">
+<p class="ltx_p" id="A1.SS1.p1.1">我们在所有编码器及主干网络中，每个自注意力层的 <math alttext="i" class="ltx_Math" display="inline" id="A1.SS1.p1.m2" intent=":literal"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> 层处计算注意力权重 <math alttext="attn_{i}=softmax(\frac{Q\cdot K}{scale})" class="ltx_Math" display="inline" id="A1.SS1.p1.m1" intent=":literal"><semantics><mrow><mrow><mi>a</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>n</mi><mi>i</mi></msub></mrow><mo>=</mo><mrow><mi>s</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>f</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>m</mi><mo lspace="0em" rspace="0em">​</mo><mi>a</mi><mo lspace="0em" rspace="0em">​</mo><mi>x</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mfrac><mrow><mi>Q</mi><mo lspace="0.222em" rspace="0.222em">⋅</mo><mi>K</mi></mrow><mrow><mi>s</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi><mo lspace="0em" rspace="0em">​</mo><mi>a</mi><mo lspace="0em" rspace="0em">​</mo><mi>l</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi></mrow></mfrac><mo stretchy="false">)</mo></mrow></mrow></mrow><annotation encoding="application/x-tex">attn_{i}=softmax(\frac{Q\cdot K}{scale})</annotation></semantics></math>。随后，我们获得一个联合注意力图，该图由每个编码器或主干中所有层的注意力权重相乘得到，即 <math alttext="map=\prod_{i}attn_{i}" class="ltx_Math" display="inline" id="A1.SS1.p1.m3" intent=":literal"><semantics><mrow><mrow><mi>m</mi><mo lspace="0em" rspace="0em">​</mo><mi>a</mi><mo lspace="0em" rspace="0em">​</mo><mi>p</mi></mrow><mo rspace="0.111em">=</mo><mrow><msub><mo>∏</mo><mi>i</mi></msub><mrow><mi>a</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>n</mi><mi>i</mi></msub></mrow></mrow></mrow><annotation encoding="application/x-tex">map=\prod_{i}attn_{i}</annotation></semantics></math>。该联合注意力图随后被归一化，并作为掩码应用于原始触觉图像上。一些触觉图像以及使用编码器掩码和主干掩码处理后的结果在图 <a class="ltx_ref" href="#A1.F5" title="Figure 5 ‣ A.1 Visualization of attention maps ‣ Appendix A Appendix ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">5</span></a> 中得以可视化。从定性角度来看，我们观察到编码器的自注意力机制突出了接触物体的区域，而主干的自注意力则更为分散，覆盖其他特征，如传感器上的标记。这一结果表明，编码器更关注与传感器无关的区域，即接触过程中的“热点”区域，而主干则同时关注特定于传感器的区域。</p><p class="source-paragraph" lang="en">We calculate the attention weights a ​ t ​ t ​ n i = s ​ o ​ f ​ t ​ m ​ a ​ x ​ ( Q ⋅ K s ​ c ​ a ​ l ​ e ) at layer i of each self-attention layers for all encoders and the trunk.
+We then obtain a joint attention map, calculated as the product of the attention weights of all layers within each encoder or trunk, m ​ a ​ p = ∏ i a ​ t ​ t ​ n i .
+This joint attention map is then normalized and applied on the original tactile images as masks.
+A few tactile images as well as them applied with encoder masks and trunk masks are visualized in Fig. 5 .
+Qualitatively, we observe that the encoder self-attentions highlight the region of the contact object, whereas the trunk self-attentions are more spread out and they cover other features like the markers on a sensor.
+This result seems to show that the encoder is more focused on the sensor agnostic regions, i.e. the "hot" regions of the contact, while the trunk also attends to sensor specific areas.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="A1.SS2">
+<h3 class="ltx_title ltx_title_subsection">A. 2 在 FoTa 数据集中汇总的公共数据集</h3>
+<div class="ltx_para ltx_noindent" id="A1.SS2.p1">
+<p class="ltx_p" id="A1.SS2.p1.1">FoTa 数据集并未修改各基础数据集中的图像或标签。对每一份数据都进行了预处理，以将触觉图像编码进去 <math alttext=".jpg" class="ltx_math_unparsed" display="inline" id="A1.SS2.p1.m1" intent=":literal"><semantics><mrow><mo rspace="0.167em">.</mo><mi>j</mi><mi>p</mi><mi>g</mi></mrow><annotation encoding="application/x-tex">.jpg</annotation></semantics></math> 对图片进行格式化处理，并将所有标签提取出来 <math alttext=".json" class="ltx_math_unparsed" display="inline" id="A1.SS2.p1.m2" intent=":literal"><semantics><mrow><mo rspace="0.167em">.</mo><mi>j</mi><mi>s</mi><mi>o</mi><mi>n</mi></mrow><annotation encoding="application/x-tex">.json</annotation></semantics></math> 格式字典。在其中一个公共数据集中的 VisGel <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib26" title="">26</a>]</cite> ，所包含的触觉图像中超过一半是“平面”图像，即在没有接触的情况下捕获的触觉图像。我们对 VisGel 进行了子采样处理，以减少平面图像的数量。以图像帧为单位 <math alttext="I_{i}" class="ltx_Math" display="inline" id="A1.SS2.p1.m3" intent=":literal"><semantics><msub><mi>I</mi><mi>i</mi></msub><annotation encoding="application/x-tex">I_{i}</annotation></semantics></math> 以及一个真正的平面框架 <math alttext="I_{f}" class="ltx_Math" display="inline" id="A1.SS2.p1.m4" intent=":literal"><semantics><msub><mi>I</mi><mi>f</mi></msub><annotation encoding="application/x-tex">I_{f}</annotation></semantics></math> 不同图像的拉普拉斯方差 <math alttext="\sigma_{i}" class="ltx_Math" display="inline" id="A1.SS2.p1.m5" intent=":literal"><semantics><msub><mi>σ</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\sigma_{i}</annotation></semantics></math> 根据方程式进行计算 <a class="ltx_ref" href="#A1.E2" title="In A.2 Public datasets aggregated in the FoTa dataset ‣ Appendix A Appendix ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">2</span></a> . 然后我们移除所有图像，这些图像的是 <math alttext="\sigma&lt;\sigma_{t}" class="ltx_Math" display="inline" id="A1.SS2.p1.m6" intent=":literal"><semantics><mrow><mi>σ</mi><mo>&lt;</mo><msub><mi>σ</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">\sigma&lt;\sigma_{t}</annotation></semantics></math> . 我们通过实证研究选择了 <math alttext="\sigma_{t}=4.24" class="ltx_Math" display="inline" id="A1.SS2.p1.m7" intent=":literal"><semantics><mrow><msub><mi>σ</mi><mi>t</mi></msub><mo>=</mo><mn>4.24</mn></mrow><annotation encoding="application/x-tex">\sigma_{t}=4.24</annotation></semantics></math> 用于去除大多数平面图像。</p><p class="source-paragraph" lang="en">The FoTa dataset does not modify the images or labels from the constituent datasets.
+Pre-processing was performed on each of them to encode the tactile images into . j p g format pictures and to extract all labels into . j s o n format dictionaries.
+In one of the constituent public datasets, VisGel [ 26 ] , more than half of the included tactile images are "flat" images, i.e. tactile images captured when there is no contact.
+We sub-sampled VisGel to reduce the amount of flat images.
+With an image frame I i and a true flat frame I f , the variance of Laplacian of the different image σ i is calculated with Eqn. 2 .
+We then remove all images whose σ &lt; σ t .
+We empirically chose σ t = 4.24 to remove most flat images.</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="A1.E2">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="\sigma_{i}=\sqrt{Var(Laplacian(I_{i}-I_{f}))},i\in\{1...N\}\\
+" class="ltx_Math" display="block" id="A1.E2.m1" intent=":literal"><semantics><mrow><mrow><msub><mi>σ</mi><mi>i</mi></msub><mo>=</mo><msqrt><mrow><mi>V</mi><mo lspace="0em" rspace="0em">​</mo><mi>a</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mrow><mi>L</mi><mo lspace="0em" rspace="0em">​</mo><mi>a</mi><mo lspace="0em" rspace="0em">​</mo><mi>p</mi><mo lspace="0em" rspace="0em">​</mo><mi>l</mi><mo lspace="0em" rspace="0em">​</mo><mi>a</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi><mo lspace="0em" rspace="0em">​</mo><mi>i</mi><mo lspace="0em" rspace="0em">​</mo><mi>a</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mrow><msub><mi>I</mi><mi>i</mi></msub><mo>−</mo><msub><mi>I</mi><mi>f</mi></msub></mrow><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">)</mo></mrow></mrow></msqrt></mrow><mo>,</mo><mrow><mi>i</mi><mo>∈</mo><mrow><mo stretchy="false">{</mo><mrow><mn>1</mn><mo lspace="0em" rspace="0em">​</mo><mi mathvariant="normal">…</mi><mo lspace="0em" rspace="0em">​</mo><mi>N</mi></mrow><mo stretchy="false">}</mo></mrow></mrow></mrow><annotation encoding="application/x-tex">\sigma_{i}=\sqrt{Var(Laplacian(I_{i}-I_{f}))},i\in\{1...N\}\\
+</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(2)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="A1.SS2.p1.2">请注意，我们的目标并非完全消除平面图像，因为平面图像也包含重要的信息，例如传感器几何结构与照明设计。FOTa中汇总数据集的统计数据列于表 <a class="ltx_ref" href="#A1.T2" title="Table 2 ‣ A.3 Data format ‣ Appendix A Appendix ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">2</span></a> 中。</p><p class="source-paragraph" lang="en">Note that we do not aim to eliminate flat images entirely as flat images also contain important information such as the sensor geometry and the illumination design.
+Statistics of the aggregated datasets in FoTa are listed in Tab. 2 .</p>
+</div>
+</section>
+<section class="ltx_subsection" id="A1.SS3">
+<h3 class="ltx_title ltx_title_subsection">A. 3 数据格式</h3>
+<div class="ltx_para ltx_noindent" id="A1.SS3.p1">
+<p class="ltx_p" id="A1.SS3.p1.1">FOTa 的每个组成数据集均被划分为一个训练数据集和一个验证数据集，且每个数据集均以预分片 WebDataset <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib40" title="">40</a>]</cite> 格式进行打包。FOTa 数据集的每个分片包含多达 <math alttext="10,000" class="ltx_Math" display="inline" id="A1.SS3.p1.m1" intent=":literal"><semantics><mn>10,000</mn><annotation encoding="application/x-tex">10,000</annotation></semantics></math> 个数据点，这些数据点被封装在 .tar 压缩文件中，其中每个数据点由一张 .jpg 触觉图像和一份包含不同任务标签的 .json 文件组成。此外，还提供了实用脚本，用于向 FoTa 数据集添加新数据或修改相关公共数据集的预处理流程。</p><p class="source-paragraph" lang="en">Each constituent dataset of FoTa is split into one train dataset and one val dataset, and each of them is packaged in a pre-sharded WebDataset [ 40 ] format.
+Each shard of the FoTa dataset contains up to 10,000 data points packed in one .tar archive, where each data point is composed of one .jpg tactile image and one .json file for various task labels.
+Utility scripts are also provided to add new data to the FoTa dataset or to modify the pre-processing procedures on the constituent public datasets.</p>
+</div>
+<figure class="ltx_table" id="A1.T1">
+<figcaption class="ltx_caption">表 1：网络规模</figcaption>
+<div class="table-scroll"><table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle" id="A1.T1.2">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="A1.T1.2.1">
+<td class="ltx_td ltx_border_tt" id="A1.T1.2.1.1"></td>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" id="A1.T1.2.1.2"><math alttext="D_{enc}" class="ltx_Math" display="inline" id="A1.T1.m1" intent=":literal"><semantics><msub><mi>D</mi><mrow><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi></mrow></msub><annotation encoding="application/x-tex">D_{enc}</annotation></semantics></math></th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" id="A1.T1.2.1.3"><math alttext="H_{enc}" class="ltx_Math" display="inline" id="A1.T1.m2" intent=":literal"><semantics><msub><mi>H</mi><mrow><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi></mrow></msub><annotation encoding="application/x-tex">H_{enc}</annotation></semantics></math></th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" id="A1.T1.2.1.4"><math alttext="L_{enc}" class="ltx_Math" display="inline" id="A1.T1.m3" intent=":literal"><semantics><msub><mi>L</mi><mrow><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi></mrow></msub><annotation encoding="application/x-tex">L_{enc}</annotation></semantics></math></th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" id="A1.T1.2.1.5"><math alttext="L_{tru}" class="ltx_Math" display="inline" id="A1.T1.m4" intent=":literal"><semantics><msub><mi>L</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi></mrow></msub><annotation encoding="application/x-tex">L_{tru}</annotation></semantics></math></th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" id="A1.T1.2.1.6">参数包括所有编码器与解码器</th></tr>
+<tr class="ltx_tr" id="A1.T1.2.2">
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T1.2.2.1">T3 -tiny</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T1.2.2.2">192</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T1.2.2.3">3</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T1.2.2.4">3</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T1.2.2.5">9</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T1.2.2.6">12M</td></tr>
+<tr class="ltx_tr" id="A1.T1.2.3">
+<td class="ltx_td ltx_align_center" id="A1.T1.2.3.1">T3 -小型</td>
+<td class="ltx_td ltx_align_center" id="A1.T1.2.3.2">384</td>
+<td class="ltx_td ltx_align_center" id="A1.T1.2.3.3">6</td>
+<td class="ltx_td ltx_align_center" id="A1.T1.2.3.4">3</td>
+<td class="ltx_td ltx_align_center" id="A1.T1.2.3.5">9</td>
+<td class="ltx_td ltx_align_center" id="A1.T1.2.3.6">45M</td></tr>
+<tr class="ltx_tr" id="A1.T1.2.4">
+<td class="ltx_td ltx_align_center" id="A1.T1.2.4.1">T3 -中等水平</td>
+<td class="ltx_td ltx_align_center" id="A1.T1.2.4.2">768</td>
+<td class="ltx_td ltx_align_center" id="A1.T1.2.4.3">12</td>
+<td class="ltx_td ltx_align_center" id="A1.T1.2.4.4">3</td>
+<td class="ltx_td ltx_align_center" id="A1.T1.2.4.5">9</td>
+<td class="ltx_td ltx_align_center" id="A1.T1.2.4.6">174M</td></tr>
+<tr class="ltx_tr" id="A1.T1.2.5">
+<td class="ltx_td ltx_align_center ltx_border_bb" id="A1.T1.2.5.1">T3 -大型</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="A1.T1.2.5.2">1024</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="A1.T1.2.5.3">8</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="A1.T1.2.5.4">3</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="A1.T1.2.5.5">9</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="A1.T1.2.5.6">308M</td></tr>
+</tbody>
+</table></div>
+</figure>
+<figure class="ltx_table" id="A1.T2">
+<figcaption class="ltx_caption">表 2：数据集统计信息</figcaption>
+<div class="table-scroll"><table class="ltx_tabular ltx_centering ltx_align_middle" id="A1.T2.2">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="A1.T2.2.1">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_tt" id="A1.T2.2.1.1">来源</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_tt" id="A1.T2.2.1.2">对象</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_tt" id="A1.T2.2.1.3">标签</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_tt" id="A1.T2.2.1.4">传感器</td>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="A1.T2.2.1.5">标记</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_tt" id="A1.T2.2.1.6">尺寸</td></tr>
+<tr class="ltx_tr" id="A1.T2.2.2">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.2.1">VisGel <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib26" title="">26</a>]</cite> -small*</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.2.2">家庭用品与玩具。原始数据集中的平面图像已被筛选处理。</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.2.3">差异图像的拉普拉斯方差</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.2.4">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.2.4.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.2.4.1.1">GelSight’17 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib12" title="">12</a>]</cite></span>
+</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.2.5">是的</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.2.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.2.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.2.6.1.1">726,740</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.3">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.3.1">TVL <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib27" title="">27</a>]</cite></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.3.2">家庭物品</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.3.3">语义对象描述</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.3.4">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.3.4.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.3.4.1.1">DIGIT <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib44" title="">44</a>]</cite></span>
+</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.3.5">No</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.3.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.3.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.3.6.1.1">82,463</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.4">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.4.1">短暂互动策略 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib29" title="">29</a>]</cite></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.4.2">自然物体</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.4.3">对象 ID</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.4.4">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.4.4.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.4.4.1.1">GelSight’17 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib12" title="">12</a>]</cite></span>
+</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.4.5">是的</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.4.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.4.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.4.6.1.1">262,082</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.5">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.5.1">Calandra’ 17 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib2" title="">2</a>]</cite></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.5.2">家庭物品</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.5.3">物体ID，抓取结果</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.5.4">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.5.4.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.5.4.1.1">GelSight’17 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib12" title="">12</a>]</cite></span>
+</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.5.5">是的</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.5.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.5.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.5.6.1.1">24,118</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.6">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.6.1">元 18 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib4" title="">4</a>]</cite></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.6.2">服装</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.6.3">11 属性，如平滑性、柔软性</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.6.4">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.6.4.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.6.4.1.1">GelSight’17 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib12" title="">12</a>]</cite></span>
+</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.6.5">是的</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.6.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.6.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.6.6.1.1">494,655</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.7">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.7.1">YCB-Sight <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib28" title="">28</a>]</cite></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.7.2">YCB对象集中的家庭物品</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.7.3">对象 ID，6 D 个姿态</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.7.4">GelSight 变体号 1 与 <br class="ltx_break"/> 仿真</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.7.5">No</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.7.6">480 真实 <br class="ltx_break"/> 1,800 模拟</td></tr>
+<tr class="ltx_tr" id="A1.T2.2.8">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.8.1">ObjectFolder-真实 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib30" title="">30</a>]</cite></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.8.2">家庭物品</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.8.3">对象，材料编号</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.8.4">GelSight 变体编号 2</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.8.5">No</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.8.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.8.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.8.6.1.1">1,417,600</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.9">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.9.1">Tippur’ 23 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib18" title="">18</a>]</cite></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.9.2">探测球</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.9.3">3 D 姿态</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.9.4">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.9.4.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.9.4.1.1">GelSight 360</span>
+</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.9.5">No</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.9.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.9.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.9.6.1.1">13,341</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.10">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.10.1">内部收集的新数据</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.10.2">工具对象</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.10.3">对象 ID 6 有 D 个实例</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.10.4">GelSight 楔形物 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib13" title="">13</a>]</cite> 本体</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.10.5">No</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.10.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.10.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.10.6.1.1">10,000</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.11">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.11.1"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.11.2"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.11.3"></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.11.4">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.11.4.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.11.4.1.1">GelSight Mini <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib45" title="">45</a>]</cite></span>
+</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.11.5">是或否</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.11.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.11.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.11.6.1.1">24,000</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.12">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.12.1"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.12.2"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.12.3"></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.12.4">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.12.4.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.12.4.1.1">DIGIT <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib44" title="">44</a>]</cite></span>
+</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.12.5">No</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.12.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.12.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.12.6.1.1">4,000</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.13">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.13.1"></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.13.2">刻有字母的探针</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.13.3">对象 ID 3 有 D 个实例</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.13.4">GelSight 楔形物 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib13" title="">13</a>]</cite> 本体</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.13.5">No</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.13.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.13.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.13.6.1.1">3,516</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.14">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.14.1"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.14.2"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.14.3"></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.14.4">GelSight 金融 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib21" title="">21</a>]</cite> <br class="ltx_break"/> 2 变体</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.14.5">No</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.14.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.14.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.14.6.1.1">6,432</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.15">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.15.1"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.15.2"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.15.3"></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.15.4">GelSight Svelte <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib19" title="">19</a>]</cite></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.15.5">No</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.15.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.15.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.15.6.1.1">5,335</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.16">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.16.1"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.16.2"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.16.3"></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.16.4">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.16.4.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.16.4.1.1">DenseTact2.0 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib14" title="">14</a>]</cite></span>
+</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.16.5">是的</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.16.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.16.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.16.6.1.1">3,531</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.17">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.17.1"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.17.2"></td>
+<td class="ltx_td ltx_align_left ltx_align_top" id="A1.T2.2.17.3"></td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.17.4">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.17.4.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.17.4.1.1">GelSight Mini <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib45" title="">45</a>]</cite></span>
+</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="A1.T2.2.17.5">是的</td>
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A1.T2.2.17.6">
+<span class="ltx_inline-block ltx_align_top" id="A1.T2.2.17.6.1" style="width:42.7pt;">
+<span class="ltx_p" id="A1.T2.2.17.6.1.1">3,359</span>
+</span></td></tr>
+<tr class="ltx_tr" id="A1.T2.2.18">
+<td class="ltx_td ltx_align_right ltx_align_top ltx_border_tt" colspan="6" id="A1.T2.2.18.1">VisGel-small 经过从原始 VisGel 中下采样处理，且大部分平面图像被去除。</td></tr>
+</tbody>
+</table></div>
+</figure>
+</section>
+<section class="ltx_subsection" id="A1.SS4">
+<h3 class="ltx_title ltx_title_subsection">A. 4 数据收集平台</h3>
+<section class="ltx_subsubsection" id="A1.SS4.SSS1">
+<h4 class="ltx_title ltx_title_subsubsection">A. 4.1 7 - DoF 机器人平台</h4>
+<div class="ltx_para ltx_noindent" id="A1.SS4.SSS1.p1">
+<p class="ltx_p" id="A1.SS4.SSS1.p1.1">我们构建了一个机器人数据收集平台，该平台配备 7 - DoF 规格的 Franka Emika 机器人臂，其末端执行器上安装了一个定制设计的平行爪夹爪。平行爪夹爪的末端处安装有两个触觉传感器，且相机框架与末端执行器框架之间的变换关系被精确测量。在触觉数据收集过程中，一个被假定为足够坚固以便牢固夹持的测试物体被固定在机器人的工作台上已知位置。机器人以所有 6 维度上的随机运动（平移和旋转）来探索该物体，并在每一步收集来自两个传感器的触觉图像以及机器人的姿态信息。</p><p class="source-paragraph" lang="en">We built a robotic data collection platform with a 7-DoF Franka Emika robotic arm with a custom-made parallel jaw gripper attached at the end-effector.
+Two tactile sensors are attached at the tips of the parallel jaw gripper, and the transformation between the camera frame and the end-effector frame is accurately measured.
+During tactile data collection, a test object, which is assumed to be rigid enough to be clamped firmly, is fixed on the workbench of the robot at a known location.
+The robot explores the object with random movements on all 6 dimensions (translation and rotation), and tactile images from both sensors as well as the robot pose are collected at each step.</p>
+</div>
+</section>
+<section class="ltx_subsubsection" id="A1.SS4.SSS2">
+<h4 class="ltx_title ltx_title_subsubsection">A. 4.2 3 - DoF 龙门平台</h4>
+<div class="ltx_para ltx_noindent" id="A1.SS4.SSS2.p1">
+<p class="ltx_p" id="A1.SS4.SSS2.p1.1">另一台基于悬臂架的机器人 3 - DoF 数据收集平台由桌面式CNC铣床构建而成。主轴已被更换为 3 D 打印探针，该探针通过固定装置连接至 CNC 的 z 轴 6 轴力扭矩传感器（MMS101，Mitsumi电气公司）。探针可以轻松更换，我们进行了整体设计 6 具有不同纹理的探针。在数据收集过程中，触觉传感器被牢固地固定在 CNC 工作台上，CNC 通过施加垂直力来探测触觉传感器，直到 z 轴力达到阈值（从均匀采样值中得出） <math alttext="0.3-2.1N" class="ltx_Math" display="inline" id="A1.SS4.SSS2.p1.m1" intent=":literal"><semantics><mrow><mn>0.3</mn><mo>−</mo><mrow><mn>2.1</mn><mo lspace="0em" rspace="0em">​</mo><mi>N</mi></mrow></mrow><annotation encoding="application/x-tex">0.3-2.1N</annotation></semantics></math> 对于大多数传感器而言，除了 GelSight Mini 以及 GelSight 我们使用的 Svelte 技术 <math alttext="1.5-5N" class="ltx_Math" display="inline" id="A1.SS4.SSS2.p1.m2" intent=":literal"><semantics><mrow><mn>1.5</mn><mo>−</mo><mrow><mn>5</mn><mo lspace="0em" rspace="0em">​</mo><mi>N</mi></mrow></mrow><annotation encoding="application/x-tex">1.5-5N</annotation></semantics></math> 由于凝胶硬度较高）。触觉图像，在传感器坐标框架中的探测位置 3 平移姿态，以及力值也会被记录。</p><p class="source-paragraph" lang="en">Another gantry-based 3-DoF data collection platform was built from a desktop CNC milling machine.
+The spindle was replaced with a 3D-printed probe, which is attached to the z-axis of the CNC with a 6-axis force torque sensor (MMS101, Mitsumi Electric Company).
+The probe can be easily swapped out, and we designed in total 6 probes with different textures.
+During data collection, a tactile sensor is attached firmly to the CNC bed, and the CNC probes the tactile sensor by applying vertical force until the z-axis force reaches a threshold (uniformly sampled from 0.3 − 2.1 ​ N for most sensors, except GelSight Mini and GelSight Svelte for which we use 1.5 − 5 ​ N due to higher gel stiffness).
+Tactile images, probing positions in the sensor’s coordinate frame (3D translational poses), and the force values are recorded.</p>
+</div>
+</section>
+</section>
+<section class="ltx_subsection" id="A1.SS5">
+<h3 class="ltx_title ltx_title_subsection">A. 5 网络配置</h3>
+<div class="ltx_para ltx_noindent" id="A1.SS5.p1">
+<p class="ltx_p" id="A1.SS5.p1.1">原则上，T3的所有组件都可以采用不同的架构，只要它们能够保持一致性。本节将列出本研究中使用的具体架构及超参数选择。</p><p class="source-paragraph" lang="en">In principle, all components of T3 can adopt different architectures, provided they maintain coherence.
+This section lists the specific architecture and hyper-parameter choices used in this work.</p>
+</div>
+<section class="ltx_paragraph" id="A1.SS5.SSS0.Px1">
+<h5 class="ltx_title ltx_title_paragraph">编码器</h5>
+<div class="ltx_para ltx_noindent" id="A1.SS5.SSS0.Px1.p1">
+<p class="ltx_p" id="A1.SS5.SSS0.Px1.p1.1">我们采用 VisionTransformer 模型 ViT ) <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib41" title="">41</a>]</cite> 作为触觉图像编码器的模块。首先将图像进行缩放处理 <math alttext="256\times 256" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px1.p1.m1" intent=":literal"><semantics><mrow><mn>256</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>256</mn></mrow><annotation encoding="application/x-tex">256\times 256</annotation></semantics></math> 然后进行中心裁剪 <math alttext="224\times 224" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px1.p1.m2" intent=":literal"><semantics><mrow><mn>224</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>224</mn></mrow><annotation encoding="application/x-tex">224\times 224</annotation></semantics></math> , 在分裂之前 <math alttext="196" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px1.p1.m3" intent=":literal"><semantics><mn>196</mn><annotation encoding="application/x-tex">196</annotation></semantics></math> 图像块每个都进行度量 <math alttext="16\times 16" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px1.p1.m4" intent=":literal"><semantics><mrow><mn>16</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">16\times 16</annotation></semantics></math> 像素。在训练过程中进行增强处理。具体而言，所有任务都进行颜色抖动处理。除姿态估计任务依赖空间信息进行预测外，所有任务均进行随机裁剪、水平和垂直翻转操作。我们采用了 MLP 比率 <math alttext="4.0" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px1.p1.m5" intent=":literal"><semantics><mn>4.0</mn><annotation encoding="application/x-tex">4.0</annotation></semantics></math> ，嵌入维度为 <math alttext="D_{enc}" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px1.p1.m6" intent=":literal"><semantics><msub><mi>D</mi><mrow><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi></mrow></msub><annotation encoding="application/x-tex">D_{enc}</annotation></semantics></math> , <math alttext="H_{enc}" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px1.p1.m7" intent=":literal"><semantics><msub><mi>H</mi><mrow><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi></mrow></msub><annotation encoding="application/x-tex">H_{enc}</annotation></semantics></math> 头部，以及 <math alttext="L_{enc}" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px1.p1.m8" intent=":literal"><semantics><msub><mi>L</mi><mrow><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi></mrow></msub><annotation encoding="application/x-tex">L_{enc}</annotation></semantics></math> 所有传感器均通过编码器之间的层结构进行连接。</p><p class="source-paragraph" lang="en">We use VisionTransformer (ViT) [ 41 ] blocks as the encoders for tactile images.
+An image is first resized to 256 × 256 then center-cropped to 224 × 224 , before split into 196 image blocks each measures 16 × 16 pixels.
+Augmentation is performed during training.
+Specifically, color jittering is performed for all tasks.
+Random cropping, horizontal and vertical flipping are performed for all tasks except pose estimation tasks, which rely on the spatial information to make predictions.
+We use a MLP ratio of 4.0 , an embedding dimension of D e ​ n ​ c , H e ​ n ​ c heads, and L e ​ n ​ c layers across encoders for all sensors.</p>
+</div>
+</section>
+<section class="ltx_paragraph" id="A1.SS5.SSS0.Px2">
+<h5 class="ltx_title ltx_title_paragraph">躯干</h5>
+<div class="ltx_para ltx_noindent" id="A1.SS5.SSS0.Px2.p1">
+<p class="ltx_p" id="A1.SS5.SSS0.Px2.p1.1">我们使用 ViT 作为躯干的模块。我们使用 MLP 比率 <math alttext="4.0" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px2.p1.m1" intent=":literal"><semantics><mn>4.0</mn><annotation encoding="application/x-tex">4.0</annotation></semantics></math> ，嵌入维度为 <math alttext="D_{tru}=D_{enc}" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px2.p1.m2" intent=":literal"><semantics><mrow><msub><mi>D</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi></mrow></msub><mo>=</mo><msub><mi>D</mi><mrow><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi></mrow></msub></mrow><annotation encoding="application/x-tex">D_{tru}=D_{enc}</annotation></semantics></math> , <math alttext="H_{tru}=H_{enc}" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px2.p1.m3" intent=":literal"><semantics><mrow><msub><mi>H</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi></mrow></msub><mo>=</mo><msub><mi>H</mi><mrow><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi></mrow></msub></mrow><annotation encoding="application/x-tex">H_{tru}=H_{enc}</annotation></semantics></math> 头部，以及 <math alttext="L_{tru}" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px2.p1.m4" intent=":literal"><semantics><msub><mi>L</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi></mrow></msub><annotation encoding="application/x-tex">L_{tru}</annotation></semantics></math> 层。</p><p class="source-paragraph" lang="en">We use ViT blocks as the trunk.
+We use a MLP ratio of 4.0 , an embedding dimension of D t ​ r ​ u = D e ​ n ​ c , H t ​ r ​ u = H e ​ n ​ c heads, and L t ​ r ​ u layers.</p>
+</div>
+</section>
+<section class="ltx_paragraph" id="A1.SS5.SSS0.Px3">
+<h5 class="ltx_title ltx_title_paragraph">解码器</h5>
+<div class="ltx_para ltx_noindent" id="A1.SS5.SSS0.Px3.p1">
+<p class="ltx_p" id="A1.SS5.SSS0.Px3.p1.1">解码器架构会根据任务需求而有所不同。在预训练 I 阶段用于掩码自编码的重建解码器，同样也是如此。 ViT ，具有 MLP 比率 <math alttext="4.0" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px3.p1.m1" intent=":literal"><semantics><mn>4.0</mn><annotation encoding="application/x-tex">4.0</annotation></semantics></math> ，嵌入维度为 <math alttext="512" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px3.p1.m2" intent=":literal"><semantics><mn>512</mn><annotation encoding="application/x-tex">512</annotation></semantics></math> , <math alttext="16" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px3.p1.m3" intent=":literal"><semantics><mn>16</mn><annotation encoding="application/x-tex">16</annotation></semantics></math> 头部，以及 <math alttext="8" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px3.p1.m4" intent=":literal"><semantics><mn>8</mn><annotation encoding="application/x-tex">8</annotation></semantics></math> 层。对于该解码器，主干网络之后不执行池化操作。</p><p class="source-paragraph" lang="en">The decoder architecture varies based on the tasks.
+The reconstruction decoder for masked auto encoding during pre-training I is also a ViT, with a MLP ratio of 4.0 , an embedding dimension of 512 , 16 heads, and 8 layers.
+No pooling is performed after the trunk for this decoder.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A1.SS5.SSS0.Px3.p2">
+<p class="ltx_p" id="A1.SS5.SSS0.Px3.p2.1">用于 <math alttext="\sigma_{i}" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px3.p2.m1" intent=":literal"><semantics><msub><mi>σ</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\sigma_{i}</annotation></semantics></math> 回归任务（公式 <a class="ltx_ref" href="#A1.E2" title="In A.2 Public datasets aggregated in the FoTa dataset ‣ Appendix A Appendix ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">2</span></a>）及所有分类任务的解码器均为 MLP 解码器。所有这些 MLP 解码器均使用相同大小的 3 隐藏层结构 <math alttext="[256,128,64]" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px3.p2.m2" intent=":literal"><semantics><mrow><mo stretchy="false">[</mo><mn>256,128</mn><mo>,</mo><mn>64</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[256,128,64]</annotation></semantics></math>。分类任务的输出维度因类别数量的不同而有所差异。在通过这些解码器处理之前，仅保留主干网络输出的分类 token 部分。</p><p class="source-paragraph" lang="en">The decoders for σ i regression (Eqn. 2 ) and all classification tasks are MLP decoders.
+We used the same size of 3 hidden layers [ 256,128 , 64 ] for all these MLP decoders.
+The output dimension varies for the classification tasks depending on the number of categories.
+Only the classification token is kept from the output of the trunk before it is passed through these decoders.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A1.SS5.SSS0.Px3.p3">
+<p class="ltx_p" id="A1.SS5.SSS0.Px3.p3.1">用于 3 D 和 6 D 姿态估计任务的解码器，由 2 ResNet <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib32" title="">32</a>]</cite> 块构成，随后进行平均池化，最后通过具有 <math alttext="[256,64]" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px3.p3.m1" intent=":literal"><semantics><mrow><mo stretchy="false">[</mo><mn>256</mn><mo>,</mo><mn>64</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[256,64]</annotation></semantics></math> 隐藏层的 MLP 层进行处理。在将主干网络的 token 输出传入 ResNet 块之前，我们首先去除分类相关的 token 层，然后将 <math alttext="[B,T,C]" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px3.p3.m2" intent=":literal"><semantics><mrow><mo stretchy="false">[</mo><mrow><mi>B</mi><mo>,</mo><mi>T</mi><mo>,</mo><mi>C</mi></mrow><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[B,T,C]</annotation></semantics></math> 的输出重塑为 <math alttext="[B,C,\sqrt{T-1},\sqrt{T-1}]" class="ltx_Math" display="inline" id="A1.SS5.SSS0.Px3.p3.m3" intent=":literal"><semantics><mrow><mo stretchy="false">[</mo><mrow><mi>B</mi><mo>,</mo><mi>C</mi><mo>,</mo><msqrt><mrow><mi>T</mi><mo>−</mo><mn>1</mn></mrow></msqrt><mo>,</mo><msqrt><mrow><mi>T</mi><mo>−</mo><mn>1</mn></mrow></msqrt></mrow><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[B,C,\sqrt{T-1},\sqrt{T-1}]</annotation></semantics></math> 形式。直观地说，我们将嵌入空间转换回 2 D 映射，并由 ResNet 块在该映射上进行卷积操作。</p><p class="source-paragraph" lang="en">The decoders for both 3D and 6D pose estimation tasks are constructed with 2 ResNet [ 32 ] blocks followed by average pooling then a MLP with hidden layers [ 256 , 64 ] .
+Before passing through the token outputs from the trunk into the ResNet blocks, we first remove the classification token, then we reshape the output from [ B , T , C ] to [ B , C , T − 1 , T − 1 ] .
+Intuitively, we transform the embedding space back to a 2D map, on which convolution is performed by the ResNet blocks.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="A1.SS5.SSS0.Px3.p4">
+<p class="ltx_p" id="A1.SS5.SSS0.Px3.p4.1">超参数选择列表载于表 <a class="ltx_ref" href="#A1.T1" title="Table 1 ‣ A.3 Data format ‣ Appendix A Appendix ‣ Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks"><span class="ltx_text ltx_ref_tag">1</span></a> 中。</p><p class="source-paragraph" lang="en">Choices of hyper parameters are listed in Tab. 1 .</p>
+</div>
+</section>
+</section>
+</section><div about="" class="ltx_rdf" content="Anonymous Submission" property="dcterms:creator"></div>
+<div about="" class="ltx_rdf" property="dcterms:subject"></div>
+<div about="" class="ltx_rdf" content="Proceedings of the \@conferenceordinal\/ Conference on Robot Learning (CoRL \@conferenceyear)" property="dcterms:subject"></div>
+<div about="" class="ltx_rdf" content="Transferable Tactile Transformers" property="dcterms:title"></div>
+</article></main>
+</html>

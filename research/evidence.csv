@@ -1,0 +1,328 @@
+arxiv,title,category,field,value,unit,scope,source_url,locator
+2610.02784,SimpleTouch,data,任务示教数与来源,50,段/任务,主评测每个任务各训练一个模型。仿真采用 UniVTAC 官方示教，真机由 Pika 接口遥操作。训练时间轴 20 Hz，三路流按近邻时间戳对齐，滤除偏差较大的样本,https://arxiv.org/html/2610.02784v1#A3,附录 C.1–C.2
+2610.02784,SimpleTouch,data,示教总小时数,未核实,,主实验按任务公布示教数,https://arxiv.org/html/2610.02784v1#A3,附录 C.1–C.2
+2610.02784,SimpleTouch,hardware,真机与采集配置,PiPER 六轴、Pika 平行夹爪、对指两枚 GelSight Mini,,光学触觉原始 640×480、25 Hz，推理前缩为 320×240。三项用固定外视相机，擦板用腕部相机。场景 RGB 输入预处理为 480×270,https://arxiv.org/html/2610.02784v1#A3.SS2.SSS0.Px1,附录 C.2 Hardware and Observations
+2610.02784,SimpleTouch,method,骨干与触觉接入,π0.5 / PaliGemma ＋冻结 T3-large ＋独立触觉专家,,两枚传感器各 197 个 token。视觉语言和动作分支与新触觉专家联合做任务训练。不加入触觉策略预训练；已有 T3 触觉表征预训练。只在训练中预测未来触觉,https://arxiv.org/html/2610.02784v1#A1.SS1.fig1,附录 A.1 表 5
+2610.02784,SimpleTouch,evaluation,UniVTAC 六任务成功率,46.3 / 45.2 / 66.7 / 77.5,%,π0.5 纯视觉 / FTP-π0.5 不做触觉策略预训练 / FTP-1 / SimpleTouch。提瓶、拔钥匙、提罐、放瓶、插孔、插管；每方法每任务 50 段示教、100 次评测,https://arxiv.org/html/2610.02784v1#S4.T1,§4.1–4.2 表 1
+2610.02784,SimpleTouch,evaluation,真机四任务成功率,37.5 / 62.5 / 71.3,%,π0.5 纯视觉 / FTP-1 / SimpleTouch。打麻将、擦板、拾芯片、插 USB；每方法每任务 50 段示教、20 次评测。插 USB 后两者均 30%,https://arxiv.org/html/2610.02784v1#S4.T2,§4.1–4.2 表 2
+2610.02784,SimpleTouch,ablation,当前触觉空间表示,39.0 / 57.5 / 74.3,%,四个非提举仿真任务平均。纯视觉 / 每传感器保留 1 个 T3 CLS token / 每传感器保留全部 197 个 token,https://arxiv.org/html/2610.02784v1#S4.SS3.SSS0.Px1,§4.3 Tactile Representation 与图 4
+2610.02784,SimpleTouch,ablation,触觉编码器比较,67.8 / 70.5 / 74.3,%,四个非提举仿真任务平均。冻结视觉 VAE / 更新当前触觉 T3 / 冻结 T3。专家与预测目标不变,https://arxiv.org/html/2610.02784v1#S4.SS3.SSS0.Px1,§4.3 Tactile Representation 与附录 D.2
+2610.02784,SimpleTouch,ablation,未来触觉预测监督,68.8 / 68.5 / 74.3,%,无预测 / 只预测第 50 步 / 每隔 5 步预测至第 50 步。在相同当前触觉和动作通路下比较四个非提举仿真任务,https://arxiv.org/html/2610.02784v1#S4.T3,§4.3 表 3
+2610.02784,SimpleTouch,scaling,放瓶示教数与成功率,10→23/5；20→38/24；50→50/19；100→46/9,段→%,各规模依次为 SimpleTouch / FTP-π0.5，两者均用触觉与 T3。所有训练子集严格嵌套。图 6 矢量数据点表明大预算处非单调,https://arxiv.org/html/2610.02784v1#S4.SS4.fig1,§4.4 图 6 左图、附录 D.3
+2610.02784,SimpleTouch,scaling,插孔示教数与成功率,10→43/14；20→57/20；50→85/47；100→90/31,段→%,各规模依次为 SimpleTouch / FTP-π0.5。测试相同本体与任务。图 6 矢量数据点,https://arxiv.org/html/2610.02784v1#S4.SS4.fig1,§4.4 图 6 右图、附录 D.3
+2610.02784,SimpleTouch,ablation,未来触觉在推理中的作用,74.3 / 70.3 / 67.3,%,四任务平均成功率，Fast 只读实测上下文 / Joint 联合生成触觉与动作 / IDM 先预测触觉再生成动作。同顺序平均推理耗时 0.623 / 1.020 / 1.463 秒,https://arxiv.org/html/2610.02784v1#S4.SS5,§4.5 图 7、附录 E.3 表 12
+2610.02784,SimpleTouch,transfer,未见传感器与本体零样本对照,未核实,,仿真与真机均使用各自的目标任务示教训练。评测覆盖两个环境,https://arxiv.org/html/2610.02784v1#A3,附录 C.1–C.2
+2610.08784,PEARS,data,离线示教规模,50,段/任务,仿真三项与真机两项各自用任务示教微调 GR00T N1.7。薄片和真机任务的基础策略输入为无触觉版本；拧瓶盖、摘软果的基础策略含指端力和力矩,https://arxiv.org/html/2610.08784v1#S5.SS1.SSS1,§V-A1 Evaluation Tasks
+2610.08784,PEARS,data,离线示教时长、采集方式和来源比例,未核实,,文中的约五小时每任务指训练耗时,https://arxiv.org/html/2610.08784v1#S5.SS1,§V-A1–A2
+2610.08784,PEARS,hardware,采集图像与力信号,腕部和第三人称图像；每个夹指 6 维力／力矩,,两个图像流输入均缩放到 224×224。触觉条件策略把双指测量和本体状态拼成 22 维；机器人型号、触觉传感原理与空间分辨率未核实,https://arxiv.org/html/2610.08784v1#S4.SS1.SSS0.Px1,§IV-A VLA and VTLA base policies
+2610.08784,PEARS,method,骨干与后训练,GR00T N1.7 ＋触觉条件 DSRL＋物理先验力推理（PFR）,,每次接触用低层控制器约束力；每回合末以图像和触觉故障史更新力界。RL 在冻结基础策略的流匹配噪声空间调整动作。仿真主对照 PFR 使用 GPT-5.6 Sol,https://arxiv.org/html/2610.08784v1#S4,§IV、§V-A2
+2610.08784,PEARS,evaluation,仿真最终成功率与交互协议,94.7 / 87.7 / 77.7,%,依次是薄片搬运、拧瓶盖、脆弱果实采摘。每个适配方法做三轮，各 100 次在线交互，然后每轮独立测试 100 次。最强基线分别为 DSRL 82.3%、Residual RL 68.0%、DSRL 40.3%,https://arxiv.org/html/2610.08784v1#S5.T1,§V-B 表 I
+2610.08784,PEARS,scaling,首次达到 80% 的在线交互次数 E80,10 / 22 / 25,回合,依次是薄片搬运、拧瓶盖、脆弱果实采摘。基线最快为 12 / 47 / 100 回合内未达到。指标为跨三轮均值、末 10 次交互的滚动成功率。最终独立测试成功率另列,https://arxiv.org/html/2610.08784v1#S5.SS2,§V-B 图 3 与表 I
+2610.08784,PEARS,ablation,力界推理与低层力控制贡献,82.3→94.7；57.7→87.7；40.3→77.7,%,DSRL only→PEARS，在三项仿真任务均有触觉条件 RL actor。对于摘软果，无 DSRL 61.7%、固定力界 44.0%,https://arxiv.org/html/2610.08784v1#S5.T2,§V-C 表 II
+2610.08784,PEARS,evaluation,真机成功次数,11/20→15/20→19/20；8/20→12/20→18/20,成功/试验,擦白板；用移液管吸液。冻结基础策略 / DSRL / PEARS。后两者均各用 40 轮真实在线交互；每方法每任务 20 次独立测试,https://arxiv.org/html/2610.08784v1#S5.T3,§V-D 表 III
+2610.08784,PEARS,transfer,跨传感器／跨本体受控结果,未核实,,仿真、真机任务不同，无匹配迁移对照,https://arxiv.org/html/2610.08784v1#S5.SS1,§V-A1
+2611.17619,TouchTwin,data,数据来源与训练规模,TouchScale 人手触觉演示＋MuJoCo 重放与扰动,,种子是选取的 TouchScale 录制片段，新增逐测点标签来自仿真。入训真实片段数、合成示教规模、小时数、源占比及其控制曲线未核实,https://arxiv.org/html/2611.17619v1#S4,§1、§4 Downstream Applications
+2611.17619,TouchTwin,hardware,真人采集配置,头戴及腕部视角、880 个测点手套、分受试者手模型,,以 TouchScale 公开采集为源。TouchTwin 盯准手套测得的法向力来校准手模型并按测点重放；该文未核实源相机分辨率,https://arxiv.org/html/2611.17619v1#S1.F2,摘要、§1 图 2
+2611.17619,TouchTwin,method,触觉如何进入训练,MuJoCo 触觉约束重建＋N0-VTLA 手部策略；Wan2.2 渲染,,关节外观由视觉追踪，实测触觉校准各手指接触、力度和闭合量。策略学重放轨迹。改变手势、动作、力、物体质量或摩擦生成仿真接触与力标签,https://arxiv.org/html/2611.17619v1#S3,§1、§3 表 3、§4
+2611.17619,TouchTwin,ablation,留出真人录制的接触预测,0.778→0.890；32.2→13.1；1.01→0.61,F1；%；秒,视觉重放→实测触觉约束重放。依次是 F1、漏掉的真实接触帧比例、每指接触时长绝对误差。留出片段从已接触开始；起触时刻未受评测,https://arxiv.org/html/2611.17619v1#S3.T2,§3 表 2、§5
+2611.17619,TouchTwin,ablation,仿真手策略力度与成功率,0.31 / 1.55 / 0.99,输出抓力／录制抓力,模仿观测指姿 / 视觉驱动仿真重放 / 触觉约束仿真重放。同顺序在 20 个留出测试中 17/20、15/20、20/20，在 36 个仿真扰动测试中 26/36、33/36、35/36。均为仿真执行，只用搬杯单任务,https://arxiv.org/html/2611.17619v1#S3.T3,§3 表 3、§5
+2611.17619,TouchTwin,ablation,视频生成控制对照,15.36 / 18.55 / 18.89,PSNR,首帧与文本 / 再加深度 / 再加仿真控制（与深度臂平行）。相同首帧、提示词和种子。另有 SSIM 0.663 / 0.759 / 0.766,https://arxiv.org/html/2611.17619v1#S3.T1,§3 表 1 与图 5
+2611.17619,TouchTwin,transfer,跨本体／传感器及真机闭环结果,未核实,,标题的 Sim2Real 包括真实风格视频和留出真人录制，策略都在仿真开环评测。真机实验明确留待后续,https://arxiv.org/html/2611.17619v1#S5,§5 Limitations
+2602.05513,DECO,data,DECO-50 采集规模,"60.027 小时 / 10,622 段；48.704 小时 / 8,021 段",,总录制；仅成功。按表 8 逐项相加，时长精度沿用原表。摘要称 50+ 小时、约 500 万帧，表 11 将数据集规模简写 50 小时、8K,https://arxiv.org/html/2602.05513v4#A1.T8,图 1、附录 A.1 表 8、A.4 表 11
+2602.05513,DECO,data,场景、子任务及来源,4 / 28,场景/子任务,DECO-50 为真人经 Apple Vision Pro 遥控双手机器人。机器人状态与动作以 30 Hz 记录，配有机器人第一视角双目及触觉,https://arxiv.org/html/2602.05513v4#S1,§1、附录 A.3
+2602.05513,DECO,hardware,本体与触觉阵列,Unitree H1-2 ＋双 Inspire RH56DFTP,,"每手 6 自由度、17 个压阻式压力片、1,062 个测点，仅法向。双臂 14 自由度；头部俯仰和偏航控制主动双目，采集图像分辨率未核实",https://arxiv.org/html/2602.05513v4#A1.SS3,附录 A.3 图 8、表 10
+2602.05513,DECO,method,骨干与触觉插件,ResNet-34 ＋多模态 DiT／rectified flow ＋LoRA,,图像与动作共同自注意力，本体进入 AdaLN，触觉独立交叉注意力。先训练视觉 DECO，再冻结已有权重，学习触觉编码、新的交叉注意力投影与 LoRA,https://arxiv.org/html/2602.05513v4#S3.SS3,§3.2–3.3 图 3–4
+2602.05513,DECO,evaluation,真机 4 项主评测成功率,72.25→82.50；53.13→73.13,%,视觉 DECO→触觉 DECO.p。前者分号左为全任务合计，右为接触密集两任务。物体拾放与材料分拣各 120 次、丢垃圾与双手装配各 80 次，每方法总 400 次,https://arxiv.org/html/2602.05513v4#S4.T1,§4 表 1
+2602.05513,DECO,ablation,逐任务视觉 DECO→触觉 DECO.p,103→108/120；101→105/120；48→62/80；37→55/80,成功/试验,任务顺序为拾放、分拣、丢弃废物、双手装配。可见性更佳的前两项提升较小,https://arxiv.org/html/2602.05513v4#S4.T1,§4 表 1
+2602.05513,DECO,ablation,阶段三双手装配与可训练参数,18/40 / 21/40 / 29/40 / 29/40,成功/试验,视觉 DECO / 触觉直接混合从头训 DECO.cs / 触觉解耦从头训 DECO.ds / 插件 DECO.p。插件更新 7.97M 参数，对照解耦从头训更新 89.41M。两种物体各 20 次,https://arxiv.org/html/2602.05513v4#S4.T5,§4.4 表 5–6
+2602.05513,DECO,ablation,互换触觉与本体的输入路径,29/40→0/40,成功/试验,同一 DECO.ds 在标准配置用触觉交叉注意力，本体进入 AdaLN；互换二者后阶段三装配结果。两种物体各 20 次,https://arxiv.org/html/2602.05513v4#S4.T7,§4.4 表 7
+2602.05513,DECO,transfer,跨传感器／本体预训练迁移,未核实,,附录评估多种仿真基准，模型各自在相应数据上训练。真机对照共用 H1-2,https://arxiv.org/html/2602.05513v4#A3,附录 C，§4.2
+2602.05513,DECO,scaling,任务示教规模受控曲线,未核实,,数据表分任务报告采集数，未找到只变化数据量的消融,https://arxiv.org/html/2602.05513v4#S4.SS4,§4.4
+2611.28752,VTLA-RL,data,SFT 真机、仿真及总示教数,90 / 89 / 179,段,"可用示教含真机遥操作和配对重放，共 26,741 帧。Vitasoy、可乐、饼干各 30 段真机，仿真 29、30、30 段。真实流以 5 Hz 记录并对齐至 20 Hz；录制小时数未核实。RL 只用仿真、只学前两项",https://arxiv.org/html/2611.28752v1#A1.SS0.SSS0.Px1,附录 A Data and initialization
+2611.28752,VTLA-RL,hardware,本体、相机和触觉,xArm 7 ＋定制平行夹爪＋两枚 Xense 光学触觉,,外置与腕端 RGB-D 输入 224×224。每个触觉垫 400×700 像素、11×20 标点，尺寸 17.5×29.3×2 mm,https://arxiv.org/html/2611.28752v1#A4,附录 D、§3.1
+2611.28752,VTLA-RL,method,骨干与触觉接入,π0.5 / SigLIP ＋真实／仿真混合 SFT ＋两阶段仿真 RL,,TacImage 拼接双指各 8 帧并复用视觉编码器，无触觉预训练。TacField 以 9×440×2 的光学标点坐标为输入编码成一个 token。策略同时输出运动和力目标,https://arxiv.org/html/2611.28752v1#S3.SS1,§3.1–3.3、附录 E
+2611.28752,VTLA-RL,evaluation,评测任务与次数,可乐罐和 Vitasoy 纸盒，三档质量,,仿真 5 个随机种子、每任务每种子 10 次；真机每表项两任务各 10 次，共 20 次。固定目标位置的质量测试给触觉垫加薄膜以诱发滑移,https://arxiv.org/html/2611.28752v1#A3.SS0.SSS0.Px2,§4、附录 C
+2611.28752,VTLA-RL,ablation,仿真跨质量档成功率与 RL 贡献,83→97；58→76；74,%,TacImage SFT→TacImage RL；TacField SFT→TacField RL；同 FAST 和 RL 的无触觉 PiRL†。两任务、三档质量种子内平均后汇总,https://arxiv.org/html/2611.28752v1#S4.T5,§4.3 表 5
+2611.28752,VTLA-RL,transfer,同硬件仿真后训练再部署真机,65→100 / 35→65；95→95 / 45→55,%,固定／随机位置。TacImage 混合 SFT→只用仿真做 RL；TacField 同口径。真机评测前无需新增微调或在线 RL，但 SFT 已使用真机；跨真实机器人本体未核实,https://arxiv.org/html/2611.28752v1#S4.T6,§4.4 表 6
+2611.28752,VTLA-RL,ablation,真机固定位置的质量档对照,100/95/70；65/65/35；90/50/25,%,依次是完整 TacImage RL、TacImage SFT 无仿真 RL、同混合动作空间和 staged RL 的无触觉 PiRL†。各列依次轻、中、重三档，每列 20 次，两件物体各 10 次；不同质量见附录 C,https://arxiv.org/html/2611.28752v1#S4.T7,§4.4 表 7、附录 C
+2611.28752,VTLA-RL,scaling,示教规模受控曲线,未核实,,报告比较 RL 路线与模块，最终真机采用同一混合 SFT 示教集,https://arxiv.org/html/2611.28752v1#S4.SS3,§4.3–4.4
+2410.24091,3D-ViTac,hardware,双臂软夹爪每指压阻阵列,16×16，共 256,触点/指,Velostat 夹在交叉导电纱和聚酰亚胺间，传感片薄于 1 mm，论文给出每点面积 3 mm²。TPU 软夹爪四指共 1024 点；读出板最高约 32.2 fps,https://arxiv.org/html/2410.24091v2#S3.SS1,§3.1 Sensor and Gripper Design
+2410.24091,3D-ViTac,hardware,多机位、触觉与动作时间对齐,顶视 RealSense D455、两台近台面 D435、双臂主从遥操,,ROS 触觉约 30 Hz，RGB-D、触觉、关节状态和目标动作按时间戳对齐到 10 Hz；腕或头戴视角未使用，原始图像分辨率未核实,https://arxiv.org/html/2410.24091v2#A2.SS1,附录 B.1 与 §3.2
+2410.24091,3D-ViTac,hardware,单触点力响应校准,1–9；超过 9,N,随机选 10/256 触点，用测力计逐点施加 0–12 N，1–9 N 在对数力轴近似线性，超过 9 N 开始饱和,https://arxiv.org/html/2410.24091v2#A1.SS2.SSS1,附录 A.2.1 与图 10
+2410.24091,3D-ViTac,data,训练示教规模,30 / 30 / 30 / 50；30 / 30,段/任务,依次为双臂蒸蛋、备葡萄、六角匙插入、做三明治，以及单臂取灯泡和插销。各任务各训独立策略；本行合列双臂表 1 和单臂附录表 3,https://arxiv.org/html/2410.24091v2#S5.T1,表 1 与附录表 3
+2410.24091,3D-ViTac,method,视觉深度与触觉点统一投影,视觉 512 点，触觉单臂 512 点或双臂 1024 点,,用正运动学求传感点在机器人基座坐标，保留连续力读数作为点特征；与多视角深度点云拼在同一空间，PointNet++ 条件扩散策略输出关节序列,https://arxiv.org/html/2410.24091v2#S4.SS2,§4.2–4.3
+2410.24091,3D-ViTac,ablation,视觉点云、触觉图单独处理与空间对齐,55/45/65/65；70/65/50/65；85/80/90/85,%,依次是蒸蛋、准备葡萄、六角匙、三明治的整任务完成率。纯点云 / 点云＋单独触觉图分支 / 同坐标触觉点。三组使用三机位，各训 2000 轮，每任务各 20 次,https://arxiv.org/html/2410.24091v2#S5.T1,表 1 与 §5.2
+2410.24091,3D-ViTac,ablation,减少摄像头时加入触觉点,50→80 / 30→70,%,单机位点云加入空间对齐触觉点，蒸蛋 / 六角匙整任务；相同两任务用三机位纯视觉为 55/65，仅触觉点为 10/15,https://arxiv.org/html/2410.24091v2#S5.T2,表 2 与 §5.3
+2410.24091,3D-ViTac,ablation,触觉测点密度和连续量,16×16 略优于 8×8，二者明显高于 4×4 与二值对照,,所有组均有多视角点云。细致在手调整受益明显；本文使用真机遥操示教，未构建这类触觉传感器的仿真以做规模化随机化,https://arxiv.org/html/2410.24091v2#S5.F6,图 6、§5.3 与 §6
+2410.24091,3D-ViTac,transfer,换用同型新传感器以及略微移位,100/100；100/100；95/90,%,单臂取灯泡旋转/放置，依次原传感器、同型新片、原布局略作移动。每组 20 次；同型传感器做归一化,https://arxiv.org/html/2410.24091v2#A2.T3,附录表 3
+2507.15062,Touch in the Wild,hardware,便携手持软夹爪触觉阵列,12×32，共 384；2×2,触点/指；mm/触点边长,"源自 3D-ViTac 的三层压阻贴片，换柔性电路电极。两片各 23 Hz，夹爪连电池约 962 g。双指合并原始表示 [1,24,32]",https://arxiv.org/html/2507.15062v2#S3.SS1,§3.1–3.2 与 §4.2
+2507.15062,Touch in the Wild,hardware,手持到机器人沿用传感配置,夹爪上的 GoPro Hero 9 鱼眼 60 Hz、双指触觉 23 Hz；目标 XArm 850,,手持示教用主机时间 QR 码以 30 Hz 刷新做离线视触觉对时，原文未提供独立同步残差；下游视觉模型输入 224×224,https://arxiv.org/html/2507.15062v2#S3.SS2,§3.2、图 2 与附录表 5
+2507.15062,Touch in the Wild,data,论文预训练数据规模,2700+；260 万+；43；12,示教段；视触觉对；任务；环境,包括四个主任务、其他室内任务和 30 余种自然情境任务。人手控制手持夹爪采集,https://arxiv.org/html/2507.15062v2#S5.SS1,§5.1 与图 4
+2507.15062,Touch in the Wild,data,作者公开版格式和许可,约 2700；MIT；Zarr ZIP 与 MP4,,预训练目录约 2700 段。主任务及室内任务另外有 UMI 式 Zarr ZIP 与视频和元数据；自然场景按录制地点提供视频目录,https://huggingface.co/datasets/binghaohuang-robot/touch_in_the_wild-dataset,发布数据卡 Overview 与 Dataset Structure
+2507.15062,Touch in the Wild,method,用对齐视频重建被遮住的触觉,95% 的训练样本遮挡 60–80% 的触觉块,,用 RGB 与残留触觉重建完整双指读数，再训练以视触觉和本体状态为输入的扩散策略；下游也更新编码器,https://arxiv.org/html/2507.15062v2#S4.SS2,§4.2–4.3
+2507.15062,Touch in the Wild,ablation,视触觉预训与融合对真机成功率的影响,25/45/55/55；50/70/70/45；70/75/80/60；85/85/90/70,%,任务顺序为收试管/插铅笔/移液/擦板，使用 197/170/160/105 段示教，每组每项 20 次、训 60 轮。四组依次纯视觉、无跨注意力、无视触觉预训、完整方案,https://arxiv.org/html/2507.15062v2#S5.T1,表 1 与 §5.2
+2507.15062,Touch in the Wild,transfer,预训移除下游目标任务示教,85→80 / 70→75,%,收试管 / 擦板完整任务。各自独立将该任务的全部示教从预训集合中移除，预训剩约 2500 段，仍用各自任务示教训练下游策略,https://arxiv.org/html/2507.15062v2#A2.T3,附录表 3 与 B.2
+2507.15062,Touch in the Wild,transfer,真机换同设计的新触觉片,85→85,%,同一试管任务的原片与新制未用片，抓取、调整、插入各阶段结果一致。手持与机器人本来用不同的物理片，传感原理未变化,https://arxiv.org/html/2507.15062v2#A1.T2,附录表 2 与附录 A
+2507.15062,Touch in the Wild,scaling,预训量与数据效率,更多手持示教降低触觉重建误差；30 或 60 段下游示教时预训有收益,,样本量对重建的证据来自图 8。实际动作性能在收试管任务单独改变示教量或训练轮数，完整多指灵巧手未测试,https://arxiv.org/html/2507.15062v2#S5.F7,图 7、附录图 8 与 §6
+2303.10880,Rotating without Seeing,hardware,灵巧手接触与控制,XArm、16 自由度 Allegro、16 个 FSR,,传感贴在手掌及手指，STM32F 读电压。策略使用 16 个二值接触位，控制 10 Hz。真机原始传感频率、有效面积与实际触发力未核实。策略无相机输入,https://arxiv.org/html/2303.10880v4#S3.SS1,§III-A 与 §IV-A
+2303.10880,Rotating without Seeing,method,以二值接触缩小仿真到真机差异,仿真接触阈值 0.01 N；8192 个并行环境,,Isaac Gym 的 PPO 用当前与前三步关节位置、前一目标、接触和旋转轴输出 16 维关节增量。真机将传感电压按阈值二值化；物体物理、传感延迟或丢失等在仿真随机化,https://arxiv.org/html/2303.10880v4#S4.SS3,§III-A/B、IV-A/B/C
+2303.10880,Rotating without Seeing,transfer,实机多物体旋转，陌生苹果,开环 0.67/20.00；无传感 0.33/10.00；连续 0.42/15.33；二值 2.67/30.00,圈/秒（成对）,仿真训练迁真机，数值分别为累计旋转圈数与跌落前时间。3 个训练种子，单次最多 30 秒；在陌生橡皮鸭上连续略高于二值 1.50/30.00 对 1.42/29.00,https://arxiv.org/html/2303.10880v4#S5.T1,表 I 与 §V-E
+2303.10880,Rotating without Seeing,ablation,触觉的训练位置与部署读取,4.91/30.00；0.25/7.67；0.17/3.33；0.42/17.00,圈/秒（成对）,真机旋转长方体，各为累计圈数/跌落前时间。全传感 / 同触觉策略评估时屏蔽 / 训练无指尖 / 训练无掌面，3 个种子。表 IV 的旋转列写 CRR，按 §V-A 的真机 CRA 定义，且全模型数值与表 I 同对象一致,https://arxiv.org/html/2303.10880v4#S5.T4,表 IV 与 §V-G
+2303.10880,Rotating without Seeing,data,用仿真试跑预测柱形物体形状,125；55000；200,物体；轨迹；控制步/轨迹,这是单独的形状估计实验，旋转策略生成 20 秒轨迹，非真实示教量。未见形状重建 MSE 有触觉为 0.22、屏蔽触觉为 0.45,https://arxiv.org/html/2303.10880v4#S5.SS8,§V-H A Shape Understanding Perspective
+2303.10880,Rotating without Seeing,evaluation,三轴旋转性能和手指侧面覆盖,未见物体 x/y/z 为 2.71/1.05/2.48,圈,3 个种子。部分物体 x、y 轴失败；作者观察到这些轴需要较多指段侧面接触，原排列对侧面覆盖不足,https://arxiv.org/html/2303.10880v4#S5.T5,表 V 与 §V-I
+2312.01853,Robot Synesthesia,hardware,灵巧手和视觉的硬件配置,XArm6、16 自由度 Allegro、16 个 FSR，Azure Kinect,,FSR 覆盖掌面与手指，控制用二值触点。深度相机外置面向机器手，真机、仿真控制速率同为 10 Hz；相机原始分辨率、采集频率未核实,https://arxiv.org/html/2312.01853v3#S3.SS1,§III-A System Setup
+2312.01853,Robot Synesthesia,method,在手掌坐标中统一三类点云,512 个外置相机深度点、每个 21 手部连杆各 8 点、每个激活 FSR 各 8 点,,激活触点从该传感器网格采样空间位置；加点类型标识，经 PointNet 提取特征，再结合 16 维关节与二值触觉输出关节增量,https://arxiv.org/html/2312.01853v3#S4.SS2,§IV-A/B 与 §IV-C2
+2312.01853,Robot Synesthesia,data,仿真教师到学生的训练量,512 万,仿真转移步,PPO 教师使用目标的真实仿真状态及触觉；学生先用该仿真教师数据行为克隆，再以 DAgger 微调。DAgger 追加规模未核实,https://arxiv.org/html/2312.01853v3#S4.SS3.SSS2,§IV-C2 Student Policy Training
+2312.01853,Robot Synesthesia,ablation,仿真中对齐接触点的效果,344.1→504.0 / 148.6→407.7,累计旋转奖励,四向扳手 / 双球。同为学生，保留二值触觉和视觉/手部点云，加掌坐标触觉点。各策略各 500 次仿真、最多 50 秒。多物体绕 x 轴的奖励则为 881.1→846.9,https://arxiv.org/html/2312.01853v3#S5.T2,表 II 与 §V-C
+2312.01853,Robot Synesthesia,transfer,仿真训练后直接部署真机,0.25/60.0→1.5/43.0；18.8/32.7→22.9/36.6,圈/秒（成对）,四向扳手 / 双球。各为累计旋转圈数与跌落前时间；从分开读触觉和视觉改为增加对齐触觉点。每个真机策略 5 次、最多 60 秒，无真机微调,https://arxiv.org/html/2312.01853v3#S5.T3,表 III 与 §V-D
+2312.01853,Robot Synesthesia,evaluation,真机旋转并非所有轴都提高,1.4/28.3→0.9/29.3,圈/秒（成对）,多物体绕 y 轴，从分开读触觉和视觉改为增加对齐触觉点。累计圈数降低、跌落前时间接近。四向扳手累计圈数升高但持物时间缩短,https://arxiv.org/html/2312.01853v3#S5.T3,表 III 与 §V-D
+2608.21290,VT-MUSE,data,仿真表征训练与下游示教,2000 / 50,段 / 段每任务,4 项 UniVTAC 任务每项采集 500 条表征训练轨迹，下游使用基准发布的每任务 50 条,https://arxiv.org/html/2608.21290v4#S4.SS1.SSS1,§IV-A1
+2608.21290,VT-MUSE,data,真机表征与策略数据,200,段,Flexiv 力反馈遥操作，每任务 50 条。两阶段复用同组任务的轨迹,https://arxiv.org/html/2608.21290v4#S4.SS1.SSS1,§IV-A1
+2608.21290,VT-MUSE,hardware,真机设备,Flexiv Rizon 4s、XenseGripper、外部 RGB,,使用 Flexiv RDK / TDK，视觉对照使用外部 RGB,https://arxiv.org/html/2608.21290v4#S4.SS1.SSS1,§IV-A1、§IV-A3
+2608.21290,VT-MUSE,hardware,触觉原生分辨率与数据时长,未核实,,仿真表示训练耗时与数据录制时长是不同口径,https://arxiv.org/html/2608.21290v4#S4.SS1,§IV-A
+2608.21290,VT-MUSE,method,预训练与策略接入,跨模态时序对齐 → 遮挡重建及触觉深度流预测 → 冻结表征接策略,,轻量 Transformer 通过带门控交叉注意力读取冻结触觉视觉潜变量,https://arxiv.org/html/2608.21290v4#S3,§III-C、§III-D
+2608.21290,VT-MUSE,evaluation,UniVTAC 评测,100,次每任务,本地训练模型。抬瓶、拔钥匙、插孔、插 HDMI,https://arxiv.org/html/2608.21290v4#S4.SS1.SSS2,§IV-A2、表 I
+2608.21290,VT-MUSE,evaluation,真机真实任务成功率,26.25 / 31.25 / 95.00,%,纯视觉 ACT / 直接视触觉 ACT / VT-MUSE，共用每任务 50 示教。插管、擦板、拉抽屉、按烤面包机，每任务 20 次。完整方法同时改变时序输入与融合方式,https://arxiv.org/html/2608.21290v4#S4.T2,表 II、§IV-B2
+2608.21290,VT-MUSE,ablation,双模态预测目标与策略成功率,27.25 / 38.75 / 37.00 / 55.25,%,仅第一阶段 / 去触觉深度流监督 / 去视觉重建监督 / 完整。仿真四任务保留视觉与触觉传感输入、策略和示教,https://arxiv.org/html/2608.21290v4#S4.T4,表 IV、§IV-C
+2608.21290,VT-MUSE,transfer,未见传感器或实体的独立迁移结果,未核实,,真实机器人与仿真分别训练表征路径，真实策略示教来自同组任务,https://arxiv.org/html/2608.21290v4#S4.SS1,§IV-A
+2610.10384,OpenViTac,data,每个传感配置的轨迹和任务,1300 / 2400、11 / 8,段、任务,前者为仿真、后者真机，按 GelSight、Xense 和 Neote 三种配置报数。采集时长未核实,https://arxiv.org/html/2610.10384v1#A2.T2,附录表 S2
+2610.10384,OpenViTac,hardware,触觉、视角和夹爪,GelSight、Xense、Neote 光学触觉；外部主相机＋腕部；Franka Hand 或 Robotiq,,同一传感配置对齐仿真真机的夹爪、观测和动作。触觉原生像素尺寸未核实,https://arxiv.org/html/2610.10384v1#A2.SS2,附录 B.2、§3.3
+2610.10384,OpenViTac,method,策略与触觉输入,π0.5；AnyTouch2 紧凑触觉历史 token,,投影后拼在视觉 token 前。论文另比较中层调制、动作专家输入、独立触觉专家和动作细化,https://arxiv.org/html/2610.10384v1#S3.SS2,§3.2、图 3
+2610.10384,OpenViTac,evaluation,仿真和真机平均成功率,48.6 / 61.2 / 68.7；41.0 / 51.9 / 54.6,%,各场景依次为 π0.5、FTP-1、OpenVTLA，未加权任务均值。真机一般每任务 20 次，插块 v2 为 30 次，任务包括物性分辨和抓取易碎品、拉抽屉及对孔插装,https://arxiv.org/html/2610.10384v1#S4.T3,表 2、表 3、表 S3
+2610.10384,OpenViTac,ablation,同 token 拼接的触觉编码器对照,59.5 / 58.1 / 64.7 / 68.7,%,SigLIP / T3 / Sparsh / AnyTouch2，仿真，同为 π0.5 拼接；各表征的 token 数和时间上下文可以不同,https://arxiv.org/html/2610.10384v1#S4.SS3,§4.3
+2610.10384,OpenViTac,scaling,固定真机示教，混入仿真,0 / 250 / 500；4 / 6 / 8；10 / 10 / 12,仿真段；成功次数,每任务保持 100 段机器人真机示教和优化预算。OpenVTLA 在标准照明下，插 USB 和齿轮装配各评 20 次。π0.5 同三档分别 3/5/8 与 7/9/10 次,https://arxiv.org/html/2610.10384v1#S4.T5,表 5、§3.3
+2610.10384,OpenViTac,transfer,光照扰动下固定真机示教混训,2→6 / 10→12,成功次数（每条件 20 次）,OpenVTLA 加入 500 条仿真后，USB 和齿轮装配。此比较保持本体、夹爪和传感配置,https://arxiv.org/html/2610.10384v1#S4.T5,表 5、§4.4
+2611.00455,TacMind,data,仿真任务目录及标准示教,28 / 100 / 100,标准任务 / 扩展任务 / 段每标准任务,标准任务为 6 个精密、11 个歧义识别、11 个动态，仿真专家生成。扩展任务不参与主结果比较,https://arxiv.org/html/2611.00455v1#A1.SS3,附录 A.3、表 6–7
+2611.00455,TacMind,data,异构预训练轨迹语料,约 42 / 3000000,小时 / 帧,TacMind-Bench、ToucHD、Daimon-Infinity、RDP、VLA-Touch、VisuoTactile-QINGLOONG。各源占比未核实,https://arxiv.org/html/2611.00455v1#A2,附录 B Heterogeneous pretraining data
+2611.00455,TacMind,hardware,传感器、相机与实体,仿真 GelSight Mini 和 DM-Tac 光学触觉；腕视角；RealMan-ISF 装 DM-Tac W,,仿真提供相机视点扰动；采集触觉 RGB 和标记。原生触觉图像分辨率未核实,https://arxiv.org/html/2611.00455v1#A1.SS1,附录 A.1、E.1
+2611.00455,TacMind,method,预训练与动作控制,Tac-LeWM 潜变量预测、触觉反思、源专属动作嵌入,,流式编码器以动作预测未来触觉 embedding，策略用当前及预测的触觉 token 生成动作,https://arxiv.org/html/2611.00455v1#S4,§4.1–4.4、附录 B
+2611.00455,TacMind,evaluation,基准扰动设置与试次,260,次每标准任务,1 个域内与 12 个扰动条件，各 20 次。以 GelSight Mini 进行主设置，扰动含照明、视点及物体大小,https://arxiv.org/html/2611.00455v1#S5.SS1,§5.1、附录 A.3
+2611.00455,TacMind,ablation,同架构触觉与预测的成功率,22.7 / 29.8 / 32.3；11.4 / 15.9 / 20.7,%,仿真域内和域外。依次为去触觉和反思、仅流式触觉、完整含未来触觉反思,https://arxiv.org/html/2611.00455v1#S5.T3,表 3
+2611.00455,TacMind,evaluation,真机示教与 rollout,300 / 20,示教总段 / 次每子任务,6 项插 USB、插插头、装大小齿轮、分辨轻重瓶，每项 50 条示教,https://arxiv.org/html/2611.00455v1#A5.SS1,附录 E.1
+2611.00455,TacMind,transfer,传感器和本体迁移的独立对照,未核实,,真机报告使用 DM-Tac W 与目标端数据，仿真扰动不能当作未见硬件迁移,https://arxiv.org/html/2611.00455v1#A5.SS1,附录 A.3、E.1
+2505.21864,DexUMI,data,各任务用于训练的轨迹,310 / 175 / 400 / 370＋100,段,方块、蛋盒、用镊子夹茶叶（涉及两类手）、厨房全程与额外转旋钮。茶叶段数依原文口径报告。采集小时及来源占比未核实,https://arxiv.org/html/2505.21864v3#A5.SS1,附录 E.1
+2505.21864,DexUMI,hardware,两类手与外骨骼触觉,Inspire Hand：压阻 FSR 电压；XHand：120 点磁阵列,,磁阵列每点提供三维力，外骨骼与目标手使用匹配传感器；UR5 底座由作者致谢确认,https://arxiv.org/html/2505.21864v3#A4.SS2,附录 D.2、Acknowledgement
+2505.21864,DexUMI,hardware,采集视角、位姿与采样,腕下 OAK-1，150° 对角，iPhone ARKit 追踪腕姿；45 / 30 FPS,,分别为 Inspire Hand / XHand 采集配置。使用 QR 测相机延迟，触觉与运动插值至视频时间戳,https://arxiv.org/html/2505.21864v3#A5.SS2,§3.2，附录 E.1–E.2
+2505.21864,DexUMI,method,表征和动作接口,DINOv2 CLS 拼接触觉，Diffusion Policy 输出腕和手指动作,,采集手和机器人手的相机位姿一致，另用视频修补两种执行器外观差异,https://arxiv.org/html/2505.21864v3#A5.SS3,§3.2、§4、附录 E.3
+2505.21864,DexUMI,evaluation,真机评测,20,次每任务,固定各方法初始物体配置。方块、蛋盒、夹茶、厨房四任务；长任务报告逐阶段累计成功,https://arxiv.org/html/2505.21864v3#S5,§5、表 1
+2505.21864,DexUMI,ablation,同相对动作及修补图像，有触觉 vs 无触觉,15→75；90→85；90→85,%,依次为 XHand 取盐、Inspire Hand 开蛋盒、Inspire Hand 镊子夹到茶叶。局部视野受遮挡的取盐受益，其余任务收益不同,https://arxiv.org/html/2505.21864v3#S5.T1,表 1、§5.1
+2505.21864,DexUMI,transfer,采集吞吐相对遥操,3.2,倍,相同操作者在镊子夹茶任务各做 15 分钟，按成功示教数量计算。两种目标手分别映射和训练，未核实同一策略的零样本迁移,https://arxiv.org/html/2505.21864v3#S5.F7,§5.1、图 7
+1803.00628,GelSlim,hardware,成像原理与感测垫尺寸,50 × 50,mm,GelSight 路线，内置相机记录织物保护的凝胶表面接触纹理和形状,https://arxiv.org/html/1803.00628v2#S1.F3,图 3、§IV
+1803.00628,GelSlim,method,触觉标定,制造时标定透视和背景，在用时再校亮度及局部对比度,,对同一传感器跟踪凝胶磨损后的响应变化,https://arxiv.org/html/1803.00628v2#S5,§V、图 8–9
+1803.00628,GelSlim,evaluation,耐久评估,3300 以上,次抓取,单个原型，双 GelSlim 指夹到 WSG-50、ABB IRB 1600ID。执行抓起、提起、震动，每 100 次测试两个压头。无策略 benchmark 与训练语料,https://arxiv.org/html/1803.00628v2#S5,§V，图 10–13
+1803.00628,GelSlim,hardware,原生像素分辨率,未核实,,与 3.0 后对照报告的数据规格分开,https://arxiv.org/html/1803.00628v2#S4,§IV
+2103.12269,GelSlim 3.0,hardware,光学成像规格,640 × 480；90；675,像素；fps；mm²,凝胶指端内置相机，WSG-32 夹爪安装，可更换指尖,https://arxiv.org/html/2103.12269v1#S6.T1,表 I、§IV-C
+2103.12269,GelSlim 3.0,method,力、形状及滑移估计,光度立体重建、标记位移检测滑移、FEM 估计三维接触力分布,,接触力由光学位移和凝胶模型推定,https://arxiv.org/html/2103.12269v1#S5,§V-B 至 V-D
+2103.12269,GelSlim 3.0,evaluation,策略数据量、rollout 或跨本体指标,未核实,,主要展示触觉测量，非机器人策略评测,https://arxiv.org/html/2103.12269v1#S5,§V、图 8–9
+2609.05266,TacPAC,hardware,真机采集设备,Flexiv Rizon 4、双 InTac S1、腕部 D405、第三人称 D435i,,夹爪两路触觉，模型输入 128×128；两路 RGB 各 256×256。控制为 30 Hz，触觉原生分辨率与录制帧率未核实,https://arxiv.org/html/2609.05266v1#A2,附录 B Implementation Details
+2609.05266,TacPAC,data,真机示教总量,未核实,,论文用五个已采集任务，附录 E 的 296 段是按固定步长抽取用于观测分析的样本，实际训练总量未给出,https://arxiv.org/html/2609.05266v1#A5,附录 E Diagnostic for Q2
+2609.05266,TacPAC,data,接触转换期帧占比和触觉变化占比,4.9 / 18.6,%,296 个训练集片段共 284948 个有效帧。夹爪宽度划分阶段，校正关键帧压缩影响。按触觉图像相邻变化量统计，转换期活动约为整段平均的 4.1 倍,https://arxiv.org/html/2609.05266v1#S4.F5,图 5 与附录 E
+2609.05266,TacPAC,method,规划未来接触后异步修正,视觉和触觉预测与动作联合规划，再由当前触觉重调尚未执行的动作,,每个动作块 48 步、1.6 秒。第二阶段冻结第一阶段，让触觉专家同时读取当前触觉、缓存的预测、已经执行的动作与拟执行动作。训练重放冻结模型生成的计划,https://arxiv.org/html/2609.05266v1#S3.SS3,§3.2–3.3 与附录 B
+2609.05266,TacPAC,evaluation,五个真机任务平均成功率,48 / 64,%,T-Rex（最强外部基线）/ TacPAC，各任务每方法 20 次。TacPAC 五项依次为插充电头 80、转移水果 65、搬薯片 90、立空瓶 40、插扩展卡 45,https://arxiv.org/html/2609.05266v1#S4.F4,图 4 与 §4.1–4.2
+2609.05266,TacPAC,ablation,预测、动作修正与预测缓存访问,22 / 37 / 33 / 47 / 64,%,纯视觉 / 只预测 / 只实时修正 / 预测及修正但屏蔽触觉预测缓存 / 全模型。后两项只改变修正模块可见的缓存内容，五任务每项 20 次；论文明确前两项匹配数据、骨干和优化步数,https://arxiv.org/html/2609.05266v1#S4.T1,表 1 与 §4.3 Q2–3
+2609.05266,TacPAC,evaluation,动作规划、缓存装填、触觉修正耗时,628.6 / 62.6 / 30.4,ms,三者分别计时，修正单遍推理约 32.90 Hz；全部五任务执行中 1.6% 的修正调用期间机器人已经前进至少一步,https://arxiv.org/html/2609.05266v1#S4.T2,表 2 与 §4.3 Q4
+2607.28391,TacWAM,hardware,真机设备、视角和采样,Agilex Piper、触觉双指 Xense G1-WS、顶视与腕部相机,,两路相机原始 480×640，缩放至 224×224，所有流对齐至 30 Hz。状态与动作各 7 个关节位置,https://arxiv.org/html/2607.28391v2#A4.SS1,附录 D.1 Robot Platform and Sensors
+2607.28391,TacWAM,hardware,触觉模态和输入形状,"[2,3,224,128]；[2,35,20,3]；[2,35,20,3]",,双指校正图、稠密力场、网格形变流。触觉图是缩放后的模型输入，原生像素分辨率未核实；每指六轴合力/力矩另作监督,https://arxiv.org/html/2607.28391v2#A1.SS2,附录 A.2 SAF Tactile Encoder and Decoder
+2607.28391,TacWAM,data,真机示教规模,300,段/任务,四项共 1200 段，每段约 500 帧。双路 RGB、双路触觉、关节和动作逐帧同步。作者明确未公开原始数据,https://arxiv.org/html/2607.28391v2#A5,附录 E Data Collection
+2607.28391,TacWAM,method,触觉表征、时序和未来目标隔离,对齐外观、力场、形变后的 128 维潜变量，另编码 32 帧历史,,先训练传感器表征并冻结，再联合预测视觉、触觉、动作。动作读取当前触觉锚点，未来触觉只提供并行训练目标,https://arxiv.org/html/2607.28391v2#S3.SS2,§3.2–3.6 与附录表 4
+2607.28391,TacWAM,evaluation,四任务真机成功率,31.3 / 20.0 / 32.5 / 37.5 / 75.0,%,π0.5 / Fast-WAM / RDP / 作者重实现 VT-WAM / TacWAM。各方法用同一批示教、相同训练轮数，每任务 20 次；单检查点,https://arxiv.org/html/2607.28391v2#S4.T2,表 2、§4.1 与附录 F
+2607.28391,TacWAM,ablation,触觉历史和注意力约束的逐步移除,82.5 / 55.0 / 37.5 / 7.5,%,两项任务平均（薯片、白板），每项每方法 20 次。全模型 / 移除触觉历史并停用接触事件辅助损失 / 再开放动作读取完整未来触觉 / 再开放视觉和触觉未来双向可见,https://arxiv.org/html/2607.28391v2#S4.T3,表 3 与 §4.3
+2610.00638,TacDyn-WAM,hardware,仿真相机与触觉输入,UniVTAC 的 Franka 平行夹爪、双 GelSight Mini、机器人头部和腕部相机,,相机 270×480、触觉 240×320，模型用四帧背景相减的无标记触觉。每任务单独用基准自带示教训练，100 次模拟测试,https://arxiv.org/html/2610.00638v1#A4.SS1,附录 D.1 与 §3.1、附录 H.1
+2610.00638,TacDyn-WAM,hardware,真实平台设备,Franka Research 3、双 Xense 光学触觉、腕部与第三人称相机,,夹爪为平行式，使用厂商输出的背景差分触觉图。触觉模型输入分别 224×224 和 384×384，传感器具体型号、相机和触觉原生分辨率/频率未核实,https://arxiv.org/html/2610.00638v1#S3.SS5,§3.5 与附录 D.2
+2610.00638,TacDyn-WAM,data,外部预训和目标任务示教,6000 / 300,段,从 21879 段/86 任务的 OmniViTac 取装配 2500、抓取 2000、擦拭 1000、调整 500，混合 xArm-7 与手持 TacUMI，作者未区分比例。五个目标任务机器人遥操各 60 段,https://arxiv.org/html/2610.00638v1#S3.SS4,§3.4–3.5 与附录 D.2
+2610.00638,TacDyn-WAM,method,预测潜空间的接触演化,V-JEPA 2.1＋DINOv2 的 TacRep，预测未来 5/15/25 帧的触觉潜变量及变化,,四帧学触觉动态，对变化较大的区域提高权重；另用 AnyTouch2 提供当前触觉记忆。两条触觉路径皆接入动作专家,https://arxiv.org/html/2610.00638v1#S2.SS3,§2.2–2.5
+2610.00638,TacDyn-WAM,evaluation,UniVTAC 八任务模拟成功率,55.8 / 81.5 / 83.1 / 84.5,%,作者复评纯视觉基座 InternVLA-A1 / 无外部触觉轨迹预训的 TacDyn-WAM / 文献 N0-VTLA / 文献 N0-TWAM。每任务 100 次，跨论文项训练方案不等同,https://arxiv.org/html/2610.00638v1#S3.T1,表 1 与附录 H.1
+2610.00638,TacDyn-WAM,ablation,预测潜空间和触觉记忆的作用,62.0 / 67.9 / 71.3 / 74.0 / 81.5,%,Cosmos VAE 像素表征 / 无触觉预测 / 无触觉记忆 / 静态 DINOv2 / 完整时序 TacRep。八仿真任务，同基座、数据和阶段超参,https://arxiv.org/html/2610.00638v1#S3.T2,表 2 与附录 E
+2610.00638,TacDyn-WAM,transfer,OmniViTac 预训迁往真实 Franka,55.0 / 71.0 / 85.0,%,FTP-1 / TacDyn-WAM 仅各目标任务训练 / TacDyn-WAM 先外部预训再微调，各任务同 60 段目标示教、20 次测试。目标 300 段也参与预训前两阶段且超采；不同机器共用同类 Xense，手持子集增益未单独测定,https://arxiv.org/html/2610.00638v1#S3.T3,表 3、§3.4 与附录 D.2
+2610.00638,TacDyn-WAM,method,跨设备数据与动作对齐,分开动作槽、按设备归一化、动作损失按有效位屏蔽,,共享 32 维动作向量。目标臂用 7 轴关节增量和 2 个绝对夹爪数值；OmniViTac 用相对末端位置/6D 旋转和绝对夹爪开口。前两阶段用目标及外部数据但无动作监督，第 3–4 预训阶段只用外部数据，最后用目标示教微调,https://arxiv.org/html/2610.00638v1#A4.SS2,附录 D.2 与表 6
+2610.00638,TacDyn-WAM,evaluation,优化版 LingBot-VA 和 TacDyn-WAM 推理耗时,1338 / 484,ms/动作块,同一 A100、批量 1、暖机后 30 次同步推理中位数，动作块长度分别 40、50；仅计算 GPU 推理,https://arxiv.org/html/2610.00638v1#S3.T4,表 4 与附录 H.2
+2607.02840,TACO,hardware,真机视触觉和动作,Franka Research 3、两只 Xense、正前方 D455 RGB 640×480,,平行夹爪每指输出六轴力/力矩，合计 12 维。以 SpaceMouse 遥操，按帧同步末端位姿、夹爪开口和力/力矩。触觉图原生分辨率与数据采样频率未核实,https://arxiv.org/html/2607.02840v2#A1.SS1,附录 A-A/A-B 与 §III-A
+2607.02840,TACO,data,机器人专家示教,50,段/任务,六任务共 300 段，插花、擦白板、拧瓶盖、敲木琴、烤面包、移动汉诺塔环。两轮另采当前策略试跑并生成局部修正，真实追加与生成总段数未核实,https://arxiv.org/html/2607.02840v2#S4.SS1,§IV-A Experiment Setup
+2607.02840,TACO,data,视觉生成主干的额外预训练,Wan2.2-TI2V-5B 加 DROID、AgiBot、RoboMIND 和未公开机器人数据,,随后在作者的真机视触觉示教上完整微调生成器；额外预训练各库权重和总规模未核实,https://arxiv.org/html/2607.02840v2#S3.SS1,§III-A Compositional Tactile World Model
+2607.02840,TACO,method,从失败试跑生成和筛选局部修正,每锚点 32 条候选、每条 49 帧、至多保留 8 条,,找进度停滞的失败临界状态；同步生成 RGB＋双指力/力矩，由逆动力学预测 7 维动作并给进度值；按逆运动学、触觉合理性、预计进度过滤，冻结 VLM 后训动作专家,https://arxiv.org/html/2607.02840v2#S3.SS2,§III-B–C 与附录 B-A
+2607.02840,TACO,evaluation,两轮后六个真机任务平均任务分,0.375 / 0.425 / 0.550 / 0.825,0–1 任务分,共同 π0.5 起点 / 只回收成功试跑 RFT / DreamGen / TACO。每方法每任务 40 次随机初始条件。按完成子阶段给部分分；TACO 第一轮 0.650,https://arxiv.org/html/2607.02840v2#S3.T1,表 I、§IV-A–B 与附录 D-A
+2607.02840,TACO,ablation,同一生成器的逆动力学加入触觉,0.038→0.019；86→98；0.650→0.825,,前为一致处理下的动作损失，中为真机回放通过率（%），后为策略任务分。生成器都用视觉＋触觉，只改变逆动力学是否读触觉；每任务每设置随机回放 50 条过滤后候选,https://arxiv.org/html/2607.02840v2#S4.T2,表 II 与 §IV-C
+2607.02840,TACO,ablation,筛选、失败定位、冻结骨干与训练目标,0.475 / 0.525 / 0.675 / 0.750 / 0.800,0–1 任务分,插花、擦白板两任务平均，依次无知识隔离、无失败点锚定、无修正筛选、AWR、完整 CFG-RL,https://arxiv.org/html/2607.02840v2#S4.T3,表 III 与 §IV-C
+2607.02840,TACO,scaling,真实与生成局部修正比例,1:2 / 1:4 / 1:8 / 1:16 → 0.625 / 0.825 / 0.875 / 0.925,比例 → 0–1 任务分,插花和烤面包，两个任务均有改善。基础策略平均 0.400；按文中同一训练配方比较，生成量绝对值未核实,https://arxiv.org/html/2607.02840v2#S4.T4,表 IV 与 §IV-C
+2607.02840,TACO,transfer,用分布外失败状态适应新背景、物体和位置,0.225 → 0.700,0–1 任务分,插花、擦白板各三种变化的平均值，同一台 FR3。TACO 使用目标场景试跑状态生成修正，未采额外目标场景专家示教；分布外每一设置的独立试验次数未明确,https://arxiv.org/html/2607.02840v2#S4.T5,表 V 与 §IV-D
+2609.23888,HapticWAM,hardware,采集设备与帧频,UR3、Robotiq 2F-85、双 DM-Tac W2L、固定 RealSense D435,,Echo 遥操。每指 36×27 mm、384×288 格点，触觉最高 8 Hz，RGB 15 Hz，机器人指令 125 Hz,https://arxiv.org/html/2609.23888v1#S4.SS1,§IV-A Experimental Setup
+2609.23888,HapticWAM,hardware,光学触觉和接触状态形状,每指胶层图、8 通道力学场、11 维接触状态,,力学场包括 2 维形变、深度、2 维剪切与 3 维分布力。状态包括六轴合力/力矩、面积、压力中心位置、滑移、掩码比例,https://arxiv.org/html/2609.23888v1#S3.SS2,§III-B Heterogeneous Haptic Tokenization
+2609.23888,HapticWAM,data,真机名义示教与刻意失败,250 / 35,段/任务,3 项各 285 段，共 855（训练 761、验证 94）。故意抓取过紧或过松段用于接触与视频监督，关闭真值动作损失；验证集仅名义示教,https://arxiv.org/html/2609.23888v1#S4.SS2,§IV-B Tasks and Dataset
+2609.23888,HapticWAM,data,部署教师和学生的新增暴露,教师 99 仿真＋203 真机试跑；学生 761 训练示教＋99 旧真机试跑,,学生的 99 段包括 66 教师、33 学生实际试跑。仿真只有接触事件标签，遮罩缺失光学触觉等损失；两外部基线用另一份 876 段导出，无仿真和试跑,https://arxiv.org/html/2609.23888v1#S4.SS3,§IV-C Training and Inference
+2609.23888,HapticWAM,method,预测接触后蒸馏至无指端触觉输入策略,Cosmos-Predict2.5-2B 冻结主干，用教师的未来接触、接触事件和动作分布监督学生,,学生保留 RGB、关节状态、从电机电流估计的臂端力/力矩和文字；共用低层执行器仍保留指端触觉保护。失败试跑可用教师动作蒸馏，屏蔽该试跑的真值动作,https://arxiv.org/html/2609.23888v1#S3.SS5,§III-A/E、§IV-C 与结论
+2609.23888,HapticWAM,evaluation,三项易碎物体放置成功计数,教师 30/50；学生 41/50；π0.5 10/50；DP 9/50,成功次数/试验次数,四配置各用同一 20 华夫饼、20 纸盒、10 鸡蛋起点。学生分别 19/20、17/20、5/10。操作者知道当前策略；各配置训练数据和执行细节不等同,https://arxiv.org/html/2609.23888v1#S4.T2,表 II 与 §IV-C–E
+2609.23888,HapticWAM,ablation,同一学生将生成的接触表示归零,21/30 → 4/30,成功次数/试验次数,每项任务前 10 个匹配起点；权重及观测通道一致。生成接触影响动作与接触依赖的筛选/闭合，匹配起点但完整条件先测。该对照衡量整体对接触生成的依赖,https://arxiv.org/html/2609.23888v1#S4.T4,表 IV 与 §IV-F
+2609.23888,HapticWAM,ablation,验证集同一学生的末端位置误差,22.31 / 22.35 / 28.31 / 28.2,mm,完整 / 只归零注意力的接触输入 / 归零生成接触 / 原位不动。94 段未训练验证示教，以闭合前 1.5 秒的状态为输入，比对 1.6 秒预测动作终点,https://arxiv.org/html/2609.23888v1#S4.SS6,§IV-F Contact-Imagination Ablation
+2608.29601,N0-Foundation,data,语料规模,">30,000；约1,400,000；450+；6",小时；轨迹；任务；本体,NeoData 论文全库。普通 RGB 8B 帧，触觉 10B 帧，不是 OpenNeoData 发布体量,https://arxiv.org/html/2608.29601#S4.SS1,§4.1；表1；图1
+2608.29601,N0-Foundation,data,公开子集,"5,000+；200,000+",小时；轨迹,OpenNeoData 数据卡混合发布；申请访问,https://huggingface.co/datasets/NeoteAIEmbodied/OpenNeoData,Dataset card；Key Features
+2608.29601,N0-Foundation,data,采集方式和来源占比,TacUMI 57%；ARX X5 17%；UR5e 11%；Flexiv Rizon 4s 8%；Piper 6%；Franka Research 3 1%,轨迹占比,全文 NeoData；五机器人经遥操作，TacUMI 人手持平行夹爪；非小时或公开子集占比,https://arxiv.org/html/2608.29601#S4.F4,§4.3 图4a
+2608.29601,N0-Foundation,data,采集任务,8 类，覆盖折叠、拾放、擦拭、堆叠、装配、插入、倾倒、开合与分类,任务类别,大类、任务和物体频次分别统计，折叠、拾放和清洁占多数,https://arxiv.org/html/2608.29601#S3.F3,图3；§4.3
+2608.29601,N0-Foundation,hardware,触觉与相机规格,每夹爪双光学触觉 640×360@30 fps；夹爪端 160° 鱼眼 RGB 640×360@30 fps；红外 6DoF 和磁编码器,像素；帧/秒；视场,TacUMI；机器人另有外部第三视角与腕视角；人头戴视角不在此配置内,https://arxiv.org/html/2608.29601#A2,§3.1–3.3；附录B
+2608.29601,N0-Foundation,method,表示和骨干,光学形变经标定学习逆映射为三轴力场；NeoForce 基于 DINOv2 的 ViT，做跨模态与时空潜变量预测、力场重建,—,策略对照固定 π0.5；力场表示接入 action expert,https://arxiv.org/html/2608.29601#S5.SS4,§5.3–5.4；§6.2 表3
+2608.29601,N0-Foundation,ablation,固定 π0.5 的 NeoReal 平均,无触觉 26.5/38.1；图像拼接 27.5/41.4；图像进动作专家 30.0/44.3；NeoForce 进动作专家 32.5/47.5,成功率%；进度分/100,10 项真机任务；表示接入方式对照。卷线所有方案为 0% 成功；插座图像进动作专家 55% 低于无触觉 60%,https://arxiv.org/html/2608.29601#S6.T3,§6.2 表3
+2608.29601,N0-Foundation,ablation,NeoForce 重建加入潜变量预测,MAE 0.070→0.066；RMSE 0.095→0.089；接触 mIoU 0.968→0.966,论文指标,重建单目标 vs 重建加潜变量预测；重建误差下降，区域重叠略降,https://arxiv.org/html/2608.29601#S5.T2,§5.5 表2
+2608.29601,N0-Foundation,transfer,实体留出迁移结果,未核实,—,§5.5 力表示跨任务稳定性不等于留出一种机器人本体后真机成功率,https://arxiv.org/html/2608.29601#S5.SS5,§5.5；§7
+2608.29601,N0-Foundation,evaluation,NeoReal 试验及训练量,"10 任务，每任务 20 次；预训练 >400,000 段，后训练 300 段/任务",任务；试验；演示,折纸盒、装袋、绕线、擦板、叠杯、插插座、插板、立瓶、收水果、折毛巾,https://arxiv.org/html/2608.29601#A5,§6 图9–10；附录E.3–E.4
+2608.29601,N0-Foundation,evaluation,NeoSim 试验数,12 任务，4 单臂和 8 双臂；100 次/任务,任务；试验,含插USB、抓芯片、倒球、丝杠装配、齿轮、碗杯盘堆叠和交接,https://arxiv.org/html/2608.29601#S6.T4,§6.3–6.4 表4
+2607.23782,N0-VTLA,data,预训练来源,NeoData 单臂、双臂遥操和人手持 TacUMI；训练小时/段比例未核实,—,沿用 NeoData；UniVTAC 仿真可转换到同一数据结构。独立模型摄取量不能直接等同于全库,https://arxiv.org/html/2607.23782#S3,§3；附录A 表3
+2607.23782,N0-VTLA,hardware,已发布传感采集,机器人每夹爪光学触觉双路；单臂 2 路、双臂 4 路触觉；统一 30 fps；模型输入 224×224,路；帧/秒；像素,表3的机器人 RGB 视图是外部＋双腕；各本体实际视频键见数据卡，TacUMI 仅夹爪腕视角,https://arxiv.org/html/2607.23782#A1.T3,§3；附录A 表3
+2607.23782,N0-VTLA,method,模型和训练,π0.5 初始化；冻结 DINOv2 编码触觉差图；未来触觉潜 token 预测、屏蔽视觉前缀训练动作专家、端到端动作训练,—,开合由统一双臂动作槽表示；预测是未来接触潜变量，测试使用当前触觉,https://arxiv.org/html/2607.23782#S4.SS2,§2.1–2.2；§4.2
+2607.23782,N0-VTLA,evaluation,NeoReal 真机结果,9 个任务；VTLA 47.2% / 56.8；π0.5 29.4% / 42.3；每任务次数未核实（各任务预算不一）,成功率%；进度分/100,图7真机九任务总体比较，不套用 Foundation 十任务的 20 次分母；插座 85% 对 60%,https://arxiv.org/html/2607.23782#S5.F7,§5.1–5.2 图7
+2607.23782,N0-VTLA,evaluation,仿真成功率,UniVTAC 83.1 对 InternVLA-A1 67.1；NeoSim 50.8 对 π0.5 45.8,成功率%,UniVTAC 8 个任务；NeoSim 12 个任务，每任务 100 条训练演示。每任务评测试验次数未核实,https://arxiv.org/html/2607.23782#S5.SS3,§5.1；§5.3 表1–2
+2607.23782,N0-VTLA,ablation,触觉路径对照和检索,同观测同采样噪音关闭触觉，接触时路径分离；未来触觉 92.3% vs 当前触觉相似度 57%,小候选池 Top-1%,378 个留出 query，约 32 候选；128 候选池为 81% vs 40%。动作反事实是个例，不当作总体成功率,https://arxiv.org/html/2607.23782#S5.SS5,§5.5；§6 图10
+2607.23782,N0-VTLA,method,ALTER 重用失败和恢复轨迹,用触觉事件和运动学切阶段；对掉落前后和人工纠偏首尾做排序；离线训练时按阶段内短期进展标注优势,—,使用既有部署语料，不需追加在线互动；与纯演示 SFT 使用的数据量不同,https://arxiv.org/html/2607.23782#S4.SS4,§4.4 图6；附录F
+2607.23782,N0-VTLA,ablation,ALTER 真机结果,π0.5+ALTER 90/75/60；VTLA+ALTER 95/80/75,成功率%,依次为折毛巾、装袋、折纸盒。同方法不同骨干；3 任务的每任务评测试验次数未核实,https://arxiv.org/html/2607.23782#S5.F9,§5.4 图9
+2607.23783,N0-TWAM,data,预训练范围与比例,"数万小时，6 本体；NeoData 全库 >30,000 小时；训练集按来源小时及比例未核实",小时；本体,原始多本体和手持 UMI 数据，真机后训练另用 InTac S1；20% 消融是完整混合预训练语料子集,https://arxiv.org/html/2607.23783#S3.SS1,§3.1；§4.1；§4.5
+2607.23783,N0-TWAM,hardware,真机视触觉,InTac S1 光学；双臂 PiPER 与单臂 Flexiv；3 RGB、最多 4 路触觉；原生传感分辨率未核实,视角；触觉路,仅真机后训练和真机评测；产地与品牌按论文,https://arxiv.org/html/2607.23783#S4.SS2,§4.1–4.2
+2607.23783,N0-TWAM,method,世界—动作及数据处理,LingBot-VA 系谱的非对称 MoT；视频/未来触觉/动作三个专家；Wan2.2 VAE 编码 RGB 和触觉并缓存；当前 NeoForce 分支调制动作,—,原窗口 30 fps 降到 10 fps，VAE 4× 时域压缩；缺触觉用条件缺省训练；接触事件可切长任务,https://arxiv.org/html/2607.23783#S3.SS2,§2.1–2.3；§3.2；§4.1
+2607.23783,N0-TWAM,scaling,20% 预训练量 vs 全量,65.4→84.5,UniVTAC 八任务宏平均成功率%,同模型、任务演示和后训练预算；只在 UniVTAC 做 20% 对照；不是改变触觉占比,https://arxiv.org/html/2607.23783#A1.T7,§4.5 图9；附录A 表7
+2607.23783,N0-TWAM,ablation,分别移除未来和当下触觉,UniVTAC 完整84.5／无预测71.8／无观测70.5；NeoSim 49.4／41.1／29.6,任务宏平均成功率%,开关分别消融两条触觉通路，保留相同后训练预算,https://arxiv.org/html/2607.23783#A1.T8,§4.5 图9；附录A 表7–8
+2607.23783,N0-TWAM,evaluation,基准与试验数,UniVTAC 8 和 NeoSim 12 个仿真任务，各 100 次/项；真机 8 项，各 20 次/项,任务；回合/项,真机叠杯、擦板、柠檬茶、装袋在 PiPER；收水果、立瓶、插插座、汉诺塔在 Flexiv,https://arxiv.org/html/2607.23783#S4.SS2,§4.2；图8
+2607.23783,N0-TWAM,transfer,两种实体真机汇总,46.3 vs π0.5 30.0 vs LingBot-VA 21.9 vs FastWAM 14.4,宏平均成功率%,两种机器人都在上游语料范围，且各有真机任务适配；不是留出本体零样本,https://arxiv.org/html/2607.23783#S4.F7,§4.3 图7
+2607.23783,N0-TWAM,transfer,仿真力编码器对照,UniVTAC clean 84.5，gel 82.4，gel＋NeoForce 88.1；单臂 NeoSim 63.8，58.5，64.8,成功率%,感测图外观及 NeoForce对照；不是未知实体迁移,https://arxiv.org/html/2607.23783#S4.T6,§4.6 表6
+2610.22342,Spark-0,data,HumanTouch 训练范围,"1,000；>100；32",小时；任务；操作者,论文训练采集，人执行接触丰富操作；整库公开时长不等同训练小时,https://arxiv.org/pdf/2610.22342,§3.2；附录A（第15页）
+2610.22342,Spark-0,data,预训练来源和采样权重,HumanTouch 1000 h/35%；EgoDex 662 h/39%；同手套机器人20 h/9%；去触觉机器人24 h/5%；仿真25 h/5%；Fourier ActionNet153 h/4%；AgiBot World60 h/3%,小时；采样权重,触觉样本曝光权重44%，并非按小时占比；7 来源,https://arxiv.org/pdf/2610.22342,附录D 表5（第19页）
+2610.22342,Spark-0,hardware,人手／同手套机器人采集,Moxian 内层压力手套每手 460 存储点，屏蔽 140 易受弯曲干扰点，320 点进模型；Manus 外手套 25 关节，VIVE 6DoF；头＋双腕 60 Hz,点/手；Hz,同手套可装在 WUJI Hand 2 人形机器人手，测点定义与其他版本分开；采集图见 Fig.6–7,https://arxiv.org/pdf/2610.22342,§3.1；附录A 图6–7（第15–16页）
+2610.22342,Spark-0,method,模型和触觉用途,StarVLA、Qwen3-VL-4B 和流匹配动作专家；DA3 几何教师和投影接触图训练视觉 token；区域力时间序列与三维触点条件化动作,—,前者仅训练，后者允许部署使用触觉；人手动作以 IK 映射到 WUJI Hand 2,https://arxiv.org/pdf/2610.22342,§4.1–4.3（第5–7页）
+2610.22342,Spark-0,scaling,同 RGB 与同计算的触觉规模消融,SparkArena-Sim 36.57→35.14→36.86；Ego Humanoid 52.45→59.42→71.72；SparkArena-Real 44→40→52,平均成功率%,Visual PT→100h→1000h。同 RGB 和预训练计算量；Scratch 不预训练。100h 落后无触觉仅在 SparkArena 两轨，Ego Humanoid 已正向,https://arxiv.org/pdf/2610.22342,§6.1–6.3 表4（第9–10页）
+2610.22342,Spark-0,transfer,目标本体未见且测试无触觉,52.45→71.72；+19.27,平均成功率%；百分点,Ego Humanoid 的四种条件均值，视觉 PT 对 1000h 触觉 PT；同 RGB、计算及下游协议；不是零演示,https://arxiv.org/pdf/2610.22342,§6.3 表4；附录E.4
+2610.22342,Spark-0,evaluation,任务与每任务试验,SparkArena-Sim 7 项×50 次；SparkArena-Real 5 项×10 次；Ego Humanoid 已见 27、未见 66 次/政策/任务,任务；试验,同一 Gen 1 Prototype 双 WUJI 手；仿真与 Ego Humanoid 执行不用触觉，真机使用触觉；真机为插试管、鞋装箱、摆手机、叠碗、立瓶,https://arxiv.org/pdf/2610.22342,§5；§6.1；附录E 表1–3
+2610.10288,TouchScale,data,全量语料与构成,"500 h；约87,000 段；约2,000 任务描述；9 类设置；800+ 场景配置；1,500+ 物体",—,真人头戴/手套，单手或双手；置放、倾倒、插入对齐、工具使用、开合、折叠、擦拭,https://arxiv.org/html/2610.10288#S3.SS2,§3.2 图3；表1
+2610.10288,TouchScale,data,公开发布口径,"100；15,324",小时；段,Hugging Face 研究子集，授权访问；训练论文的 500h 是单独口径,https://huggingface.co/datasets/2077AIDataFoundation/TouchScale,Dataset card；At a glance
+2610.10288,TouchScale,hardware,手套和视觉,全手法向压力 Tachin 880 点/手，单元 1.5×1.5 mm；头戴 Orbbec Gemini 345Lg RGB 1280×720/深度640×480；双腕 D405 RGB 1280×720，全部30 Hz,点/手；像素；Hz,手套名义 USB100 Hz/WiFi50 Hz，与对齐视频时钟的 30 Hz 不同,https://arxiv.org/html/2610.10288#S3.SS1,§3.1；附录§7
+2610.10288,TouchScale,method,跨硬件与后训练方案,12 个共同手部区域评测；Hiera-B 做触觉预测视觉预训练；N0-VTLA Stage-1 预测未来触觉变化，再用目标机器人示范后训练,—,真人数据没有动作标签；机器人测试比较增加人类视触觉 mid-training 与不增加,https://arxiv.org/html/2610.10288#S4.SS3,§4.1–4.3；附录§6、§10.2
+2610.10288,TouchScale,transfer,不同传感器的零样本接触预测,EgoTouch 训练 0.134，TouchScale 在表2对照 0.181；全规模图4为0.383,接触 IoU,测试为留出 EgoTactile 触觉布局下的视觉预测任务。表2与摘要/图4给出的 TouchScale 结果不同，按各出处分别引用,https://arxiv.org/html/2610.10288#S4.T2,§4.1 表2与图4；摘要
+2610.10288,TouchScale,scaling,同传感器同协议放大全量,训练数据10%→100%，接触IoU 0.311→0.383，强度IoU 0.252→0.276,接触/体积 IoU,视觉预测跨传感器 EgoTactile；不等同真实机器人控制,https://arxiv.org/html/2610.10288#S4.F4,§4.1 图4
+2610.10288,TouchScale,ablation,加人类视触觉中训练,平均22.5→57.5；软硬分拣10→60；瓶盖40→70；试管30→60；白板10→40,真机成功率%,同 N0-VTLA 起点；相同后训练轨迹；无等量额外 RGB-only 中训练对照,https://arxiv.org/html/2610.10288#S4.T4,§4.3 表4
+2610.10288,TouchScale,scaling,真人中训练比例与下游,0/20/40/60/80/100% 对应 22.5/30.0/32.5/50.0/50.0/57.5,数据比例%；四任务平均成功率%,固定机器人后训练，60% 至80%无增长；不可拟合跨模态绝对 scaling 斜率,https://arxiv.org/html/2610.10288#S4.F6,§4.3 图6
+2610.10288,TouchScale,evaluation,真机平台、任务和次数,xArm6＋BrainCo Revo 2＋触觉手套；外部 RGB-D 和腕部 RGB；50 段遥操/任务；20 次评测/任务,示范；试验,任务为软硬分拣、取移瓶盖、转移试管、擦白板。仅一个目标机器人平台,https://arxiv.org/html/2610.10288#S4.T4,§4.3 图5、表4
+2503.02881,RDP,hardware,机器人夹爪与同步传感器,Flexiv Rizon 4、Flexiv Grav、GelSight Mini、MCTac、末端估计力/力矩,,GelSight 8MP / 25 fps，MCTac 2MP / 30 fps，关节估计末端六轴力/力矩 120 Hz 下采样至 24 Hz。单臂腕部 D435，双臂再加第三人称 D415,https://arxiv.org/html/2503.02881v3#S5.SS1.SSS1,§V-A1 Hardware
+2503.02881,RDP,data,任务示教与 PCA 触觉数据,60 / 80 / 50 段，30 / 40 分钟,,前三项分别为削皮、擦拭、双臂举杯的机器人示教；后两项为 20 个物体上的随机接触，给 GelSight Mini / MCTac 分别拟合 PCA,https://arxiv.org/html/2503.02881v3#A0.SS4,附录 D Data Collection
+2503.02881,RDP,method,慢规划与快触觉闭环,1–2 / 24,Hz,慢策略以 1–2 Hz 更新未来动作片段，快策略用 24 Hz 触觉或力/力矩做闭环修正。胶层形变经低维 PCA 编码,https://arxiv.org/html/2503.02881v3#A0.SS6,附录 F Inference Process 与 §V-A5
+2503.02881,RDP,evaluation,削皮与擦拭接触后扰动,0.15 → 0.80 / 0.15 → 0.50,归一化得分,触觉嵌入 DP → GelSight RDP。两个任务每项每条件 10 次。削皮按相对示教剥皮长度评分，擦拭按残留给 0、0.5 或 1 分,https://arxiv.org/html/2503.02881v3#S5.T2,表 II、表 III 与 §V-A4
+2503.02881,RDP,transfer,相同机器人上使用不同光学触觉,0.90 / 0.88,归一化得分,GelSight Mini / MCTac 的削皮总分，覆盖三种测试情形。两设备同步采集，分别做传感器专用 PCA；没有留一设备的零样本迁移测试,https://arxiv.org/html/2503.02881v3#S5.T2,表 II、§V-B Q3 与附录 D
+2503.02881,RDP,ablation,力维度与动作编码方式,0.48 / 0.58 / 0.95,归一化得分,只保留法向力 / 使用对称编码器 / 默认 RDP。削皮任务三种条件均值,https://arxiv.org/html/2503.02881v3#A0.T6,附录表 VI
+2503.02881,RDP,ablation,示教质量对策略影响,移除遥操 AR 触觉/力反馈，削皮策略得分下降超过 30%,,双方都用 60 段削皮示教及同一 RDP（Force）。比较采集者是否实时看到反馈,https://arxiv.org/html/2503.02881v3#S5.F14,图 14 与 §V-B Q7
+2503.02881,RDP,evaluation,遥操对接触数据质量的影响,0.72 → 0.91 / 0.58 → 0.87,,无反馈 → 有 AR 触觉/力反馈。归一化剥皮长度 / 稳定接触占比，10 名用户共 200 次采集试验。稳定性依持物者判断,https://arxiv.org/html/2503.02881v3#S5.F12,图 12、§V-B Q6 与附录 H
+2610.18852,ForceWAM,hardware,真机视触觉设备,Flexiv Rizon 4S、末端六轴力/力矩、腕部 RGB,,Hanoi 环使用 Robotiq 2F-85 与 Meta Quest 3 遥操，另有第三人称相机；翻盒与滑动使用定制顺应性接触末端和手把手教学,https://arxiv.org/html/2610.18852v1#A1,附录 A Hardware Setup and Data Collection
+2610.18852,ForceWAM,data,每任务的成功示教与无指定任务的接触探索,200 / 200,段/任务族,共滑动、翻盒、Hanoi 三个任务族，正常与扰动翻盒共用训练集。两类数据都同步记录腕部 RGB、末端六轴力/力矩和动作,https://arxiv.org/html/2610.18852v1#S4.SS1.SSS0.Px2,§4.1 Datasets
+2610.18852,ForceWAM,method,把任务目标和局部接触反应分别训练,成功示教训练未来预测，成功示教＋接触探索训练逆动力学,,视觉扩散骨干预测视觉及未来 16 个六轴力/力矩采样。逆动力学用记录中的未来与所执行动作训练，部署以实测力/力矩更新动作,https://arxiv.org/html/2610.18852v1#S3.SS3,§3.2–3.4 与附录 B
+2610.18852,ForceWAM,scaling,固定示教与训练步数，增加接触探索,0 / 50 / 100 / 150 / 200,段探索/任务族,固定全部任务示教、视觉及力预测模型、逆动力学优化步数；中间规模独立抽样。0→200 段时滑动 40→85，翻盒 75→95，扰动翻盒 65→85，Hanoi 75→90,https://arxiv.org/html/2610.18852v1#S4.F4,图 4 与 §4.3
+2610.18852,ForceWAM,evaluation,同样的探索数据给端到端模型,20 / 45 / 25 / 55 → 10 / 25 / 10 / 30；15 / 40 / 30 / 60 → 10 / 20 / 15 / 40,%,依次滑动、翻盒、扰动翻盒、Hanoi。前为 ImplicitRDP，后为 Cosmos Policy。每条件 20 次，滑动还要求 5–15 N；探索数据同样提供动作标签,https://arxiv.org/html/2610.18852v1#S4.T1,表 1 与 §4.1 附加 Play 训练
+2610.18852,ForceWAM,ablation,四种未来预测输入的策略成功率,85/95/85/90；15/40/30/70；20/30/25/30；15/30/35/50,%,视觉＋力/力矩未来、仅视觉未来、仅力/力矩未来、无未来。各组都保留当前图像与实测力/力矩、采用相同示教和探索。任务顺序为滑动、翻盒、扰动翻盒、Hanoi,https://arxiv.org/html/2610.18852v1#S4.T2,表 2 Online Future-Conditioning Ablation
+2606.13102,FTP-1,data,预训练规模,约 3000 小时；26 个来源；21 种传感器,小时／来源／种,人手、灵巧手机器人、夹爪机器人混合；总轨迹数和去重任务数未核实，附录表 8 分来源登记。,https://arxiv.org/html/2606.13102v4#S2.SS4,§2.4；附录 C 表 8
+2606.13102,FTP-1,data,采集方式与训练采样,人手 20%，灵巧手机器人 30%，夹爪机器人 50%,%,重采样后的训练比例，不是原始时长比例；新采 Sharpa North 长程 4000 条为论文所述新采范围。,https://arxiv.org/html/2606.13102v4#S2.SS4,§2.4
+2606.13102,FTP-1,hardware,传感器与适配硬件,7 种图像式、5 种阵列式、9 种状态式；GelSight Mini／Sharpa DTC 为已见，Flexiv＋Robotiq＋Xense、Franka＋定制夹爪＋Contactile 为未见传感器设置,,全库相机配置和传感器原始分辨率无统一口径；逐来源原始分辨率未核实。,https://arxiv.org/html/2606.13102v4#A4.T9,附录 D 表 9；附录 C
+2606.13102,FTP-1,method,骨干与触觉接口,π0.5 骨干＋24 槽形态感知触觉 token 空间＋共享触觉 Transformer 专家；图像、阵列、状态分别编码,,图像式复用 T3 共享骨干；不同硬件的区域投影到同一接口，并保留左右手。,https://arxiv.org/html/2606.13102v4#S2,§2.1–2.3
+2606.13102,FTP-1,evaluation,已见传感器评测协议,UniVTAC 六任务各 100 次；真机每任务 20 次,次／任务,UniVTAC 提瓶、拔钥匙、提罐、放瓶、插孔、插管；真机含气球绘画、修手模型两阶段、拧盖、翻书及擦碟。,https://arxiv.org/html/2606.13102v4#S3.SS1,§3.1–3.2；附录 E.2
+2606.13102,FTP-1,ablation,已见传感器真机成功率,FTP-1 62.5；纯视觉 π0.5 45.3；Tactile-VLA 35.8；未预训练 FTP-π0.5 41.6,%,表中六个任务或阶段宏平均；仅接入触觉的基线低于原视觉基线。,https://arxiv.org/html/2606.13102v4#S3.T2,表 2
+2606.13102,FTP-1,transfer,未见传感器微调成功率,FTP-1 46.6；视觉 π0.5 15.0；未预训练 FTP-π0.5 15.0；Tactile-VLA 8.3,%,新建并学习传感器编码器后，三任务宏平均；插环、插 USB、擦板微调示范 100／100／50 条；每任务测试 20 次。,https://arxiv.org/html/2606.13102v4#S4.T3,§4.1 表 3；§3.1
+2606.13102,FTP-1,transfer,Dexmate 跨机器人微调,翻书／擦碟 85／60；视觉 π0.5 65／30,%,Dexmate 本体在预训练未见，Sharpa Wave 与 Sharpa DTC 已见；每任务微调 100 条，测试 20 次；改变本体与任务。,https://arxiv.org/html/2606.13102v4#S3.T2,表 2；附录 D 表 9；附录 E.2
+2606.13102,FTP-1,ablation,触觉预训练匹配轨迹对照,FTP-1 66.7 对视觉 π0.5 57.0；去掉两项偏视觉抬升任务 59.5 对 44.0,%,UniVTAC 成功率；相同机器人预训练轨迹及预算，触觉输入和专门架构联合改变。,https://arxiv.org/html/2606.13102v4#S4.T4,§4.3 表 4；附录 F.1
+2606.13102,FTP-1,ablation,同架构取消触觉预训练,FTP-1 66.66 对 NTP-1 50.00；排除两项抬升任务 59.5 对 36.5,%,相同预训练数据和优化设置，NTP-1 只在目标任务微调时加装触觉分支；UniVTAC 六任务。,https://arxiv.org/html/2606.13102v4#A5.T10,§4.2；附录 E.6 表 10
+2606.13102,FTP-1,scaling,触觉预训练规模与优化步数,0／50／100% 数据 × 0／25000／50000 步 → 45.2／59.0／66.7,UniVTAC 平均成功率 %,数据量与优化步数同时变化；排除两项抬升任务为 42.0／46.0／59.5。,https://arxiv.org/html/2606.13102v4#A6.T11,附录 F.2 表 11
+2606.13102,FTP-1,transfer,同架构跨传感器预训练对照,FlexivXense 上比 NTP-1 高 37.5,百分点,取消触觉预训练但恢复相同下游架构；本文正文报告差值，基线独立总体绝对值未核实。,https://arxiv.org/html/2606.13102v4#S4.SS2,§4.2，图 7
+2603.23481,VTAM,data,训练语料规模,薯片抓放 100，黄瓜削皮 61，白板擦拭 105；Xense 环件插入 100,演示轨迹,手动遥操；每任务独立训练；未用触觉或动作预训练，初始化视频骨干。四组相加 366 条，总训练小时数未核实。,https://arxiv.org/html/2603.23481v2#S4,v2 §4
+2603.23481,VTAM,hardware,相机、本体和触觉,xArm6＋单夹指 GelSight Mini＋两台 RealSense D455；Flexiv Rizon 4＋Xense Photon＋单腕相机,,训练图像 192×256；传感器原始成像分辨率未核实。采集和低层控制 30 Hz，闭环推理 1 Hz。,https://arxiv.org/html/2603.23481v2#S4,v2 §4、§4.1
+2603.23481,VTAM,method,触觉接入与训练阶段,GE-base 视频骨干、冻结共享视频 VAE；先用任务数据预测未来视觉与触觉潜变量，再联合训练流匹配动作专家和光流形变代理监督,,无需外部力传感器；光流代理不直接标定成力；推理只前向产生潜变量，无需生成整段视频。,https://arxiv.org/html/2603.23481v2#S3,v2 §3.1–3.3
+2603.23481,VTAM,evaluation,真机薯片抓放对照,VTAM 90%（18/20），纯视觉 π0.5 10%（2/20），直接加触觉的 π0.5 5%（1/20）,%／次,差值 80 个百分点；同 100 条薯片任务演示；纯视觉 π0.5 与 VTAM 骨干不同。初版同一结果在 v1 表 1。,https://arxiv.org/html/2603.23481v2#S5.T2,v2 §5.2 表 2；v1 §4.3 表 1
+2603.23481,VTAM,evaluation,真机三任务成功率,薯片抓放 90；黄瓜削皮 85；白板擦拭 95；任务宏平均 90.0,%,薯片 20 次、削皮连续 20 次、平／斜板擦拭各 20 次。削皮共享逐渐变化的同一黄瓜。,https://arxiv.org/html/2603.23481v2#S5.T2,v2 §4、§5.2 表 2
+2603.23481,VTAM,evaluation,UniVTAC 与大规模预训练模型,VTAM 83.4；N0-TWAM 全量 84.5；N0-VTLA 83.1；FTP-1 64.8；最强无触觉预训练对照 48.0,八任务成功率宏平均 %,任务为提瓶、拔钥匙、提罐、放瓶、插孔、插管、插 HDMI、抓握分类。VTAM 每任务 100 个种子，部分基线取自各自论文。,https://arxiv.org/html/2603.23481v2#S3.T1,v2 表 1；§4、§5.1
+2603.23481,VTAM,transfer,新触觉传感器和新本体上的任务训练,VTAM 75（15/20）；FTP-1 55（11/20）；纯视觉 π0.5 25（5/20）,%／次数,Flexiv＋Xense Photon 环件插入。冻结编码器零样本接入传感器，目标策略仍用 100 条环件插入演示训练。,https://arxiv.org/html/2603.23481v2#S5.T4,v2 表 4；§4
+2603.23481,VTAM,ablation,触觉进入世界模型与光流代理,完整薯片／擦板／环件 90／95／75；冻结 VAE 直接给动作专家 0／0／0；去光流代理 10／10／55,%,三个真机任务；保留触觉图像的接入结构也影响结果。,https://arxiv.org/html/2603.23481v2#S5.T5,v2 §5.4 表 5
+2603.23481,VTAM,ablation,省略阶段 I 的任务触觉世界建模,八任务均值 83.4→65.8；插孔反向变化 67→95,%,完整到省略阶段 I 的对照，仍在阶段 II 训练触觉策略；插孔是在同组中效果反向的任务。,https://arxiv.org/html/2603.23481v2#S5.T6,v2 §5.4 表 6
+2603.23481,VTAM,method,推理效率,VTAM 588／145；N0-TWAM 3393／5136；Fast-WAM 548／127,ms／动作块,单 NVIDIA L40S，BF16，批量 1；数值分别为 eager／compiled，在 UniVTAC 输入上测得。,https://arxiv.org/html/2603.23481v2#S5.T8,v2 §5.6 表 8
+2606.17055,T-Rex,data,分阶段训练数据,"人类第一视角 22,889 小时；机器人触觉中训练 100 小时；每项下游技能约 100 条演示",小时／演示,人类视频阶段学习头视语义和重定向手部动作，尚未启用触觉专家。,https://arxiv.org/html/2606.17055v2#S4.SS3,§4.3
+2606.17055,T-Rex,data,机器人触觉训练来源与任务,7755 条；207 个物体、22 个动作原语、502 个可行组合,轨迹／物体／原语／组合,双手机器人遥操；论文 100 小时中训练库。,https://arxiv.org/html/2606.17055v2#A7,附录 G
+2606.17055,T-Rex,data,公开下载子集,5464 条、5473459 帧，约 50.68 小时,轨迹／帧／小时,LeRobot 发布子集；按卡片 30 fps 折算。,https://huggingface.co/datasets/zekaiwang/trex_dataset#at-a-glance,数据卡 At a Glance
+2606.17055,T-Rex,hardware,本体、相机和触觉,Dexmate Vega-1＋双 22 自由度 Sharpa Wave；ZED X Mini 左目头视＋双 ZED X One S 腕视；10 指尖形变深度与六轴估算力矩,,三路 RGB 640×360、30 Hz；通过 Manus 手套与 VIVE 追踪器遥操。触觉图原始分辨率在论文中未核实。,https://arxiv.org/html/2606.17055v2#A4,附录 D、G
+2606.17055,T-Rex,method,双频动作策略与编码,混合 Transformer 专家；低频视动规划、高频触觉级联流匹配修正；时序力 VQ-VAE、触觉形变 CNN,,模型使用触觉修正下一段动作并保留视觉规划先验；传感触觉最初在机器人中训练加入。,https://arxiv.org/html/2606.17055v2#S4.SS2,§4.1–4.3；附录 C
+2606.17055,T-Rex,evaluation,任务设置与分数,12 项真机任务，每项 16 次,次／任务,翻页、运蛋、擦碟、涂膏、拆杯、分麻将、开锁、补药片、酸碱中和、抽卡、发牌、拧灯泡。多阶段任务有进度部分分。,https://arxiv.org/html/2606.17055v2#S5.SS1,§5.1 表 1，附录 F
+2606.17055,T-Rex,ablation,视觉基线和朴素触觉输入,T-Rex 65；EgoScale 35；π0.5 17；朴素加触觉 π0.5 6,进度计分后宏平均 %,12 项真机任务×16 次。EgoScale 仍有大规模人类第一视角预训练，和 T-Rex 在数据、训练阶段和策略结构上均有差异。,https://arxiv.org/html/2606.17055v2#S5.T1,§5.2 表 1
+2606.17055,T-Rex,ablation,同系统触觉及异步修正,完整 65；去触觉 42；只留形变 54；只留力 59；去异步 60,进度计分后宏平均 %,翻页、涂牙膏、拆杯、开锁、抽卡、拧灯泡六任务。,https://arxiv.org/html/2606.17055v2#S5.T2,§5.3 表 2
+2606.17055,T-Rex,ablation,人类预训练和机器人触觉中训练的贡献,两者均不用 18；只用触觉中训练 34；只用人类预训练 45；两者均用 65,六任务进度计分后宏平均 %,均有任务后训练；差值体现训练阶段和数据混合，不是随机对照的纯传感器效应。,https://arxiv.org/html/2606.17055v2#S5.T3,§5.3 表 3
+2606.17055,T-Rex,scaling,等时长中训练与下游演示规模,100 小时对象×动作原语库对 100 小时 11 任务库；后训练 10 至 200 条,小时／演示,匹配中训练时长；零样本抓方块 45 对 15，按按钮 35 对 10（原语库对 11 个专门任务库）。,https://arxiv.org/html/2606.17055v2#S5.F6,§5.3 图 5、6
+2606.17055,T-Rex,scaling,中训练降低目标任务示范数,涂牙膏 29／51／60／66／71 对 9／18／30／34／36；拆杯 36／59／70／78／85 对 17／33／42／52／55；抽卡 26／48／60／70／78 对 12／20／36／46／50,图示成功率 %,轴点 10／20／50／100／200 条目标演示；每对为有／无 100 小时机器人触觉中训练；均为图上标注。,https://arxiv.org/html/2606.17055v2#S5.F5,§5.3 图 5
+2611.01483,TF²-Steering,data,两阶段触觉数据混合,OpenNeoData 30%；T-Rex 40%；FTP-1-Sharpa 30%,%,相对采样权重。阶段一全部为触觉；阶段二 90% 触觉加 10% 无触觉骨干数据；实际使用总时长及总轨迹数未核实。,https://arxiv.org/html/2611.01483v1#A1.SS1.SSS2,附录 A.1.2 表 6
+2611.01483,TF²-Steering,data,数据来源与下游采集,骨干 AgiBot World、RoboMIND、Open X-Embodiment、RoboCOIN；真机遥操 600 条,示范,真机六任务各 100 条；触觉预训练阶段各 50000 步。,https://arxiv.org/html/2611.01483v1#A1.SS2.SSS1,附录 A.1.1、A.1.2、A.2.1
+2611.01483,TF²-Steering,hardware,机器人与相机,双 UR5e＋双 22 自由度 Sharpa 灵巧手；顶置 RealSense D455＋双腕 D405；Meta Quest＋Manus 遥操,,采集 30 Hz，触觉图预测训练帧 192×256、15 fps；指尖传感器原始分辨率及版本未核实。,https://arxiv.org/html/2611.01483v1#A1.SS2.SSS1,附录 A.1.2、A.2.1 图 5
+2611.01483,TF²-Steering,method,预测触觉和实时反馈接入,LTX-Video＋Q-Former＋流匹配动作专家；单向视觉条件触觉世界模型；触觉专家将预测和实测触觉转成流速度修正,,保留视觉到动作骨干，通过双支路修正流场并做异步反馈。,https://arxiv.org/html/2611.01483v1#S3.SS1,§3.1–3.3
+2611.01483,TF²-Steering,evaluation,评测任务与次数,真机每项 20 次，仿真 UniVTAC 六任务各 50 次,次数,真机水果上盘、拉拉链、擦板、拧盖、拆杯、滴管转移；仿真提瓶、拔钥匙、提罐、放瓶、插孔、插管，50 次口径适用于作者复跑方法。真机指标含阶段部分分。,https://arxiv.org/html/2611.01483v1#S4.SS1,§4.1；附录 A.2
+2611.01483,TF²-Steering,evaluation,真机进度成功率,TF²-Steering 71.5；T-Rex 62.4；FTP-1 52.7；π0.5 40.2；直接加入触觉拼图的 π0.5 35.2,进度宏平均 %,共同下游真机设置；朴素接入触觉降 5 个百分点；不能与二元成功率直接比较。,https://arxiv.org/html/2611.01483v1#S4.T2,表 2
+2611.01483,TF²-Steering,evaluation,UniVTAC 仿真二元成功率,TF²-Steering 68.3；FTP-1 57.7；π0.5 55.7；π0.5＋触觉 56.0,宏平均 %,六任务对比；拔钥匙任务全模型 34.0 低于 π0.5 36.0。,https://arxiv.org/html/2611.01483v1#S4.T1,表 1
+2611.01483,TF²-Steering,ablation,预测触觉与实时触觉,全量 72.3；仅实时 69.7；仅预测 63.0；两者都去 61.7；动作空间残差 61.3,进度宏平均 %,拧盖、拉拉链、拆杯三个任务，实时输入贡献大于预测输入。,https://arxiv.org/html/2611.01483v1#S4.T3,表 3
+2611.01483,TF²-Steering,ablation,跳过两阶段触觉预训练,图 4 四个真机任务均低于完整模型；精确未预训练分数未核实,,两条件均保留触觉观测和全部模块；不预训练时两个触觉模块随机初始化再任务后训练。,https://arxiv.org/html/2611.01483v1#S4.F4,§4.3 图 4；附录 A.3.2
+2611.01483,TF²-Steering,scaling,固定优化步数触觉规模曲线,未核实,,本文有跳过预训练的对照，未核实仅改变小时数的多点曲线。,https://arxiv.org/html/2611.01483v1#S4.SS3,§4.3
+2611.01483,TF²-Steering,transfer,独立留出新本体或触觉传感器实验,未核实,,真机主要用指定双臂同一平台，和跨来源预训练混合有别。,https://arxiv.org/html/2611.01483v1#A1.SS2.SSS1,附录 A.2.1
+2611.21057,WiTac,data,表征预训练语料,"SharpaDex v1.0 约 300 小时、28,993 段、59 任务",小时／段／任务,机器人遥操数据，LeRobot v2.1 与 v3.0 是同批导出；WiTac 将语料按轨迹分为 98%／2% 训练与验证，公开库数字来自发行数据卡。,https://huggingface.co/datasets/Sharpa-Robotics/SharpaDex-v1.0#dataset-at-a-glance,数据卡概览；论文 §3.2、附录 A.1
+2611.21057,WiTac,hardware,设备与输入维度,Sharpa North 双 Sharpa Wave 手，10 指×240×240 形变输入；双腕鱼眼 RGB＋机器人头部双目；65 维关节,,形变历史 8 帧、30 Hz；触觉分支腕图缩至 256×320。数据由外骨骼遥操，生效关节见数据卡。,https://arxiv.org/html/2611.21057v3#A1.SS1,§3.1、§4.1；附录 A.1–2
+2611.21057,WiTac,method,腕视角对齐接触表征,触觉时序＋指端位姿＋DINOv3 腕图融合，生成 10 个逐指接触 token；冻结编码器并以门控交叉注意力注入 GR00T N1.7／π0.5,,自监督目标为接触描述、形变历史、指端历史、遮挡腕图特征恢复及动作条件力矩变化；不需任务成功标签。,https://arxiv.org/html/2611.21057v3#S3.SS2,§3.1–3.3
+2611.21057,WiTac,evaluation,下游任务与次数,装电池、擦碗、拔插 USB、开柜门；各 200 条训练示范、20 次测试,示范／次数,四任务与 SharpaDex 预训练任务不重合；仍用同类 Sharpa Wave 平台，验证跨任务。,https://arxiv.org/html/2611.21057v3#S4.SS1,§4.1
+2611.21057,WiTac,transfer,同一触觉编码器接入两个策略骨干,GR00T 完整 66.3、去腕 47.5、原始 37.5；π0.5 完整 58.8、去腕 51.3、原始 43.8,闭环成功率宏平均 %,四个真机任务各 20 次；跨骨干复用，不是跨传感器或跨机器人测试。,https://arxiv.org/html/2611.21057v3#S4.T1,表 1；§4.2
+2611.21057,WiTac,ablation,腕视角防止误用触觉,USB 重新插入，GR00T 原始 10、无腕触觉 5、完整 WiTac 40,成功率 %,同一任务 20 次；保留腕视角的触觉有帮助，去腕版本弱于原始基线。,https://arxiv.org/html/2611.21057v3#S4.T1,表 1；§4.2
+2611.21057,WiTac,ablation,表征预训练、腕图监督与融合,完整 66.3；去表征预训练 53.8；去腕图恢复 58.8；分开接入 50.0,闭环成功率宏平均 %,GR00T 下游，真实四任务；无预训练变体仍冻结原图像形变编码器。,https://arxiv.org/html/2611.21057v3#S4.T5,§4.4 表 5
+2611.21057,WiTac,scaling,固定策略的触觉预训练小时曲线,未核实,,全文有预训练的有／无对照；未核实多数据预算对照。,https://arxiv.org/html/2611.21057v3#S4.SS4,§4.4
+2611.21057,WiTac,transfer,新触觉硬件或新机器人留出验证,未核实,,同一物理平台、不同下游技能和策略骨干。,https://arxiv.org/html/2611.21057v3#S4.SS1,§4.1
+2607.07287,TouchWorld,data,人手触觉到机器人世界模型,EgoTouch 头和腕 RGB／手姿／双掌压力；10 小时机器人配对示范、约 108 万帧,小时／帧,训练世界模型；实际使用的 EgoTouch 小时数和轨迹数未核实。人手与机器人触觉均转成图像网格。,https://arxiv.org/html/2607.07287v2#S3.SS2,§3.2
+2607.07287,TouchWorld,data,下游采集任务,六项任务、每项 200 条遥操作训练轨迹,任务／轨迹每任务,灌花、清理桌面、插杯、插电源插头、擦锅、抽纸。各阶段机器人数据相互重合程度未核实。,https://arxiv.org/html/2607.07287v2#S4.SS1,§4.1
+2607.07287,TouchWorld,hardware,机器人和遥操作配置,人形机器人＋Wuji 灵巧手＋JQ-Industries 触觉手套；Meta Quest 头显、Touch Plus 控制器、Wuji Glove 遥操,,导出头戴／腕 RGB、双手压力，模型片段训练 384×224；机器人型号及手套原始测点和视频分辨率未核实。,https://arxiv.org/html/2607.07287v2#S4.SS1,§4.1；图 3；§8
+2607.07287,TouchWorld,method,世界模型、动作和反馈,Qwen3-VL-4B 子任务规划；Wan2.2-TI2V-5B 预测未来视觉触觉目标；流匹配 VLA 给标称动作，触觉残差 Transformer 高频修正,,预测未来目标只在子任务或接触阶段变化时刷新，以降低推理开销。,https://arxiv.org/html/2607.07287v2#S8,§2、§3、§8
+2607.07287,TouchWorld,evaluation,清洁及扰动真机成功率,清洁 TouchWorld 65.0 对 FTP-1 49.3／π0.5 40.7；扰动 53.7 对 35.2／27.7,六任务宏平均 %,论文称每任务 100 次真机评估；100 次如何在两种设置之间分配未核实。,https://arxiv.org/html/2607.07287v2#S4.T1,表 1；§4.1
+2607.07287,TouchWorld,ablation,触觉输入、预测及在线修正,完整 65.0／53.7；去世界模型 60.2／51.2；去子任务规划 55.5／46.2；去高频修正 55.3／40.3；去触觉 43.3／30.0,六任务宏平均成功率 %,每对均为清洁／人工扰动，数值来自图 5 柱顶标注。,https://arxiv.org/html/2607.07287v2#S4.F5,§4.4 图 5
+2607.07287,TouchWorld,transfer,人手触觉预训练到机器人,用 EgoTouch 预训练再以 10 小时机器人示范适配,,混合训练流程改变触觉布局，转为共同图像网格；仅去掉人手预训练、保持其余一致的对照未核实。,https://arxiv.org/html/2607.07287v2#S3.SS2,§3.2；§4.4
+2607.07287,TouchWorld,scaling,独立数据规模扫描,未核实,,人手预训练和机器人适配的设置与固定计算量的多档规模对照不同。,https://arxiv.org/html/2607.07287v2#S3.SS2,§3.2
+2609.34182,UVTA,data,人手和机器人示范,5000 人手、750 机器人、5 个任务；各自 1000／150 条每任务,示范／任务,论文训练设置；人手来自穿戴触觉外骨骼，机器人来自 Sharpa North 遥操。总小时数未核实。发布目录规模可能和论文训练范围不同。,https://arxiv.org/html/2609.34182v2#A1.SS3,§III-B；附录 A-C
+2609.34182,UVTA,data,共同训练采样比例,人手 50%、机器人 50%,%,带放回等概率抽样，和 5000／750 的组成占比不同；每任务独立模型。,https://arxiv.org/html/2609.34182v2#A2,§IV-D；附录 B 表 2
+2609.34182,UVTA,hardware,人手和机器人感知设备,人手压阻 FSR，五指各四区；单腕鱼眼，双 Vive Tracker 3.0，22 自由度被动连杆外骨骼；机器人 Sharpa North＋Sharpa Wave 光学指尖,,作者记每个 FSR 活动区 15×15 mm²，腕视图处理为 224×224，共用主机时钟重采样 30 Hz；覆盖指尖，掌面未直接测量。,https://arxiv.org/html/2609.34182v2#S3.SS1,§III-A；附录 A-B、D
+2609.34182,UVTA,method,共享触觉与动作空间,触觉光学形变图按四区压缩成每手 20 维；动作 31 维（9 维相对腕＋22 维绝对关节）；ViT-S/8＋1D U-Net 扩散动作头＋并行未来触觉头,,每本体独立归一化；单阶段人机联合训练，未来触觉头只做训练监督。,https://arxiv.org/html/2609.34182v2#S4.SS2,§IV-B–D；附录 B
+2609.34182,UVTA,evaluation,任务与计分,翻页、拧灯泡、拨开关、按球材料分类、滴管移液；每项 10 次真实机器人试验,次数,按最高里程碑给部分分，五任务宏平均；固定目标平台。,https://arxiv.org/html/2609.34182v2#A3.SS2,§V-A；附录 C-B 表 3
+2609.34182,UVTA,ablation,触觉输入和预测监督,完整 70；去未来触觉预测 42；视觉单模态 26；加入关节本体状态 18；仅人手数据 0；T-Rex 29,阶段进度宏平均 %,五任务；未来触觉预测与输入观测的作用分开；单用人手动作不能验证纯人手替代执行真实机器人。,https://arxiv.org/html/2609.34182v2#S5.T1,§V-B 表 1
+2609.34182,UVTA,scaling,固定机器人示范增加人手触觉示范,每任务 0／250／500／750／1000 条人手 → 0／8／29／51／84,三任务阶段进度宏平均 %,机器人每任务固定 150 条；翻页、拧灯泡、拨开关；同架构、损失和评测，无头戴人手对照。,https://arxiv.org/html/2609.34182v2#S5.F5,§V-B 图 5；附录 C-C
+2609.34182,UVTA,transfer,人到单一机器人动作适配,人工触觉与动作映射加机器人可执行示范，完整 70 对仅人手 0,五任务阶段进度宏平均 %,真人与机器人共享视觉、触觉和动作字段；只支持对目标 Sharpa 平台的联合训练，未核实未见机器人测试。,https://arxiv.org/html/2609.34182v2#S5.T1,表 1；§IV-B、§V-B
+2406.13640,T3,data,FoTa 规模,300 万以上触觉数据点、13 种传感器、11 项标注任务,数据点、传感器、任务,多源公开及自采数据；录制小时与 episode 总数未核实,https://arxiv.org/html/2406.13640#S3,§3
+2406.13640,T3,hardware,触觉和采集,GelSight Wedge / Finray / Mini 等光学触觉；FoTa 加入多台架的触觉图、姿态和力等任务标签,,相机配置与分辨率按各源，统一原始规格未核实,https://arxiv.org/html/2406.13640#A1.SS4,附录 A.4
+2406.13640,T3,method,网络与监督,传感器专用输入编码器、共享 Transformer 主体、任务输出头；先掩码重建，再多任务监督与可选适配,,触觉表示预训练，插入技能用下游策略,https://arxiv.org/html/2406.13640#S4,§4
+2406.13640,T3,scaling,下游标注量和模型大小,"约 1,650 对 3,300；12M / 45M / 174M / 308M",训练样本、参数,24 种组合，预训练相对从零训练的分类改善中位数为论文所报 24%；这是下游标注量和模型大小,https://arxiv.org/html/2406.13640#S5.SS1,§5.1，图 3a
+2406.13640,T3,transfer,未见传感器,"2 个未见传感器 × 2 项已见任务；少样本再用 2,000 个样本",传感器、任务、样本,GelSight Svelte、DenseTact2.0。零样本分类接近随机，姿态估计优于均值；对应具体范围见图,https://arxiv.org/html/2406.13640#S5.SS2,§5.2，图 3c–d
+2410.24090,Sparsh,data,自监督图像,46 万以上触觉图像,图像,Touch-Slide、YCB-Slide、Touch and Go、ObjectFolder；小时数和 episode 总数未核实,https://arxiv.org/html/2410.24090#S1,§1、图 2
+2410.24090,Sparsh,hardware,输入,DIGIT、GelSight 等相机式设备；按各源用触觉图,,以压入、滑移等触觉片段构建训练；统一原始分辨率未核实,https://arxiv.org/html/2410.24090#S3,§3、图 2
+2410.24090,Sparsh,method,自监督,掩码建模与自蒸馏；比较 MAE、DINO、I-JEPA 等，任务头在冻结表示上训练,,通用触觉编码器,https://arxiv.org/html/2410.24090#S3,§3
+2410.24090,Sparsh,evaluation,TacBench 与监督量,6 项任务；主要用 33% 标签，迷宫用 50%,任务、标签比例,力、滑移、位姿、抓取稳定性、织物、珠子迷宫,https://arxiv.org/html/2410.24090#S4,§4、图 1
+2410.24090,Sparsh,ablation,相对 E2E,95.1,跨异质指标平均相对改善 %,论文平均量，含误差/准确率等不同量纲，不能当机器人成功率百分点,https://arxiv.org/html/2410.24090#S1,§1、图 1
+2401.18084,UniTouch,data,触觉预训练源,Touch and Go 120k；Feeling of Success 9.3k；YCB-Slide 183k；ObjectFolder 2.0 180k,表列样本,三类设备 GelSight、DIGIT、Taxim；录制小时与 episode 总数未核实,https://arxiv.org/html/2401.18084#S4,§4，表 1
+2401.18084,UniTouch,method,多模态对齐,把触觉映射到已有视觉语义空间；使用传感器专属 token，再服务材料分类、抓稳预测、检索与生成,,触觉表示，不提供同一动作策略的对照,https://arxiv.org/html/2401.18084#S3,§3.1–3.3
+2401.18084,UniTouch,transfer,域外材料识别,ObjectFolder Real 48.1→61.2；SSVTP 68.5→77.4,准确率 %,全源 VT CMC 对 UniTouch，域外数据集，表中 Linear Probing 区；用线性探针，不是机器人迁移,https://arxiv.org/html/2401.18084#S4.SS1,§4.1，表 2
+2401.18084,UniTouch,evaluation,基准和试验,Touch and Go、YCB-Slide、ObjectFolder、SSVTP；真机 rollout 次数未核实,,材料、抓稳、跨模态检索,https://arxiv.org/html/2401.18084#S4,§4，表 1
+2211.12498,Touch and Go,data,采集行为,两人协作，一人用传感器探触自然环境物体，另一人近似第一人称拍摄,,包含户内外硬物、织物等部位，接触式探测而非完整操作轨迹,https://arxiv.org/html/2211.12498#S3.SS1,§3.1
+2211.12498,Touch and Go,hardware,设备与采样,约 1.5 cm GelSight 相机式接触面，普通摄像头，同机录制约 27 Hz,cm、Hz,可从凝胶图估表面形状、深度与剪切；没有独立力计,https://arxiv.org/html/2211.12498#S3.SS1,§3.1，Hardware
+2211.12498,Touch and Go,method,训练目标,视触觉对比特征、触觉指导的材料风格生成、未来触觉预测,,采集者动作作为自然探触，未核实结构化机器人动作,https://arxiv.org/html/2211.12498#S4,§4
+2211.12498,Touch and Go,evaluation,迁移范围,材料识别、机器人抓稳预测和视触觉预测；试验次数未核实,,感知模型评测，未核实机器人控制成功率,https://arxiv.org/html/2211.12498#S5,§5
+2502.12191,AnyTouch,data,数据规模,传感器组扩张实验 996k、2161k、2388k、2427k,样本,四组数据量和传感器组成均变化；小时、episode 总数未核实,https://arxiv.org/html/2502.12191#S5.SS2,§5.2，表 1
+2502.12191,AnyTouch,hardware,同接触采集,TacQuad 用 GelSight、GelSlim、DIGIT、GelSight Mini 等光学传感器构建跨传感器配对,,外部 RGB 与文本供对齐，统一原始分辨率未核实,https://arxiv.org/html/2502.12191#S3,§3
+2502.12191,AnyTouch,method,目标,触觉图像与视频编码，掩码重建、跨模态对齐与跨传感器匹配；支持缺失模态,,触觉表示，允许低成本未配齐数据继续训练,https://arxiv.org/html/2502.12191#S4,§4.1–4.6
+2502.12191,AnyTouch,scaling,同域和域外走势,996k→2427k：同域 TAG 83.55→79.70；未见传感器 OF 1.0 46.12→48.75,准确率 %,扩大数据同时变更来源构成，同域与域外收益方向可不同,https://arxiv.org/html/2502.12191#S5.SS2,§5.2，表 1
+2502.12191,AnyTouch,evaluation,验证类型,已见和未见传感器静态感知，及真实倒水动态感知,,具体真机任务试验次数未核实,https://arxiv.org/html/2502.12191#A1.SS8,附录 A.8
+2609.34286,Dexterous Tactile World Model,data,EgoTouch 筛后规模,"1,926 段、20.21 小时；训练 1,338 段、17.51 小时、174 种任务",段、小时、种,"训练 38,600 片段；按相近录制会话隔离；EgoTouch 数据复用",https://arxiv.org/html/2609.34286#A1,附录 A，Clips 和 Splits
+2609.34286,Dexterous Tactile World Model,hardware,人手信号与相机,双手 21×21 压力格，主第一人称画面；训练帧重排至 384×512,,压力来源为实测，手位置来自视觉重建；此尺寸为模型输入,https://arxiv.org/html/2609.34286#A1,附录 A–B
+2609.34286,Dexterous Tactile World Model,method,手部空间条件,把对应手的触觉投影到视频 DiT 手部 token 位置，在多层注入触觉残差,,用历史图像、压力和手姿预测未来视频，未来动作与压力不给模型,https://arxiv.org/html/2609.34286#S3.SS2,§3.2
+2609.34286,Dexterous Tactile World Model,ablation,匹配架构视觉基线,ID 0.4243→0.4157；OOD 0.4882→0.4774,LPIPS ↓,"视觉基线触觉置零，等架构/参数/训练处方；3,000 个片段中 OOD 272 个。指标是画面预测误差",https://arxiv.org/html/2609.34286#S4.SS2,§4.2，表 1
+2609.34286,Dexterous Tactile World Model,evaluation,预测和 OOD,36 帧、1.2 s；OOD 是推车、拉椅子、用温度计三类,帧、秒、任务,没有机器人执行成功率,https://arxiv.org/html/2609.34286#S4.SS1,§4.1、附录 A 表 3
+2611.29240,Tacinf,data,混合源实验规模,6 项真实基础任务，每源每单位 30 段/任务；最佳 real:sim:UMI = 1:5:1,段、配比,比例是混合训练样本量，非时长；总录制小时未核实,https://arxiv.org/html/2611.29240#S4.SS8,§4.8，混合数据对照表
+2611.29240,Tacinf,hardware,手持采集与部署,手持平行夹爪用 Xense 光学触觉、VR 位姿、外部相机和主动反馈；夹爪马达与机器人部署共用,,Taxim/FOTS 接触仿真与同任务真机对照,https://arxiv.org/html/2611.29240#S3.SS3,§3.3
+2611.29240,Tacinf,method,方法与控制,VTLA 同时预测动作和夹指目标力；语言区分轻/重，用目标力控制器执行,,分离触觉输入、力监督和部署反馈,https://arxiv.org/html/2611.29240#S3.SS2,§3.2、§4.3
+2611.29240,Tacinf,transfer,新物体和位置,真机遥操单源 20，遥操+仿真+手持 60,平均成功率 %,新物体及位置同时变化；三源增加规模和覆盖，不能只归因为多数据。手持单源在低数据对照表现弱,https://arxiv.org/html/2611.29240#S4.SS8,§4.8
+2611.29240,Tacinf,evaluation,任务和试验,力控制和特殊物体两类；仿真 50、真机力任务 20、真机特殊任务 10,次/任务,力目标跟踪、擦板、卡片沿槽滑动、转旋钮；评测设置/任务详见附录 B,https://arxiv.org/html/2611.29240#S4,§4、附录 B
+2005.14679,DIGIT,hardware,光学传感,紧凑相机、凝胶、内部照明；多指配备以支持手内操作,,单传感器设计与原型，采集总小时/episode 未核实,https://arxiv.org/html/2005.14679#S3,设计与实现
+2005.14679,DIGIT,evaluation,机器人验证,Allegro 手上用触觉与自监督运动实现手内滚珠,,具体试验次数未核实，属硬件验证而非多本体预训练,https://arxiv.org/html/2005.14679#S5,手内操作实验
+1805.11085,More Than a Feeling,data,抓取训练,"约 6,450 次试验、65 个以上训练物体",次、物体,同一双指机器人夹具，随机抓取产生训练数据；时长未核实,https://arxiv.org/html/1805.11085#S4,数据采集
+1805.11085,More Than a Feeling,hardware,触觉与视觉,两片 GelSight 安装在机器人双指夹爪，另有外部 RGB,,光学凝胶接触观测,https://arxiv.org/html/1805.11085#S3,模型与实验装置
+1805.11085,More Than a Feeling,method,动作条件模型,从触觉和图像预测给定重抓动作的后果，利用预测进行重抓选择,,早期以执行动作闭环使用触觉的对照,https://arxiv.org/html/1805.11085#S3,动作条件模型
+1805.11085,More Than a Feeling,ablation,容易物体重抓,视觉 63.2，视觉＋触觉 94.0,跨物体平均成功率 %,各物体试验数不一致，表列分子分母；两种模型皆为闭环重抓,https://arxiv.org/html/1805.11085#S5,真实机器人结果，两张重抓结果表
+2611.20718,TaF-Foundation,data,对齐触觉与参考力矩,一亿以上配对触觉观测与六维力／力矩、24 个传感器、4 类感测机制,样本、传感器、类型,主要为台架受控接触，样本数不等于自然操作时长；时长和 episode 未核实,https://arxiv.org/html/2611.20718#S3,§3、附录 A
+2611.20718,TaF-Foundation,method,跨传感器共同监督,独立参考六维力矩监督共享编码器；不要求不同传感器互相录到同一次接触,,传感器前端加共同力矩目标，另训练 TaF-Policy,https://arxiv.org/html/2611.20718#S4,§4
+2611.20718,TaF-Foundation,transfer,表示评测,单帧力 RMSE 相对下降 17.1，跨传感检索 R@1 提高 13.11,相对 %、百分点,与论文最强基线比较；未见传感器另有少样本实验,https://arxiv.org/html/2611.20718#S5.SS2,§5.2–5.3
+2611.20718,TaF-Foundation,evaluation,策略指标,仿真 51.33 对 47.33；真实 46.25 对 23.75,成功率 %,仿真 3 项，真实 4 项；为同任务集最强对照，每项试验数见 §5.5/附录 C.5,https://arxiv.org/html/2611.20718#S5.SS5,§5.5、附录 C.5
+2611.25683,TipDex-VTLA,method,稀疏地用触觉,视觉不稳定时根据预测触觉和当前传感数据修正慢策略的下一动作；先训扩展结构，再训触觉修正,,视觉光照变化和突然变换为核心设置,https://arxiv.org/html/2611.25683#S3,§3.1–3.4
+2611.25683,TipDex-VTLA,data,公开试验数据,公开样例 50 段鸡蛋转移原录，另 50 段为同源光照扰动,段,这是发布文件 scope，训练全部录像时长未核实,https://huggingface.co/datasets/TipDex-VTLA/TipDex-Data/tree/main,数据卡及文件目录
+2611.25683,TipDex-VTLA,hardware,本体,RealMan RM75 双臂、Inspire RH56F2-E2-T1，头顶/高视角及双腕 RGB；右手传感读数,,公开包传输字段 364 为传输数值数，不能当物理测点,https://arxiv.org/html/2611.25683#S4.SS1,§4.1
+2611.25683,TipDex-VTLA,evaluation,视觉扰动实机,接触丰富和灵巧任务对比 T-Rex、N0-VTLA，重点对抗光照扰动,,数值取 §4.2 图表，各任务具体试验数未核实,https://arxiv.org/html/2611.25683#S4.SS2,§4.2

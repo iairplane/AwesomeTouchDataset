@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PEARS: Physical-Prior-Guided Efficient Adaptation via Failure Reasoning and Diffusion Steering for Tactile Manipulation</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a></nav><div class="paper-meta"><p>中文导读 · arXiv:2610.08784v1</p><p><a href="https://arxiv.org/html/2610.08784v1">英文 HTML</a> · <a href="https://arxiv.org/pdf/2610.08784v1">英文 PDF</a> · <a href="https://arxiv.org/licenses/nonexclusive-distrib/1.0/">arXiv 非独家分发许可 1.0</a></p></div><h1>PEARS 中文精读｜把接触失败变成下一轮的训练信号</h1>
+<h2>问题</h2>
+<p>真机适配时，光记录一次失败，下一轮还得摸索错在位置、时机还是力的大小。PEARS 给策略保留一条调整运动和接触时机的通路，再用视觉结果与触觉历史推断下一轮该把力限制在哪个范围。这样的分工适合那些力太小会打滑、力太大又会损坏物体的任务。<a href="https://arxiv.org/abs/2610.08784v1">原文摘要</a> · <a href="https://arxiv.org/html/2610.08784v1#S4">方法总览</a></p>
+<h2>数据、传感与后训练</h2>
+<p>每项任务先用 50 条离线示教微调 GR00T N1.7。腕部与固定第三视角图像均缩放至 224×224，双夹指各提供六维力与力矩。薄片和两项真机任务的基础策略读取视觉、语言指令和本体状态。在线阶段，触觉条件强化学习通过调整流匹配的初始噪声来修正运动，基础策略权重冻结。力推理模块在每回合结束后更新力的上下限，下一回合再由低层力位控制器落实。机器人型号、传感原理与测点分辨率在全文中未核实。<a href="https://arxiv.org/html/2610.08784v1#S4.SS1">基础策略</a> · <a href="https://arxiv.org/html/2610.08784v1#S5.SS1">任务示教</a></p>
+<h2>读仿真与真机实验</h2>
+<p>仿真做薄片搬运、拧瓶盖、摘软果。各方法在线学习 3 轮，每轮 100 个回合，完成后每轮再测试 100 次。拧瓶盖时，PEARS 在第 22 回合达到 80% 滚动成功率，最快基线需 47 回合。真机每项给适配方法 40 轮交互，再独立测试 20 次。擦白板是冻结基础策略 11/20、DSRL 15/20、PEARS 19/20；移液是 8/20、12/20、18/20。在线达到阈值的时间和训练后的独立成功率对应不同问题。<a href="https://arxiv.org/html/2610.08784v1#S5.T1">仿真表 I</a> · <a href="https://arxiv.org/html/2610.08784v1#S5.SS2">在线指标</a> · <a href="https://arxiv.org/html/2610.08784v1#S5.T3">真机表 III</a></p>
+<h2>对数据采集的启发</h2>
+<p>仿真摘软果用完整方法达 77.7%，只做 DSRL 为 40.3%，把力界固定在初始推断值为 44.0%。只保留力推理和低层控制而去掉 DSRL，仍能达到 61.7%。采集时可以保留失败的视觉结果、连续力曲线和任务阶段，便于回看是夹得过重，还是拉力不足。在线预算对应的是已有离线示教后的目标任务适配。论文的对照同时考察力推理与控制器，对跨传感器或跨本体效果仍缺匹配评测。<a href="https://arxiv.org/html/2610.08784v1#S5.T2">消融表 II</a> · <a href="https://arxiv.org/pdf/2610.08784v1">官方 PDF</a></p>
+</main>
+</html>

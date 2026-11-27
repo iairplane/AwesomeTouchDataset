@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SimpleTouch: Can Vision-Language-Action Models Master Contact-Rich Manipulation Without Tactile Policy Pretraining?</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a></nav><div class="paper-meta"><p>中文导读 · arXiv:2610.02784v1</p><p><a href="https://arxiv.org/html/2610.02784v1">英文 HTML</a> · <a href="https://arxiv.org/pdf/2610.02784v1">英文 PDF</a> · <a href="https://arxiv.org/licenses/nonexclusive-distrib/1.0/">arXiv 非独家分发许可 1.0</a></p></div><h1>SimpleTouch 中文精读｜少量示教怎样教会策略用触觉</h1>
+<h2>问题</h2>
+<p>如果已有视觉动作骨干和触觉编码器，还要不要拿一批触觉轨迹把策略再预训练一遍？SimpleTouch 把学习分成两件事。T3 已学会从胶面图里提取接触特征，新增的触觉专家负责在目标任务里学会用这些特征改变动作。论文从训练样本怎么用、触觉信息保留多少，以及预测信号何时参与控制三个角度检验这个做法。<a href="https://arxiv.org/abs/2610.02784v1">原文摘要</a> · <a href="https://arxiv.org/html/2610.02784v1#S3">方法</a></p>
+<h2>设备与训练</h2>
+<p>真机为 PiPER 机械臂、Pika 平行夹爪，两个夹指各装一枚 GelSight Mini。触觉原始图为 640×480、25 Hz，示教按最近时间戳把图像、触觉和关节消息对齐到 20 Hz。策略从 π0.5 初始化，冻结 T3，每个传感器保留 197 个当前触觉 token。训练时，每隔 5 步预测一次未来触觉，直到第 50 步。动作分支部署时直接读当前触觉缓存，预测任务只在训练阶段提供监督。<a href="https://arxiv.org/html/2610.02784v1#A3.SS2">平台与同步</a> · <a href="https://arxiv.org/html/2610.02784v1#A1.SS1.fig1">训练配置</a></p>
+<h2>真机对照与触觉消融</h2>
+<p>每项任务各用 50 条示教。UniVTAC 六项平均成功率 77.5%，FTP‑1 为 66.7%，每项测试 100 次。真机四项均值为 71.3% 和 62.5%，每项测试 20 次，其中插 USB 均为 30%。更接近受控实验的是四个仿真任务的消融。纯视觉、只保留每传感器一个汇总 token、保留完整触觉特征，均值依次为 39.0%、57.5%、74.3%。固定当前触觉通路，去掉未来预测后均值为 68.8%，只预测最后一步为 68.5%。<a href="https://arxiv.org/html/2610.02784v1#S4.T1">仿真表 1</a> · <a href="https://arxiv.org/html/2610.02784v1#S4.T2">真机表 2</a> · <a href="https://arxiv.org/html/2610.02784v1#S4.SS3">消融</a></p>
+<h2>怎么读数据量曲线</h2>
+<p>用 20 条示教，放瓶和插孔成功率为 38% 和 57%，均超过 FTP‑π0.5 用 50 条示教得到的 19% 和 47%。两者都有 T3 和触觉专家，差别包括编码器是否冻结、当前特征保留多少和有无预测监督。放瓶中 SimpleTouch 从 50 条到 100 条由 50% 降至 46%。跨本体、跨传感器的零样本效果仍待检验。<a href="https://arxiv.org/html/2610.02784v1#S4.SS4.fig1">预算实验</a></p>
+<p>部署时也有一个可直接对照的选择。保留未来触觉作为训练目标，在测试时直接从当前观测生成动作，平均耗时 0.623 秒。把未来触觉与动作联合生成则耗时 1.020 秒，四项成功率均值由 74.3% 降到 70.3%。训练用了预测目标，部署端因此可以省掉这一路生成开销。<a href="https://arxiv.org/html/2610.02784v1#S4.SS5">推理效率</a> · <a href="https://arxiv.org/pdf/2610.02784v1">官方 PDF</a></p>
+</main>
+</html>

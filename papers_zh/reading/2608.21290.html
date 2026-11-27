@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VT-MUSE: Multimodal Unified Sequential Visuotactile Representation Learning for Manipulation</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a></nav><div class="paper-meta"><p>中文导读 · arXiv:2608.21290v4</p><p><a href="https://arxiv.org/html/2608.21290v4">英文 HTML</a> · <a href="https://arxiv.org/pdf/2608.21290v4">英文 PDF</a> · <a href="https://arxiv.org/licenses/nonexclusive-distrib/1.0/">arXiv 非独家分发许可 1.0</a></p></div><h1>VT-MUSE 论文导读</h1>
+<p>VT-MUSE 想解决的是视觉和触觉的互补信息如何保留到策略输入里。相机能看清整体运动，触觉更容易辨认接触面的变化。作者先用两类信号的时间关系训练共享表示，再让轻量策略读取冻结表示。阅读时可以把表示训练、策略训练和最终动作评测分别看，才能判断各个阶段需要哪些数据。<a href="https://arxiv.org/html/2608.21290v4#S3">原文 §III</a></p>
+<h2>数据和方法</h2>
+<p>仿真表示训练覆盖四项 UniVTAC 任务，每项 500 段轨迹，策略使用基准发布的每任务 50 段示教。真机用 Flexiv Rizon 4s、XenseGripper 和外部相机，力反馈遥操作获得 200 段示教，四个任务每项 50 段。真机的表示与策略阶段复用同一批任务轨迹。表示先学习跨模态时序对齐，再加入遮挡重建和触觉深度流预测。训练策略时，带门控的交叉注意力读取冻结的视觉触觉表示。<a href="https://arxiv.org/html/2608.21290v4#S3">方法 §III-C–D</a> · <a href="https://arxiv.org/html/2608.21290v4#S4.SS1">采集与协议 §IV-A</a></p>
+<h2>两组对照应该一起看</h2>
+<p>在插管、擦板、拉抽屉和按烤面包机的真机实验中，每任务测试 20 次。纯视觉 ACT、直接读取视触觉的 ACT 和完整 VT-MUSE 的总体成功率分别为 26.25%、31.25%、95.00%。三者的下游示教预算相同，完整系统同时改变了时间上下文和融合方式。仿真表 IV 对预测目标的拆分更细，完整方法为 55.25%，去掉触觉深度流为 38.75%，去掉视觉重建为 37.00%。这组对照更适合判断预训练目标带来的收益。<a href="https://arxiv.org/html/2608.21290v4#S4.T2">真机表 II</a> · <a href="https://arxiv.org/html/2608.21290v4#S4.T4">消融表 IV</a></p>
+<h2>怎么复用这套思路</h2>
+<p>可以先在少量、反复发生接触变化的任务上复现。让预训练学习哪段视觉轨迹对应哪段触觉，再比较普通特征拼接与时间上下文融合。比如插管时单独记录初次接触、偏孔、重新对准和插入成功，测试模型能否在每个阶段读对信号。论文的主要真机结果覆盖同组任务，跨传感器和跨设备的效果还要用留出设备的实验确认。建议读完 §III 转到表 II 和表 IV，最后回到 §IV-A 检查真机与仿真的训练来源。<a href="https://arxiv.org/html/2608.21290v4#S4">实验与消融 §IV</a></p>
+</main>
+</html>

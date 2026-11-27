@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spark-0: Scaling Spatially Aligned Tactile Pretraining for Robot Dexterous Manipulation</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a></nav><div class="paper-meta"><p>中文导读 · arXiv:2610.22342v1</p><p><a href="https://arxiv.org/abs/2610.22342v1">原文页面</a> · <a href="https://arxiv.org/pdf/2610.22342v1">英文 PDF</a> · <a href="https://arxiv.org/licenses/nonexclusive-distrib/1.0/">arXiv 非独家分发许可 1.0</a></p></div><h1>Spark-0 论文导读</h1>
+<p>Spark-0 最值得看的是触觉有两种用法。训练阶段，用手套接触位置和现成三维几何教师监督视觉表示。部署阶段，另一条输入路径可以把分区域力历史和三维触点提供给动作专家。这使同一个检查点既可用纯视觉部署，也可在有触觉的机器手上继续利用实时接触。两个训练目标的混合关系见正文第 4 节。<a href="https://arxiv.org/pdf/2610.22342#page=6">原文 PDF §4</a></p>
+<h2>人手数据和传感布局</h2>
+<p>HumanTouch 的论文训练规模为 1,000 小时，涵盖 100 项以上任务和 32 名操作者。人戴一层压力手套和一层 Manus 跟踪手套，另有腕部定位和头、双腕摄像头。论文按每手 460 个存储位置打包，训练中屏蔽 140 个容易受弯曲干扰的位置。采集设备还可以移到 WUJI Hand 2 上录机器人触觉。附录表 5 给真人触觉、EgoDex、真人与机器人其他来源分别设置采样权重。训练时的抽样曝光和源数据时长各有口径。<a href="https://arxiv.org/pdf/2610.22342#page=15">设备与 HumanTouch §3、附录 A</a> · <a href="https://arxiv.org/pdf/2610.22342#page=19">附录表 5</a></p>
+<h2>最关键的三档对照</h2>
+<p>表 4 固定视觉数据和预训练计算量，比较去掉触觉、保留 100 小时触觉、保留 1,000 小时触觉。Ego Humanoid 的平均成功率依次是 52.45%、59.42%、71.72%，目标机器人部署时使用纯视觉。SparkArena-Real 是 44%、40%、52%，同时有部署触觉。仿真是 36.57%、35.14%、36.86%。因此，小规模触觉已有收益的说法要注明评测轨道。千小时的提升也应按这套任务和训练协议来读。<a href="https://arxiv.org/pdf/2610.22342#page=10">表 4 与 §6.1–6.3</a></p>
+<h2>读完可以怎么判断自家数据</h2>
+<p>先看附录采集图，明确原始压力、手姿、相机标定各自支持什么对齐，再看表 4 的三档实验。做自家消融时，可在同一批同步视频内固定视觉样本曝光和总优化步数，分别保留不同量的触觉。评测也分开安排纯视觉部署和带触觉部署，才能测清触觉到底改善了视觉预训练，还是主要在执行时提供反馈。对 H2，尤其要保留目标本体与目标任务微调数据的单独说明。<a href="https://arxiv.org/pdf/2610.22342#page=15">附录 A 与评测附录 E</a></p>
+</main>
+</html>

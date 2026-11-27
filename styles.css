@@ -36,6 +36,8 @@ button { cursor: pointer; }
 .intro { padding: clamp(25px, 3.1vw, 42px) 0 24px; }
 h1 { font-size: clamp(36px, 4.8vw, 62px); line-height: 1.14; letter-spacing: -.06em; margin: 0 0 9px; }
 .intro-text { max-width: 68ch; color: var(--muted); font-size: clamp(1rem, 1.6vw, 1.12rem); }
+.resource-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; }
+.resource-links a { font-size: .92rem; font-weight: 680; }
 .composition { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); list-style: none; padding: 0; margin: 14px 0; border-block: 1px solid var(--line); }
 .composition li { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; padding: 9px 13px; min-width: 0; }
 .composition li:first-child { padding-left: 0; }

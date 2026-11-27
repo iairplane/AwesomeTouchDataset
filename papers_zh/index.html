@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>触觉基础模型｜中文论文读本</title><link rel="stylesheet" href="reading.css">
+<main><h1>触觉基础模型｜中文论文读本</h1>
+<p class="muted">37 篇论文 · 20 篇中文译稿 · 17 篇中文导读</p>
+<p>从触觉表征到操作策略与世界–动作模型。每篇提供固定版本的原文与 PDF 入口。机器译稿保留英文技术名词，中文导读聚焦关键实验并链接原文章节。</p>
+<nav class="top" aria-label="读本导航"><a href="../">数据集首页</a><a href="../research/">调研报告</a><a href="#reading-order">推荐阅读顺序</a><a href="#tactile_representation">触觉表征</a><a href="#policy_vla">操作策略与 VLA</a><a href="#world_model">世界模型与世界–动作模型</a></nav>
+<section id="reading-order" aria-labelledby="reading-order-title"><h2 id="reading-order-title">推荐阅读顺序</h2>
+<div class="table-scroll"><table class="reading-order"><thead><tr><th scope="col">论文</th><th scope="col">优先看</th><th scope="col">要回答的问题</th></tr></thead><tbody>
+<tr><th scope="row">1. <a href="reading/2608.29601.html">N0‑Foundation</a></th><td>§4、表 3</td><td>先掌握 NeoData 的采集组成，再看触觉和 NeoForce 接到同一个策略后的差别。</td></tr>
+<tr><th scope="row">2. <a href="reading/2610.22342.html">Spark‑0</a></th><td>表 4</td><td>固定视觉数据和算力，比较 0／100／1,000 小时人手触觉。关注哪些任务先受益。</td></tr>
+<tr><th scope="row">3. <a href="reading/2606.13102.html">FTP‑1</a></th><td>§4.1–4.3</td><td>分开看换传感器和换机器人两种迁移，记下目标端还用了多少示教。</td></tr>
+<tr><th scope="row">4. <a href="reading/2606.17055.html">T‑Rex</a></th><td>图 5–6</td><td>等时长下，比较按完整任务录制与按接触动作、物体组合录制。</td></tr>
+<tr><th scope="row">5. <a href="reading/2610.02784.html">SimpleTouch</a>、<a href="reading/2603.23481.html">VTAM</a></th><td>SimpleTouch 图 6、VTAM 表 2 和表 6</td><td>用少量示教评估当前触觉与未来触觉预测，比较模型需要的训练数据。</td></tr>
+<tr><th scope="row">6. <a href="reading/2607.23782.html">N0‑VTLA</a>、<a href="reading/2607.23783.html">N0‑TWAM</a></th><td>方法总图与触觉消融</td><td>先看动作专家怎样用预测触觉，再看联合预测视频、触觉和动作的建模方式。</td></tr>
+</tbody></table></div><p class="muted">时间有限时，先读前三篇，记下用了多少数据、固定了什么、哪些任务有提升。</p></section>
+<section id="tactile_representation"><h2>触觉表征 · 6 篇</h2><ul class="directory">
+<li><div class="entry"><a href="reading/2401.18084.html">将触觉与一切相连 统一多模态触觉表征学习</a><span>2401.18084v1 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2401.18084v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2406.13640.html">可迁移触觉 Transformer｜跨多种传感器与任务的表征学习</a><span>2406.13640v3 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2406.13640v3">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2410.24090.html">Sparsh: Self-supervised touch representations for vision-based tactile sensing</a><span>2410.24090v1 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2410.24090v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2502.12191.html">AnyTouch ｜面向多种视触觉传感器的统一静态与动态表征学习</a><span>2502.12191v3 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2502.12191v3">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2608.21290.html">VT-MUSE: Multimodal Unified Sequential Visuotactile Representation Learning for Manipulation</a><span>2608.21290v4 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2608.21290v4">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2611.20718.html">TaF-Foundation: Wrench-Grounded Cross-Sensor Tactile Representations</a><span>2611.20718v1 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2611.20718v1">PDF</a></div></li>
+</ul></section>
+<section id="policy_vla"><h2>操作策略与 VLA · 19 篇</h2><ul class="directory">
+<li><div class="entry"><a href="reading/1805.11085.html">More Than a Feeling: Learning to Grasp and Regrasp using Vision and Touch</a><span>1805.11085v2 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/1805.11085v2">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2303.10880.html">Rotating without Seeing: Towards In-hand Dexterity through Touch</a><span>2303.10880v4 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2303.10880v4">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2312.01853.html">机器人联觉｜基于视触觉感知的手内操作</a><span>2312.01853v3 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2312.01853v3">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2410.24091.html">3 D-ViTac｜通过视触觉感知 学习精细操作</a><span>2410.24091v2 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2410.24091v2">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2503.02881.html">Reactive Diffusion Policy: Slow-Fast Visual-Tactile Policy Learning for Contact-Rich Manipulation</a><span>2503.02881v3 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2503.02881v3">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2602.05513.html">DECO｜用于双手灵巧操作的解耦多模态扩散 Transformer 配备可插拔触觉适配器</a><span>2602.05513v4 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2602.05513v4">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2606.13102.html">FTP‑1 面向富接触操作的跨传感器通用触觉基础策略</a><span>2606.13102v4 · CC BY-SA 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2606.13102v4">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2606.17055.html">T-Rex 基于触觉反馈的灵巧操作</a><span>2606.17055v2 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2606.17055v2">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2607.23782.html">N₀‑VTLA 利用潜在触觉 Tokens 扩展视觉—触觉—语言—动作模型</a><span>2607.23782v1 · CC BY-NC-SA 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2607.23782v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2608.29601.html">N₀‑Foundation 迈向触觉智能时代</a><span>2608.29601v2 · CC BY-NC-SA 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2608.29601v2">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2609.34182.html">面向灵巧操作的统一视觉—触觉—动作建模——基于人类示教</a><span>2609.34182v2 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2609.34182v2">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2610.02784.html">SimpleTouch: Can Vision-Language-Action Models Master Contact-Rich Manipulation Without Tactile Policy Pretraining?</a><span>2610.02784v1 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2610.02784v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2610.08784.html">PEARS: Physical-Prior-Guided Efficient Adaptation via Failure Reasoning and Diffusion Steering for Tactile Manipulation</a><span>2610.08784v1 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2610.08784v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2610.10384.html">OpenViTac ：在统一的仿真与真机框架中学习和评测视触觉策略</a><span>2610.10384v1 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2610.10384v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2610.22342.html">Spark-0: Scaling Spatially Aligned Tactile Pretraining for Robot Dexterous Manipulation</a><span>2610.22342v1 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2610.22342v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2611.21057.html">WiTac：结合腕部视觉的触觉表征 面向接触密集型操作</a><span>2611.21057v3 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2611.21057v3">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2611.25683.html">TipDex-VTLA: Learning to Refine Actions with Visual Reliability and Tactile Feedback for Dexterous Manipulation</a><span>2611.25683v2 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2611.25683v2">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2611.28752.html">VTLA -RL：学习能够适应负载变化的 视触觉抓取策略</a><span>2611.28752v1 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2611.28752v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2611.29240.html">Tacinf——面向机器人操作的统一触觉基础设施</a><span>2611.29240v1 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2611.29240v1">PDF</a></div></li>
+</ul></section>
+<section id="world_model"><h2>世界模型与世界–动作模型 · 12 篇</h2><ul class="directory">
+<li><div class="entry"><a href="reading/2603.23481.html">VTAM: Efficient Visuo-Tactile World-Action Models for Contact-Rich Manipulation without Tactile Pretraining</a><span>2603.23481v2 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2603.23481v2">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2607.02840.html">TACO: TActile World Model as a Self-COrrector for Scalable Robot Policy Post-Training</a><span>2607.02840v2 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2607.02840v2">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2607.07287.html">TouchWorld: A Predictive and Reactive Tactile Foundation Model for Dexterous Manipulation</a><span>2607.07287v2 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2607.07287v2">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2607.23783.html">N₀‑TWAM 面向富接触操作的原生触觉世界—动作模型规模化训练</a><span>2607.23783v1 · CC BY-NC-SA 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2607.23783v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2607.28391.html">TacWAM：锚点引导的世界–动作模型与力学感知触觉预测</a><span>2607.28391v2 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2607.28391v2">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2609.05266.html">TacPAC: Tactile Prediction and Real-Time Action Correction in World-Action Models for Contact-Rich Manipulation</a><span>2609.05266v1 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2609.05266v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2609.23888.html">HapticWAM: Distilling Imagined Touch into a World-Action Model without Inference-Time Tactile Sensing</a><span>2609.23888v1 · CC BY-NC-ND 4.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2609.23888v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2609.34286.html">灵巧操作触觉世界模型</a><span>2609.34286v1 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2609.34286v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2610.00638.html">TacDyn-WAM: Learning Implicit Tactile Dynamics in a Heterogeneous Visuo-Tactile World Action Model</a><span>2610.00638v1 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2610.00638v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2610.18852.html">ForceWAM：分开学习交互的未来走向与局部反应 利用任务示教和接触探索数据 实现接触密集型操作</a><span>2610.18852v1 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2610.18852v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2611.00455.html">TacMind ：机器人操作中的触觉交互状态建模与基准评测</a><span>2611.00455v1 · CC BY 4.0</span></div><div class="kind">中文机器译稿 · <a href="https://arxiv.org/pdf/2611.00455v1">PDF</a></div></li>
+<li><div class="entry"><a href="reading/2611.01483.html">$TF^2$-Steering: Action Refinement with Tactile Forecasts and Feedback via Velocity-Field Steering</a><span>2611.01483v1 · arXiv 非独家分发许可 1.0</span></div><div class="kind">中文导读 · <a href="https://arxiv.org/pdf/2611.01483v1">PDF</a></div></li>
+</ul></section></main>
+</html>

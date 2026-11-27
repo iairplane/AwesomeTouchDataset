@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>More Than a Feeling: Learning to Grasp and Regrasp using Vision and Touch</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a></nav><div class="paper-meta"><p>中文导读 · arXiv:1805.11085v2</p><p><a href="https://arxiv.org/html/1805.11085v2">英文 HTML</a> · <a href="https://arxiv.org/pdf/1805.11085v2">英文 PDF</a> · <a href="https://arxiv.org/licenses/nonexclusive-distrib/1.0/">arXiv 非独家分发许可 1.0</a></p></div><h1>More Than a Feeling 论文导读</h1>
+<p>这篇论文把触觉放在抓取的第二次决策里。夹爪合上之后，外部相机对指尖位置的接触情况只能看到一部分，而两片 GelSight 可以看到接触面的形变。作者给模型当前观察和一个候选重抓动作，让它预测这个动作之后能否抓稳，再挑预测最好的候选执行。这样的监督把触觉与动作结果绑在一起，适合研究接触反馈何时真正改变后续决策。<a href="https://arxiv.org/html/1805.11085#S4">原文动作条件模型 §IV</a></p>
+<h2>数据怎么来的</h2>
+<p>作者在同一台双指夹爪机器人上做随机化抓取，训练有约 6,450 次试验和 65 个训练物体。数据给出图像、双指触觉、机器人执行的调整和最终抓取结果。随机动作的结果也能训练预测模型，成功和失败都可提供信息。评测时是在现有抓握附近选重抓动作，论文另展示了给候选动作加入低力目标的例子。这里值得借鉴的是在记录接触的同时记录动作及结果，否则后来难判断某个触觉状态需要哪类修正。<a href="https://arxiv.org/html/1805.11085#S5">原文数据采集 §V</a> · <a href="https://arxiv.org/html/1805.11085#S6">真机实验 §VI</a></p>
+<h2>抓稳率如何比较</h2>
+<p>作者对此前未见的物体分了容易、困难两组。两种学习方法均为闭环重抓。在容易组，纯视觉和视触觉的跨物体平均成功率分别为 63.2% 和 94.0%，困难组为 50.0% 和 73.6%。表里逐个报了成功数和试验数，容易组首个物体的测试次数与其他物体不同。论文也保留了圆柱拟合基线，比较时要把这种手工策略与加减触觉的模型消融分开。<a href="https://arxiv.org/html/1805.11085#S6">原文 §VI 两组真机结果</a></p>
+<h2>对今天的预训练意味着什么</h2>
+<p>论文适合用来设计小的机制验证。先把初次碰上物体、第一次夹紧、位置调整和最终稳定持握分别记下来，让同一视觉条件下的调整结果有足够变化。可以在固定动作候选集和同一任务上比较有无触觉输入，再看预测是否帮助策略选择不同的动作。实验只用一台机器人和一套传感器，直接支撑同设备的闭环重抓分析。建议先读模型结构和数据采集，再逐物体看困难组的结果。<a href="https://arxiv.org/html/1805.11085#S4">原文 §IV–VI</a></p>
+</main>
+</html>

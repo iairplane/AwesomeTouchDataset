@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TacDyn-WAM: Learning Implicit Tactile Dynamics in a Heterogeneous Visuo-Tactile World Action Model</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a></nav><div class="paper-meta"><p>中文导读 · arXiv:2610.00638v1</p><p><a href="https://arxiv.org/html/2610.00638v1">英文 HTML</a> · <a href="https://arxiv.org/pdf/2610.00638v1">英文 PDF</a> · <a href="https://arxiv.org/licenses/nonexclusive-distrib/1.0/">arXiv 非独家分发许可 1.0</a></p></div><h1>TacDyn‑WAM 中文精读｜预测有助于动作的触觉变化</h1>
+<h2>问题</h2>
+<p>光学指尖画面里的胶层纹理、光照和一小块接触形变都会进入下一帧预测。TacDyn‑WAM 改变监督目标，让预测器学习接触形态如何移动，而策略同时从另一条分支读取当前触觉。这样可以分别追问「看清现在」和「预测下一步」各有多少用处。<a href="https://arxiv.org/abs/2610.00638v1">原文摘要</a> · <a href="https://arxiv.org/html/2610.00638v1#S2.F1">框架图</a></p>
+<h2>触觉预测怎么做</h2>
+<p>输入是减去无接触背景的双指触觉图。TacRep 用连续四帧学习形变演化，借 DINOv2 保留局部空间结构；触觉专家预测未来第 5、15、25 帧的特征与变化，并提高发生显著变化的区域的损失权重。AnyTouch2 的当前触觉记忆和未来触觉特征一同进入动作模型。真实平台是 Franka Research 3、双 Xense 指端触觉、腕部和第三人称相机。<a href="https://arxiv.org/html/2610.00638v1#S2.SS2">表征与监督</a> · <a href="https://arxiv.org/html/2610.00638v1#S2.SS3">预测细节</a> · <a href="https://arxiv.org/html/2610.00638v1#S3.SS5">真机</a></p>
+<h2>对照实验</h2>
+<p>在 UniVTAC 八项仿真任务上，各任务测 100 次。固定骨干、数据和逐阶段超参，预测像素重建空间为 62.0%，拿掉触觉预测为 67.9%，拿掉当前触觉记忆为 71.3%，换成静态 DINOv2 为 74.0%，完整时序表征为 81.5%。插 HDMI 仍只有 12%，论文指出该任务的示教中触觉变化很少。八项平均的改善需要结合每项的接触条件看。<a href="https://arxiv.org/html/2610.00638v1#S3.T1">主结果</a> · <a href="https://arxiv.org/html/2610.00638v1#S3.T2">消融</a></p>
+<h2>怎么看迁移</h2>
+<p>用各任务 60 条真机示教，先做额外预训练再微调，平均成功率由 71% 升到 85%，五项各测 20 次。额外语料有 6,000 段 OmniViTac，混合机器人和手持夹爪，两者比例没报告。目标的 300 段也进入前两个触觉学习阶段，两边用同类 Xense；动作学习把末端指令与关节指令放在不同槽位。这一结果适合参考跨本体数据组织，同一增益无法归给手持子集或新传感器迁移。<a href="https://arxiv.org/html/2610.00638v1#A4.SS2">预训练流程</a> · <a href="https://arxiv.org/html/2610.00638v1#S3.T3">真机结果</a> · <a href="https://arxiv.org/pdf/2610.00638v1">官方 PDF</a></p>
+</main>
+</html>

@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>面向灵巧操作的统一视觉—触觉—动作建模——基于人类示教</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a><label class="language-toggle"><input type="checkbox" id="show-original"> 显示英文段落</label></nav><div class="paper-meta">
+        <p class="original-title" lang="en">Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation</p>
+        <p>Li, Wenqiao · Zhao, Qianyou · Hao, Jiawen · Zhu, Xuezhou · Liu, Tengyu · Zhang, Kaifeng · Wen, Chuan · Huang, Siyuan · arXiv:2609.34182v2</p>
+        <p>正文与附录为机器译稿，中文标题和摘要已对照原文校订。公式、参考文献及图内文字保留原样。</p><p><a href="https://arxiv.org/html/2609.34182v2">英文 HTML</a> · <a href="https://arxiv.org/pdf/2609.34182v2">英文 PDF</a> · <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p><p>本中文译稿采用与原文相同的授权。</p>
+        </div><details class="contents"><summary>章节目录</summary><ul><li><a href="#S1">I 引言</a></li><li><a href="#S2">II 相关工作</a></li><li><a href="#S3">III 数据收集系统与数据集</a></li><li><a href="#S3.SS1">III-A 触觉运动捕捉系统</a></li><li><a href="#S3.SS2">III-B 数据集</a></li><li><a href="#S4">IV 方法</a></li><li><a href="#S4.SS1">IV-A 问题表述</a></li><li><a href="#S4.SS2">IV-B 统一动作与触觉空间</a></li><li><a href="#S4.SS3">IV-C 模型架构</a></li><li><a href="#S4.SS4">IV-D 训练配方</a></li><li><a href="#S5">V 实验</a></li><li><a href="#S5.SS1">V-A 实验设置</a></li><li><a href="#S5.SS2">V-B 主要结果与分析</a></li><li><a href="#S6">VI 结论</a></li><li><a href="#bib">参考文献</a></li><li><a href="#A1">附录 A 附加系统与数据细节</a></li><li><a href="#A1.SS1">A-A 跨本体校准</a></li><li><a href="#A1.SS2">A-B 触觉处理与同步</a></li><li><a href="#A1.SS3">A-C 数据集构建</a></li><li><a href="#A2">附录 B 实施细节</a></li><li><a href="#A3">附录 C 推广与评估细节</a></li><li><a href="#A3.SS1">C-A 闭环执行</a></li><li><a href="#A3.SS2">C-B 阶段间成功率</a></li><li><a href="#A3.SS3">C-C 人类-数据扩展协议</a></li><li><a href="#A4">附录 D 局限性与未来研究方向</a></li></ul></details><article class="ltx_document ltx_authors_1line" lang="zh-CN">
+<h1 class="ltx_title ltx_font_bold ltx_title_document" style="font-size:173%;">面向灵巧操作的统一视觉—触觉—动作建模——基于人类示教</h1>
+<div class="ltx_authors">
+<span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Wenqiao Li<sup class="ltx_sup" id="id1">*1</sup>, Qianyou Zhao<sup class="ltx_sup" id="id2">*3</sup>,
+Jiawen Hao<sup class="ltx_sup" id="id3">4</sup>, Xuezhou Zhu<sup class="ltx_sup" id="id4">3</sup>, Tengyu Liu<sup class="ltx_sup" id="id5">2</sup>,
+<br class="ltx_break"/>Kaifeng Zhang<sup class="ltx_sup" id="id6">3</sup>, Chuan Wen<sup class="ltx_sup" id="id7">🖂 1</sup>,
+Siyuan Huang<sup class="ltx_sup" id="id8">🖂 2</sup>
+</span><span class="ltx_author_notes"><span class="ltx_author_notes_content">
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_contact_name">Affiliation: </span><sup class="ltx_sup" id="id9"><span class="ltx_text" id="id9.1" style="font-size:80%;">1</span></sup><span class="ltx_text" id="id10" style="font-size:80%;"> Shanghai Jiao Tong University
+<br class="ltx_break"/><sup class="ltx_sup" id="id10.1">2</sup> State Key Laboratory of General Artificial Intelligence, BIGAI
+<br class="ltx_break"/><sup class="ltx_sup" id="id10.2">3</sup> Sharpa Robotics
+<br class="ltx_break"/><sup class="ltx_sup" id="id10.3">4</sup> Beijing Institute of Technology
+<br class="ltx_break"/><sup class="ltx_sup" id="id10.4">*</sup> Denotes equal contributions   <sup class="ltx_sup" id="id10.5">🖂</sup> Corresponding authors</span>
+</span></span></span></span></div>
+<div class="ltx_abstract" id="abstract1"><h6 class="ltx_title ltx_title_abstract">摘要</h6>
+<p class="ltx_p" id="abstract1.1">灵巧操作需要触觉反馈。然而，操作者在遥控灵巧手时只能获得有限的触觉反馈，难以扩大机器人触觉示教的规模。采集人类示教更容易扩展，也能覆盖多种触觉交互。手的形态可以变化，交互依循的物理规律相通。基于这一点，我们使用人类触觉数据改善灵巧操作策略。首先，我们构建了一套触觉动作捕捉系统，同步记录画面、触觉信号与手部运动。利用这套系统，我们构建了覆盖五项富接触任务的 UVTA 数据集。每项任务包含 1,000 条覆盖多种交互模式的人类示教，以及 150 条机器人示教。 为把人类交互中的物理信息迁移到机器人控制，我们提出统一视觉—触觉—动作模型。模型将人手和机器人手的数据映射到对齐的触觉与动作表征，并联合预测后续的动作和触觉轨迹。联合训练目标让人类示教为接触感知表征学习提供监督，部署时只执行机器人动作。在五项真机任务上，我们的方法平均成功率为 70%，高于最强视触觉基线的 29% 及架构消融方案的 42%。增加人类示教后，性能持续改善，每任务达到 1,000 条时仍未饱和，验证了可规模化的真人触觉数据对灵巧操作的有效性。 项目页面见 <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://uni-vta.github.io/" title="">https://uni-vta.github.io/</a>。</p><p class="source-paragraph" lang="en">Dexterous manipulation requires tactile feedback. However, robot tactile demonstrations are difficult to scale because dexterous-hand teleoperation provides limited tactile feedback to the operator. In contrast, human demonstrations offer a substantially more scalable source of diverse tactile interactions. Motivated by a simple premise— hands can change, but the underlying physics of interaction does not —we leverage human tactile data to improve dexterous manipulation policies. Specifically, we first build a tactile motion-capture system that synchronously records images, tactile signals, and hand motions. Using this system, we construct the UVTA dataset spanning five contact-rich tasks, with 1,000 human demonstrations covering diverse interaction patterns and 150 robot demonstrations per task. To transfer the underlying physics of human interaction to robot control, we propose a Unified Visual-Tactile-Action Model that maps both embodiments into aligned tactile and action representations and jointly predicts future action and tactile trajectories. The joint objective enables human demonstrations to supervise contact-aware representation learning, while only robot actions are executed during deployment. In real-robot evaluations across five tasks, our method achieves an average success rate of 70%, outperforming the strongest visual-tactile baseline, which achieves 29%, and an architecture ablation, which achieves 42%. Performance improves consistently with additional human demonstrations and exhibits no saturation at 1,000 demonstrations per task, validating the effectiveness of scalable human tactile data for dexterous manipulation. Project page is available at https://uni-vta.github.io/ .</p>
+</div><span class="ltx_note ltx_role_aftertitle" id="id11"><sup class="ltx_note_mark">†</sup> <sup class="ltx_note_mark">†</sup> 后标题：<img alt="[Uncaptioned image]" class="ltx_graphics ltx_centering ltx_img_landscape" height="308" id="g1" loading="lazy" src="../media/2609.34182/figures/teaser_2.jpg" style="aspect-ratio:400/308;" width="400"/> 图。1。我们提出了统一视觉触觉动作（UVTA）建模框架，该框架能够基于人类触觉数据实现注重接触的灵巧操作学习。在UVTA框架下，人类手与机器人手共享统一的交互表示。</span>
+<section class="ltx_section" id="S1">
+<h2 class="ltx_title ltx_title_section">I 引言</h2>
+<div class="ltx_para" id="S1.p1">
+<p class="ltx_p" id="S1.p1.1">触觉反馈对于灵巧操作至关重要。以接触为关键的任务依赖于接触起始点、压力、形变及滑移等物理状态，而这些状态在视觉观察中往往难以明确或被遮蔽。对这些状态的掌握使得更精准、更快速的反应式操作成为可能 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib16" title="">1</a>, <a class="ltx_ref" href="#bib.bib17" title="">2</a>, <a class="ltx_ref" href="#bib.bib18" title="">3</a>, <a class="ltx_ref" href="#bib.bib1" title="">4</a>, <a class="ltx_ref" href="#bib.bib2" title="">5</a>]</cite>。然而，学习触觉策略通常需要通过灵巧机器人手遥操作来收集数据。此类数据难以大规模获取：操作高维度手形机器人十分困难，而传统界面提供的触觉反馈又有限。因此，收集同步的视觉、触觉及动作轨迹过程成本高昂，限制了机器人数据集中所包含的物体、环境及接触模式种类的多样性。</p><p class="source-paragraph" lang="en">Tactile feedback is indispensable for dexterous manipulation. Contact-rich tasks depend on contact onset, pressure, deformation, and slip—physical states that are often ambiguous or occluded in visual observations. Access to these states has enabled increasingly precise and reactive manipulation [ 1 , 2 , 3 , 4 , 5 ] . Nevertheless, learning tactile policies typically requires demonstrations collected through dexterous robot-hand teleoperation. Such data are difficult to scale: teleoperating a high-dimensional hand is demanding, and conventional interfaces provide the operator with limited tactile feedback. Consequently, collecting synchronized visual, tactile, and action trajectories remains costly, constraining the diversity of objects, environments, and contact patterns represented in robot datasets.</p>
+</div>
+<div class="ltx_para" id="S1.p2">
+<p class="ltx_p" id="S1.p2.1">人类示范提供了更可扩展的多种物理交互来源。大规模人类视频有助于视觉表征学习及长视距机器人控制 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib6" title="">6</a>, <a class="ltx_ref" href="#bib.bib7" title="">7</a>, <a class="ltx_ref" href="#bib.bib8" title="">8</a>, <a class="ltx_ref" href="#bib.bib9" title="">9</a>, <a class="ltx_ref" href="#bib.bib10" title="">10</a>]</cite>，而动作重建、目标重定位以及人与机器人协同训练中的行为迁移则能更直接地实现本体感知 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib11" title="">11</a>, <a class="ltx_ref" href="#bib.bib12" title="">12</a>, <a class="ltx_ref" href="#bib.bib13" title="">13</a>, <a class="ltx_ref" href="#bib.bib14" title="">14</a>, <a class="ltx_ref" href="#bib.bib15" title="">15</a>, <a class="ltx_ref" href="#bib.bib3" title="">16</a>]</cite>。然而，人类与机器人手在形态、运动学、感知布局及动作空间方面存在差异，因此直接的运动对应并不可靠。此外，仅依靠视频无法完全捕捉决定操作成功性的局部接触动态。因此，我们试图通过一种比本体特定运动更为基础的方式来传递人类交互经验。 我们的核心假设是，手的形式可以变化，但交互的底层物理机制保持不变：尽管不同形态的本体之间存在差异，但接触形成、变形、滑动、释放以及物体响应仍保留着共同的物理结构。</p><p class="source-paragraph" lang="en">Human demonstrations provide a substantially more scalable source of diverse physical interactions. Large-scale human video has supported visual representation learning and long-horizon robot control [ 6 , 7 , 8 , 9 , 10 ] , while motion reconstruction, retargeting, and human–robot co-training transfer human behavior more directly [ 11 , 12 , 13 , 14 , 15 , 16 ] . However, human and robot hands differ in morphology, kinematics, sensing layouts, and action spaces, making direct motion correspondence unreliable. Moreover, video alone does not fully capture the local contact dynamics that determine manipulation success. We therefore seek to transfer human interaction experience through a quantity that is more fundamental than embodiment-specific motion. Our central premise is that hands can change, but the underlying physics of interaction does not : although embodiments differ, contact formation, deformation, slip, release, and object response retain shared physical structure.</p>
+</div>
+<div class="ltx_para" id="S1.p3">
+<p class="ltx_p" id="S1.p3.1">为了大规模捕捉这种结构，我们首先开发了一种可穿戴触觉运动捕捉系统，该系统能够同步记录以手腕为中心的图像、指尖触觉数据以及手部运动。随后，我们利用该系统在五次高接触任务中构建 UVTA 数据集。每个任务都包含 1,000 类人类演示，涵盖多种交互模式，以及 150 类机器人演示。这种组合方式既体现了人类交互的多样性与可扩展性，又满足了机器人执行所需的特定本体感知监督机制。</p><p class="source-paragraph" lang="en">To capture this structure at scale, we first develop a wearable tactile motion-capture system that synchronously records wrist-centric images, fingertip tactile measurements, and hand motion. We then use the system to construct the UVTA dataset over five contact-rich tasks. Each task contains 1,000 human demonstrations that cover diverse interaction patterns and 150 robot demonstrations. This composition combines the diversity and scalability of human interaction with the embodiment-specific supervision required for robot execution.</p>
+</div>
+<div class="ltx_para" id="S1.p4">
+<p class="ltx_p" id="S1.p4.1">基于该数据集，我们提出了一种统一的视觉-触觉-动作模型，该模型能够将人类与机器人的行为轨迹转化为一致的触觉与动作表示。该模型通过结合预测未来的动作与触觉轨迹，利用人类示范数据来监督与接触相关的表示学习过程，而在实际运行时仅执行机器人动作。对触觉结果的预测将运动与其物理后果联系起来，从而在多个本体中提供统一的学习信号 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib28" title="">17</a>, <a class="ltx_ref" href="#bib.bib29" title="">18</a>, <a class="ltx_ref" href="#bib.bib30" title="">19</a>, <a class="ltx_ref" href="#bib.bib31" title="">20</a>, <a class="ltx_ref" href="#bib.bib32" title="">21</a>, <a class="ltx_ref" href="#bib.bib33" title="">22</a>, <a class="ltx_ref" href="#bib.bib34" title="">23</a>, <a class="ltx_ref" href="#bib.bib35" title="">24</a>, <a class="ltx_ref" href="#bib.bib4" title="">25</a>, <a class="ltx_ref" href="#bib.bib36" title="">26</a>, <a class="ltx_ref" href="#bib.bib37" title="">27</a>, <a class="ltx_ref" href="#bib.bib24" title="">28</a>, <a class="ltx_ref" href="#bib.bib27" title="">29</a>]</cite>。在五项真实机器人任务中，我们的方法实现了平均成功率为 70%，其中 29% 对应最强的视觉-触觉基础模型，而 42% 则对应被移除关键模块的架构。随着人类示范数据的增加，性能持续提升，且每个任务下的示范数量达到 1,000 时仍不会出现饱和现象。 这些结果表明，可扩展的人类触觉数据能够显著提升富含接触的灵巧操作能力。</p><p class="source-paragraph" lang="en">Building on this dataset, we propose a Unified Visual-Tactile-Action Model that maps human and robot trajectories into aligned tactile and action representations. The model jointly predicts future action and tactile trajectories, using human demonstrations to supervise contact-aware representation learning while executing only robot actions at deployment. Predicting tactile outcomes connects motion to its physical consequences, providing a shared learning signal across embodiments [ 17 , 18 , 19 , 20 , 21 , 22 , 23 , 24 , 25 , 26 , 27 , 28 , 29 ] . Across five real-robot tasks, our method achieves a 70% average success rate, compared with 29% for the strongest visual-tactile baseline and 42% for the ablated architecture. Performance continues to improve as the number of human demonstrations increases, with no saturation at 1,000 demonstrations per task. These results demonstrate that scalable human tactile data can substantially improve contact-rich dexterous manipulation.</p>
+</div>
+<div class="ltx_para" id="S1.p5">
+<p class="ltx_p" id="S1.p5.1">我们的主要贡献包含三个方面：</p><p class="source-paragraph" lang="en">Our main contributions are threefold:</p>
+<ul class="ltx_itemize" id="S1.I1">
+<li class="ltx_item" id="S1.I1.i1" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">•</span>
+<div class="ltx_para" id="S1.I1.i1.p1">
+<p class="ltx_p" id="S1.I1.i1.p1.1">我们开发了一种可穿戴触觉运动捕捉系统，该系统能够同步采集视觉观测数据、指尖触觉测量数据以及手部运动数据，而无需通过机器人遥操作。</p><p class="source-paragraph" lang="en">We develop a wearable tactile motion-capture system that synchronously captures visual observations, fingertip tactile measurements, and hand motion without requiring robot teleoperation.</p>
+</div></li>
+<li class="ltx_item" id="S1.I1.i2" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">•</span>
+<div class="ltx_para" id="S1.I1.i2.p1">
+<p class="ltx_p" id="S1.I1.i2.p1.1">我们介绍了 UVTA 数据集，该数据集包含五个具有丰富接触行为的任务，每个任务均包含 1,000 多种人类演示及 150 机器人演示。</p><p class="source-paragraph" lang="en">We introduce the UVTA dataset, comprising five contact-rich tasks with 1,000 diverse human demonstrations and 150 robot demonstrations per task.</p>
+</div></li>
+<li class="ltx_item" id="S1.I1.i3" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">•</span>
+<div class="ltx_para" id="S1.I1.i3.p1">
+<p class="ltx_p" id="S1.I1.i3.p1.1">我们提出了一种统一的视觉-触觉-动作模型，该模型能够在不同本体之间传递基于接触信息的物理表征。真实的机器人实验及规模扩展研究验证了该模型的性能，以及其利用更多人类触觉数据的能力。</p><p class="source-paragraph" lang="en">We propose a unified visual-tactile-action model that transfers contact-aware physical representations across embodiments. Real-robot experiments and scaling studies validate both its performance and its ability to benefit from increasing amounts of human tactile data.</p>
+</div></li>
+</ul>
+</div>
+<figure class="ltx_figure" id="S1.F2"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="145" id="S1.F2.g1" loading="lazy" src="../media/2609.34182/figures/human_data_system_1.jpg" style="aspect-ratio:476/145;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 2：触觉运动捕捉系统概述。该被动式触觉外骨骼能够捕捉手部运动与触觉信号。该集成系统还包含 VIVE 跟踪器以及腕部安装的 RGB 相机，分别用于捕捉腕部姿态和以腕部为中心的图像。该相机与 VIVE 跟踪器均按照 Sharpa Wave 腕部框架进行校准。</figcaption>
+</figure>
+<figure class="ltx_figure" id="S1.F3"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="310" id="S1.F3.g1" loading="lazy" src="../media/2609.34182/figures/dataset.jpg" style="aspect-ratio:476/310;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 3：数据集概览。每个任务包含在有限变化条件下收集的 150 机器人演示，以及具有多种场景和接触模式的 1,000 人类演示。</figcaption>
+</figure>
+<figure class="ltx_figure" id="S1.F4"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="217" id="S1.F4.g1" loading="lazy" src="../media/2609.34182/UVAT.png" style="aspect-ratio:476/217;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 4：我们统一视觉-触觉-动作模型的概述。VTPM将视觉-触觉输入转换为 20 -D 压阻型 taxel token，而Transformer则提取出 384 -D 视觉 token。这两个 tokens 被串联成统一的 404 -D 交互表示，并传递给扩散动作头与触觉回归头。动作损失和触觉损失分别监督各自的预测头，而其联合目标则优化共享的Transformer，以学习出统一的、考虑触觉的视觉表示。</figcaption>
+</figure>
+</section>
+<section class="ltx_section" id="S2">
+<h2 class="ltx_title ltx_title_section">II 相关工作</h2>
+<div class="ltx_para" id="S2.p1">
+<p class="ltx_p" id="S2.p1.1">从人类数据中学习的人工智能机器人。大规模以自我为中心的数据集能够捕捉任务、物体及环境层面的多样化人类交互行为 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib6" title="">6</a>, <a class="ltx_ref" href="#bib.bib7" title="">7</a>, <a class="ltx_ref" href="#bib.bib38" title="">30</a>, <a class="ltx_ref" href="#bib.bib39" title="">31</a>]</cite>。这种经验被用于学习可复用的视觉表征与潜在规划，以用于后续的机器人控制 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib8" title="">8</a>, <a class="ltx_ref" href="#bib.bib9" title="">9</a>, <a class="ltx_ref" href="#bib.bib40" title="">32</a>, <a class="ltx_ref" href="#bib.bib41" title="">33</a>, <a class="ltx_ref" href="#bib.bib10" title="">10</a>]</cite>；同时，另一研究方向通过姿态重建、动作重定位、便携式动作捕捉或人机联合训练，实现人类运动行为的传递 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib11" title="">11</a>, <a class="ltx_ref" href="#bib.bib12" title="">12</a>, <a class="ltx_ref" href="#bib.bib13" title="">13</a>, <a class="ltx_ref" href="#bib.bib14" title="">14</a>, <a class="ltx_ref" href="#bib.bib15" title="">15</a>, <a class="ltx_ref" href="#bib.bib3" title="">16</a>, <a class="ltx_ref" href="#bib.bib5" title="">34</a>]</cite>。尽管这些方法大幅降低了机器人示范的需求，但直接策略迁移仍依赖于可恢复的人类运动或对齐后的动作表征。预测性方法则采用不受本体影响的交互结果作为监督信号 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib4" title="">25</a>]</cite>。我们的研究同时从人类与机器人的示范数据中预测动作及未来的触觉轨迹。 人类行为为训练监督提供贡献，但不被视为机器人指令；部署阶段仅选择机器人动作预测结果，而对应的动作与接触动力学则共同构成了共享的跨本体表示。</p><p class="source-paragraph" lang="en">Robot Learning from Human Data. Large-scale egocentric datasets capture diverse human interactions across tasks, objects, and environments [ 6 , 7 , 30 , 31 ] . This experience has been used to learn reusable visual representations and latent plans for downstream robot control [ 8 , 9 , 32 , 33 , 10 ] , while a complementary line transfers human motor behavior through pose reconstruction, action retargeting, portable motion capture, or human–robot co-training [ 11 , 12 , 13 , 14 , 15 , 16 , 34 ] . Although these methods substantially reduce the demand for robot demonstrations, direct policy transfer still relies on recoverable human motion or an aligned action representation. Predictive approaches instead use embodiment-invariant interaction outcomes as supervision [ 25 ] . Our work jointly predicts action and future tactile trajectories from both human and robot demonstrations. Human actions contribute training supervision but are not treated as robot commands; deployment selects only robot-action predictions, while paired action–touch dynamics provide the shared cross-embodiment representation.</p>
+</div>
+<div class="ltx_para" id="S2.p2">
+<p class="ltx_p" id="S2.p2.1">用于灵巧操作的手感学习。触觉能够揭示在视觉中可能模糊或被遮蔽的接触、力、滑动及变形信息，从而在接触丰富的任务中实现闭环灵巧操作 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib42" title="">35</a>, <a class="ltx_ref" href="#bib.bib43" title="">36</a>, <a class="ltx_ref" href="#bib.bib16" title="">1</a>, <a class="ltx_ref" href="#bib.bib17" title="">2</a>, <a class="ltx_ref" href="#bib.bib18" title="">3</a>]</cite>。除了任务特定的控制外，触觉表征还通过机器人游戏、隐藏的多模态目标、大量未标注的手感数据以及异构传感器数据得以学习 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib44" title="">37</a>, <a class="ltx_ref" href="#bib.bib19" title="">38</a>, <a class="ltx_ref" href="#bib.bib20" title="">39</a>, <a class="ltx_ref" href="#bib.bib21" title="">40</a>, <a class="ltx_ref" href="#bib.bib22" title="">41</a>]</cite>。策略级系统进一步结合视觉与触觉，用于双手或多手指操作、高频反应式控制以及基于物理原理的 vision-language-action学习 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib23" title="">42</a>, <a class="ltx_ref" href="#bib.bib24" title="">28</a>, <a class="ltx_ref" href="#bib.bib25" title="">43</a>, <a class="ltx_ref" href="#bib.bib26" title="">44</a>, <a class="ltx_ref" href="#bib.bib27" title="">29</a>]</cite>。最近的扩展研究引入了触觉中期训练以及以人类为中心的触觉预训练方法 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib1" title="">4</a>, <a class="ltx_ref" href="#bib.bib2" title="">5</a>]</cite>。然而，现有系统主要依赖机器人自身的触觉进行学习，或通过分阶段训练并调整人类与机器人动作空间来转移人类触觉经验。 我们采用共同训练的方式，让人类触觉运动捕捉系统与机器人操作轨迹在相同的动作及未来触觉目标下协同学习。这种耦合机制使得两种本体都能参与视觉表示的构建，同时保留机器人特有的执行方式。</p><p class="source-paragraph" lang="en">Tactile Learning for Dexterous Manipulation. Touch reveals contact, force, slip, and deformation that may be ambiguous or occluded in vision, enabling closed-loop dexterity in contact-rich tasks [ 35 , 36 , 1 , 2 , 3 ] . Beyond task-specific control, tactile representations have been learned from robotic play, masked multimodal objectives, large unlabeled tactile corpora, and heterogeneous sensor data [ 37 , 38 , 39 , 40 , 41 ] . Policy-level systems further combine vision and touch for bimanual or multifingered manipulation, high-frequency reactive control, and physically grounded vision-language-action learning [ 42 , 28 , 43 , 44 , 29 ] . Recent scaling efforts introduce tactile mid-training and human-centric tactile pre-training [ 4 , 5 ] . Nevertheless, existing systems predominantly learn from robot touch or transfer human touch through staged training with aligned human–robot action spaces. We instead co-train human tactile motion-capture and robot teleoperation trajectories with the same action and future-tactile objectives. Their coupling lets both embodiments shape the visual representation, while deployment retains robot-specific execution.</p>
+</div>
+<div class="ltx_para" id="S2.p3">
+<p class="ltx_p" id="S2.p3.1">机器人学习的世界模型。世界模型通过预测未来观测结果或潜在状态，并将这些预测与规划或动作生成相结合，从而支持机器人学习 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib45" title="">45</a>, <a class="ltx_ref" href="#bib.bib46" title="">46</a>, <a class="ltx_ref" href="#bib.bib47" title="">47</a>, <a class="ltx_ref" href="#bib.bib48" title="">48</a>, <a class="ltx_ref" href="#bib.bib28" title="">17</a>, <a class="ltx_ref" href="#bib.bib29" title="">18</a>, <a class="ltx_ref" href="#bib.bib30" title="">19</a>]</cite>。近期系统将未来视频或特征预测直接整合到通用策略中，并共同建模视觉动态与动作 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib31" title="">20</a>, <a class="ltx_ref" href="#bib.bib32" title="">21</a>, <a class="ltx_ref" href="#bib.bib33" title="">22</a>]</cite>。通过将这一范式应用于异构机器人及人类视频，便形成了能够跨任务与本体传递物理知识的世界动作模型 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib34" title="">23</a>, <a class="ltx_ref" href="#bib.bib35" title="">24</a>, <a class="ltx_ref" href="#bib.bib4" title="">25</a>]</cite>。然而，大多数此类模型仅预测视觉未来，此时接触开始、力值及局部变形难以被清晰观测。触觉预测则提供了一种互补的世界建模目标，从预测局部触觉观测到生成触觉子目标及多模态交互动态 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib44" title="">37</a>, <a class="ltx_ref" href="#bib.bib36" title="">26</a>, <a class="ltx_ref" href="#bib.bib37" title="">27</a>, <a class="ltx_ref" href="#bib.bib27" title="">29</a>, <a class="ltx_ref" href="#bib.bib2" title="">5</a>]</cite>。 我们的模型能够联合预测人类与机器人交互过程中的触觉及动作轨迹，并将物理后果与产生这些行为的动作相耦合。在实际部署过程中，仅执行机器人行为的预测结果。</p><p class="source-paragraph" lang="en">World Models for Robot Learning. World models support robot learning by predicting future observations or latent states and coupling these predictions to planning or action generation [ 45 , 46 , 47 , 48 , 17 , 18 , 19 ] . Recent systems integrate future-video or future-feature prediction directly into generalist policies and jointly model visual dynamics and actions [ 20 , 21 , 22 ] . Scaling this paradigm with heterogeneous robot and human videos has produced world action models that transfer physical knowledge across tasks and embodiments [ 23 , 24 , 25 ] . However, most such models predict visual futures, in which contact onset, force, and local deformation are only weakly observable. Tactile prediction offers a complementary world-modeling target, from anticipating local touch observations to generating tactile subgoals and multimodal interaction dynamics [ 37 , 26 , 27 , 29 , 5 ] . Our model jointly predicts future tactile and action trajectories from both human and robot interactions, coupling physical consequences with the motions that produce them. At deployment, only the robot-action predictions are executed.</p>
+</div>
+</section>
+<section class="ltx_section" id="S3">
+<h2 class="ltx_title ltx_title_section">III 数据收集系统与数据集</h2>
+<div class="ltx_para" id="S3.p1">
+<p class="ltx_p" id="S3.p1.1">我们利用图 <a class="ltx_ref" href="#S1.F2" title="Fig. 2 ‣ I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">2</span></a> 中所示的可穿戴触觉外骨骼手套系统，收集了富含接触信息的人类行为数据。该系统会记录手腕鱼眼图像、指尖触觉信号以及 22 - DoF 关节角度。经过处理与时间同步后，该系统捕获的原始信号在运动学及接触空间上都与 Sharpa Wave 手模型保持一致。</p><p class="source-paragraph" lang="en">We collect human demonstrations rich in contact using the wearable tactile exoskeleton glove system shown in Fig. 2 . The system records wrist fisheye images, fingertip tactile signals, and 22-DoF joint angles. After processing and temporal synchronization, the raw signals captured by this system are aligned with Sharpa Wave Hand in both kinematic and contact space.</p>
+</div>
+<section class="ltx_subsection" id="S3.SS1">
+<h3 class="ltx_title ltx_title_subsection">III-A 触觉运动捕捉系统</h3>
+<div class="ltx_para" id="S3.SS1.p1">
+<p class="ltx_p" id="S3.SS1.p1.1">触觉感知。我们采用常规力感测电阻器来捕捉人体触觉信号。具体而言，触觉感知外骨骼手套的每根指尖均配备有包含四个感知区域的力感测电阻器阵列，每个区域的活动区域大小为 <math alttext="15\times 15\mathrm{mm}^{2}" class="ltx_Math" display="inline" id="S3.SS1.p1.m1" intent=":literal"><semantics><mrow><mrow><mn>15</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>15</mn></mrow><mo lspace="0em" rspace="0em">​</mo><msup><mi>mm</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">15\times 15\mathrm{mm}^{2}</annotation></semantics></math>。当指尖受到外部压力时，对应感知点的电阻值会发生变化。这种变化会被转化为电信号，并作为该位置的触觉测量值被记录下来。</p><p class="source-paragraph" lang="en">Tactile sensing. We employ conventional force-sensing resistors (FSR) to capture human tactile signals. Specifically, each fingertip of the tactile-sensing exoskeleton glove is equipped with an FSR array containing four sensing regions, each with an active area of 15 × 15 ​ mm 2 . When external pressure is applied to the fingertip, the resistance of the corresponding sensing point changes. This change is converted into an electrical signal and recorded as the tactile measurement at that location.</p>
+</div>
+<div class="ltx_para" id="S3.SS1.p2">
+<p class="ltx_p" id="S3.SS1.p2.1">手部运动。手腕和手指的运动分别通过一对 VIVE Tracker 3.0 设备与被动连杆外骨骼来捕捉。其中一个追踪器固定在桌面上以建立参考框架，另一个则通过 3 D 打印适配器牢固地连接在手腕上。在每个时间步长中，根据校准后的追踪器与手腕变换关系，结合手腕追踪器相对于参考追踪器的姿态，从而恢复 6 - DoF 手腕姿态。手指运动则通过安装在手背上的被动 22 - DoF 连杆外骨骼来测量。该外骨骼结合了刚性碳纤维连杆与柔性的背侧支撑板。正向运动学将编码器测量值转换为五个指尖的位置和方向，随后通过固定校准参数将其转换为 Sharpa Wave 手掌坐标系。 一种约束反运动学优化方法通过匹配指尖姿态，从而恢复相应的 22 - DoF 手部构型，同时保留拇指与其他指尖之间的相对几何关系。关节限制被作为硬约束来实施，而拇指掌指关节与四指掌指关节以及四指指间关节的耦合关系则被建模为软线性约束。</p><p class="source-paragraph" lang="en">Hand Motion. Wrist and finger motions are captured using a pair of VIVE Tracker 3.0 devices and a passive linkage exoskeleton, respectively. One tracker is fixed to the table to establish a reference frame, whereas the other is rigidly attached to the wrist via a 3D-printed adapter. At each timestep, the pose of the wrist tracker relative to the reference tracker is composed with the calibrated tracker-to-wrist transformation to recover the 6-DoF wrist pose. Finger motion is measured by a passive 22-DoF linkage exoskeleton mounted on the dorsum of the hand. The exoskeleton combines rigid carbon-fiber links with a compliant dorsal support plate. Forward kinematics converts the encoder measurements into the positions and orientations of the five fingertips, which are then transformed into the Sharpa Wave palm frame using a fixed calibration. A constrained inverse-kinematics optimization recovers the corresponding 22-DoF hand configuration by matching fingertip poses while preserving the relative geometry between the thumb and the other fingertips. Joint limits are enforced as hard constraints, whereas the thumb carpometacarpal (CMC) and four-finger metacarpophalangeal (MCP) couplings are modeled as soft linear constraints.</p>
+</div>
+<div class="ltx_para" id="S3.SS1.p3">
+<p class="ltx_p" id="S3.SS1.p3.1">图像流。一台单目鱼眼 RGB 相机通过固定适配器固定在手腕附近。其相机与手腕的外部变换参数经过校准，以匹配 Sharpa North 机器人的相机与末端执行器变换参数，从而确保不同本体之间相机与手部的几何结构保持一致。手腕图像流、触觉信号、手腕姿态及关节运动均使用共享主机时钟进行时间戳记录，并以 30 Hz 的间隔进行时间重采样。</p><p class="source-paragraph" lang="en">Image Stream. A monocular fisheye RGB camera is rigidly mounted near the wrist using a fixed adapter. Its camera-to-wrist extrinsic transformation is calibrated to match the camera-to-end-effector transformation of the Sharpa North robot, thereby maintaining consistent camera–hand geometry across embodiments. The wrist image stream, tactile signals, wrist poses, and joint motion are timestamped using a shared host clock and temporally resampled at 30 Hz.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S3.SS2">
+<h3 class="ltx_title ltx_title_subsection">III-B 数据集</h3>
+<div class="ltx_para" id="S3.SS2.p1">
+<p class="ltx_p" id="S3.SS2.p1.1">我们的数据集包含五项具有大量接触操作的任务，每项任务均配有 150 机器人与 1,000 人类演示。机器人演示是通过 Sharpa North 平台遥操作的方式收集的，每项任务的场景布局、初始机器人配置及桌子高度均保持固定。人类演示则通过我们的可穿戴触觉运动捕捉系统进行收集，且无需使用机器人参与。我们改变了物体实例和场景背景，并使用黑白手套来调整手部的外观特征。图 <a class="ltx_ref" href="#S1.F3" title="Fig. 3 ‣ I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">3</span></a> 对比了固定机器人收集设置与更为多样化的人类演示情况。</p><p class="source-paragraph" lang="en">Our dataset covers five contact-rich manipulation tasks, each with 150 robot and 1,000 human demonstrations. Robot demonstrations are collected through teleoperation on the Sharpa North platform, with the scene layout, initial robot configuration, and table height fixed for each task. Human demonstrations are collected using our wearable tactile motion-capture system without a robot in the loop. We vary object instances and scene backgrounds, and use black and white gloves to vary hand appearance. Fig. 3 contrasts the fixed robot collection settings with the more varied human demonstrations.</p>
+</div>
+<div class="ltx_para" id="S3.SS2.p2">
+<p class="ltx_p" id="S3.SS2.p2.1">机器人演示将视觉与触觉观测与可执行的手腕与手指指令相结合，为目标平台上的控制提供直接指导。人类演示则提供更多样化的动作与接触序列，有助于学习针对物体与场景的接触感知表征。这两种来源共同指导动作执行及未来触觉预测，从而训练出能够捕捉接触随动作变化规律的共享表征。人类动作作为训练目标，而非直接可执行的机器人指令。</p><p class="source-paragraph" lang="en">Robot demonstrations pair visual-tactile observations with executable wrist and finger commands, providing direct supervision for control on the target platform.
+Human demonstrations contribute more varied motion and contact sequences for learning contact-aware representations across objects and scenes. Both sources supervise action and future-tactile prediction, training the shared representation to capture how contact changes with motion. Human motions serve as training targets rather than directly executable robot commands.</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S4">
+<h2 class="ltx_title ltx_title_section">IV 方法</h2>
+<div class="ltx_para" id="S4.p1">
+<p class="ltx_p" id="S4.p1.1">我们的目标是从人类触觉示范中学习可泛化的交互表征，以实现灵巧操作。为了弥合人类与机器人数据在视觉、触觉及动作本体层面的差异，我们将两者整合到统一的跨本体空间中（章节 <a class="ltx_ref" href="#S4.SS2" title="IV-B Unified Action and Tactile Space ‣ IV Method ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">IV-B</span></a>）。如图 <a class="ltx_ref" href="#S1.F4" title="Fig. 4 ‣ I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">4</span></a> 所示，我们的统一视觉-触觉-动作模型以以手腕为中心的视觉-触觉观测作为动作生成与未来触觉预测的基础（章节 <a class="ltx_ref" href="#S4.SS3" title="IV-C Model Architecture ‣ IV Method ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">IV-C</span></a>）。该模型通过均衡共训练方法，结合人类运动捕捉数据与机器人操作数据进行联合训练；在推理过程中，仅将机器人标准化后的动作预测结果转换为手腕与手指指令。</p><p class="source-paragraph" lang="en">We aim to learn generalizable interaction representations from human tactile demonstrations for dexterous manipulation. To bridge the visual, tactile, and action embodiment gaps between human and robot data, we align both into a unified cross-embodiment space (Sec. IV-B ). As shown in Fig. 4 , our Unified Visual-Tactile-Action Model conditions action generation and future-tactile prediction on the same wrist-centric visual-tactile observation (Sec. IV-C ). It is trained jointly on human motion-capture and robot teleoperation samples using a balanced co-training recipe; during inference, only robot-normalized action predictions are converted into wrist and finger commands.</p>
+</div>
+<section class="ltx_subsection" id="S4.SS1">
+<h3 class="ltx_title ltx_title_subsection">IV-A 问题表述</h3>
+<div class="ltx_para" id="S4.SS1.p1">
+<p class="ltx_p" id="S4.SS1.p1.1">我们考虑具有丰富接触信息的灵巧操控问题，涉及两个数据来源：一个人类数据集 <math alttext="\mathcal{D}^{\mathrm{H}}" class="ltx_Math" display="inline" id="S4.SS1.p1.m1" intent=":literal"><semantics><msup><mi class="ltx_font_mathcaligraphic">𝒟</mi><mi>H</mi></msup><annotation encoding="application/x-tex">\mathcal{D}^{\mathrm{H}}</annotation></semantics></math> 由我们的触觉运动捕捉系统及机器人数据集收集而来 <math alttext="\mathcal{D}^{\mathrm{R}}" class="ltx_Math" display="inline" id="S4.SS1.p1.m2" intent=":literal"><semantics><msup><mi class="ltx_font_mathcaligraphic">𝒟</mi><mi>R</mi></msup><annotation encoding="application/x-tex">\mathcal{D}^{\mathrm{R}}</annotation></semantics></math> 通过遥操作收集。任一本体在每个时间步均包含同步的腕部数据。 RGB 图像 <math alttext="\mathbf{I}_{t}" class="ltx_Math" display="inline" id="S4.SS1.p1.m3" intent=":literal"><semantics><msub><mi>𝐈</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{I}_{t}</annotation></semantics></math> ，触觉 token <math alttext="Z_{t}\in\mathbb{R}^{20}" class="ltx_Math" display="inline" id="S4.SS1.p1.m4" intent=":literal"><semantics><mrow><msub><mi>Z</mi><mi>t</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mn>20</mn></msup></mrow><annotation encoding="application/x-tex">Z_{t}\in\mathbb{R}^{20}</annotation></semantics></math> ，以及一个动作 <math alttext="\mathbf{a}_{t}\in\mathbb{R}^{31}" class="ltx_Math" display="inline" id="S4.SS1.p1.m5" intent=":literal"><semantics><mrow><msub><mi>𝐚</mi><mi>t</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mn>31</mn></msup></mrow><annotation encoding="application/x-tex">\mathbf{a}_{t}\in\mathbb{R}^{31}</annotation></semantics></math> 基于当前的视觉-触觉观测数据，模型预测了未来的情况 action chunk 以及未来的触觉轨迹在视野范围内 <math alttext="H" class="ltx_Math" display="inline" id="S4.SS1.p1.m6" intent=":literal"><semantics><mi>H</mi><annotation encoding="application/x-tex">H</annotation></semantics></math> :</p><p class="source-paragraph" lang="en">We consider contact-rich dexterous manipulation with two data sources: a human dataset 𝒟 H collected by our tactile motion-capture system and a robot dataset 𝒟 R collected by teleoperation. A sample from either embodiment contains, at each timestep, a synchronized wrist RGB image 𝐈 t , a tactile token Z t ∈ ℝ 20 , and an action 𝐚 t ∈ ℝ 31 . Given the current visual-tactile observation, the model predicts a future action chunk and a future tactile trajectory over horizon H :</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E1">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="\mathbf{A}_{t}=\mathbf{a}_{t:t+H-1},\hskip 20.00003ptY_{t}=Z_{t+1:t+H}," class="ltx_math_unparsed" display="block" id="S4.E1.m1" intent=":literal"><semantics><mrow><mi>𝐀</mi><msub><mrow></mrow><mi>t</mi></msub><mo>=</mo><mi>𝐚</mi><msub><mrow></mrow><mrow><mi>t</mi><mo lspace="0.278em" rspace="0.278em">:</mo><mrow><mrow><mi>t</mi><mo>+</mo><mi>H</mi></mrow><mo>−</mo><mn>1</mn></mrow></mrow></msub><mo rspace="2.167em">,</mo><mi>Y</mi><msub><mrow></mrow><mi>t</mi></msub><mo>=</mo><mi>Z</mi><msub><mrow></mrow><mrow><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow><mo lspace="0.278em" rspace="0.278em">:</mo><mrow><mi>t</mi><mo>+</mo><mi>H</mi></mrow></mrow></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">\mathbf{A}_{t}=\mathbf{a}_{t:t+H-1},\hskip 20.00003ptY_{t}=Z_{t+1:t+H},</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="S4.SS1.p1.2">在我们的实现中，使用 <math alttext="H=16" class="ltx_Math" display="inline" id="S4.SS1.p1.m7" intent=":literal"><semantics><mrow><mi>H</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">H=16</annotation></semantics></math> 作为占位符。机器人动作属于可执行的遥操作指令，而人类动作则源自连续的运动捕捉状态。我们将策略学习表述为未来人类与机器人交互轨迹的联合预测。</p><p class="source-paragraph" lang="en">where H = 16 in our implementation. Robot actions are executable teleoperation commands, whereas human actions are derived from consecutive motion-capture states. We formulate policy learning as the joint prediction of future human and robot interaction trajectories:</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E2">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="(\widehat{\mathbf{A}}_{t},\widehat{Y}_{t})\sim\pi_{\Theta}(\cdot\mid\mathbf{I}_{t},Z_{t})," class="ltx_math_unparsed" display="block" id="S4.E2.m1" intent=":literal"><semantics><mrow><mrow><mo stretchy="false">(</mo><msub><mover accent="true"><mi>𝐀</mi><mo mathsize="0.900em">^</mo></mover><mi>t</mi></msub><mo>,</mo><msub><mover accent="true"><mi>Y</mi><mo mathsize="0.900em">^</mo></mover><mi>t</mi></msub><mo stretchy="false">)</mo></mrow><mo>∼</mo><msub><mi>π</mi><mi mathvariant="normal">Θ</mi></msub><mrow><mo stretchy="false">(</mo><mo lspace="0em" rspace="0em">⋅</mo><mo lspace="0em" rspace="0.167em">∣</mo><msub><mi>𝐈</mi><mi>t</mi></msub><mo>,</mo><msub><mi>Z</mi><mi>t</mi></msub><mo stretchy="false">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">(\widehat{\mathbf{A}}_{t},\widehat{Y}_{t})\sim\pi_{\Theta}(\cdot\mid\mathbf{I}_{t},Z_{t}),</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(2)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="S4.SS1.p1.3">其中，<math alttext="\Theta=\{\theta,\phi,\psi\}" class="ltx_Math" display="inline" id="S4.SS1.p1.m8" intent=":literal"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo>=</mo><mrow><mo maxsize="0.900em" minsize="0.900em">{</mo><mrow><mi>θ</mi><mo>,</mo><mi>ϕ</mi><mo>,</mo><mi>ψ</mi></mrow><mo maxsize="0.900em" minsize="0.900em">}</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta=\{\theta,\phi,\psi\}</annotation></semantics></math> 分别表示视觉编码器、动作头与触觉头的参数。在测试阶段，仅机器人动作预测值 <math alttext="\widehat{\mathbf{A}}_{t}" class="ltx_Math" display="inline" id="S4.SS1.p1.m9" intent=":literal"><semantics><msub><mover accent="true"><mi>𝐀</mi><mo mathsize="0.900em">^</mo></mover><mi>t</mi></msub><annotation encoding="application/x-tex">\widehat{\mathbf{A}}_{t}</annotation></semantics></math> 会被发送给控制器。</p><p class="source-paragraph" lang="en">where Θ = { θ , ϕ , ψ } denotes the parameters of the visual encoder, action head, and tactile head, respectively. At test time, only the robot action prediction 𝐀 ^ t is sent to the controller.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S4.SS2">
+<h3 class="ltx_title ltx_title_subsection">IV-B 统一动作与触觉空间</h3>
+<div class="ltx_para" id="S4.SS2.p1">
+<p class="ltx_p" id="S4.SS2.p1.1">我们的目标是从人类触觉演示中学习通用的物理表征，这些表征对灵巧操作具有直接实用价值。然而，人类触觉运动捕捉数据与机器人数据在触觉表征和运动学方面存在差异，且不可避免地包含触觉与运动噪声。为了使机器人和人类触觉观测结果保持一致，我们引入了视觉-触觉到压阻映射机制。 Taxel 映射（VTPM）技术，可将波状传感器捕获的视觉-触觉变形图转换为类压力的压阻效应 taxel 信号。对于每个手指，有效的像素被分配到标准指尖框架中的四个手套对齐区域，各区域的变形强度被汇总为一个标量值。将所有五个手指的数据串联起来，便得到一个统一的表示。 20 人类与机器人演示所共享的多维度触觉表征。 在动作空间方面，人类与机器人的动作均采用相同的 31 维布局来表示。手腕运动通过 3 -D 平移及连续的 6 -D 旋转来表示，而手指运动则通过 22 绝对关节角度来表示。这种相对手腕与绝对手指的表示方式降低了对全局工作空间的依赖，同时又能保持精准的手部构型，从而实现灵巧操作。</p><p class="source-paragraph" lang="en">We aim to learn general physical representations from human tactile demonstrations that are directly useful for dexterous manipulation. However, human tactile motion-capture data differs from robot data in both tactile representation and kinematics, while inevitably containing tactile and motion noise.
+To align robot and human tactile observations, we introduce Visual-Tactile-to-Piezoresistive Taxel Mapping (VTPM), which converts visual-tactile deformation maps captured by the Wave sensors into pressure-like piezoresistive taxel signals. For each finger, valid pixels are assigned to four glove-aligned regions in a canonical fingertip frame, and the deformation intensity within each region is aggregated into one scalar value. Concatenating all five fingers produces a unified 20-dimensional tactile representation shared by human and robot demonstrations. For the action space, human and robot motions are represented using the same 31-dimensional layout. Wrist motion is expressed relative to the current wrist frame using 3-D translation and a continuous 6-D rotation representation, while finger motion is represented by 22 absolute joint angles. This relative-wrist and absolute-finger formulation reduces dependence on the global workspace while preserving precise hand configurations for dexterous manipulation.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S4.SS3">
+<h3 class="ltx_title ltx_title_subsection">IV-C 模型架构</h3>
+<div class="ltx_para" id="S4.SS3.p1">
+<p class="ltx_p" id="S4.SS3.p1.1">如图 <a class="ltx_ref" href="#S1.F4" title="Fig. 4 ‣ I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">4</span></a> 所示，该模型具有共享的视觉-触觉特征，并包含两个输出分支。为便于理解，我们省略了中间特征上的本体标注。一个可训练的变换器编码器 <math alttext="f_{\theta}" class="ltx_Math" display="inline" id="S4.SS3.p1.m1" intent=":literal"><semantics><msub><mi>f</mi><mi>θ</mi></msub><annotation encoding="application/x-tex">f_{\theta}</annotation></semantics></math> 将当前的 <math alttext="224\times 224" class="ltx_Math" display="inline" id="S4.SS3.p1.m2" intent=":literal"><semantics><mrow><mn>224</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>224</mn></mrow><annotation encoding="application/x-tex">224\times 224</annotation></semantics></math> 手腕图像映射为 384 -D 视觉 token。</p><p class="source-paragraph" lang="en">As shown in Fig. 4 , the model has a shared visual-tactile condition and two output branches. We omit the embodiment superscript on intermediate features for clarity. A trainable transformer encoder f θ maps the current 224 × 224 wrist image to a 384-D visual token,</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E3">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="Z_{0}=f_{\theta}(\mathbf{I}_{t})\in\mathbb{R}^{384}." class="ltx_Math" display="block" id="S4.E3.m1" intent=":literal"><semantics><mrow><mrow><msub><mi>Z</mi><mn>0</mn></msub><mo>=</mo><mrow><msub><mi>f</mi><mi>θ</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msub><mi>𝐈</mi><mi>t</mi></msub><mo stretchy="false">)</mo></mrow></mrow><mo>∈</mo><msup><mi>ℝ</mi><mn>384</mn></msup></mrow><mo lspace="0em">.</mo></mrow><annotation encoding="application/x-tex">Z_{0}=f_{\theta}(\mathbf{I}_{t})\in\mathbb{R}^{384}.</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(3)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="S4.SS3.p1.2">该编码器采用 ViT -S/ 8 架构，并在我们的实现中从零开始进行优化。与此同时，VTPM 提供 20 -D 触觉 token <math alttext="Z_{t}" class="ltx_Math" display="inline" id="S4.SS3.p1.m3" intent=":literal"><semantics><msub><mi>Z</mi><mi>t</mi></msub><annotation encoding="application/x-tex">Z_{t}</annotation></semantics></math> 功能，经过与 <math alttext="e" class="ltx_Math" display="inline" id="S4.SS3.p1.m4" intent=":literal"><semantics><mi>e</mi><annotation encoding="application/x-tex">e</annotation></semantics></math> 本体相关的统计处理后实现归一化。该模型通过直接串联的方式实现早期特征级融合。</p><p class="source-paragraph" lang="en">The encoder uses a ViT-S/8 architecture and is optimized from scratch in our implementation. In parallel, VTPM provides the 20-D tactile token Z t , after normalization with statistics specific to embodiment e . The model performs early feature-level fusion by direct concatenation,</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E4">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="Z=[Z_{0};Z_{t}]\in\mathbb{R}^{404}." class="ltx_Math" display="block" id="S4.E4.m1" intent=":literal"><semantics><mrow><mrow><mi>Z</mi><mo>=</mo><mrow><mo stretchy="false">[</mo><mrow><msub><mi>Z</mi><mn>0</mn></msub><mo>;</mo><msub><mi>Z</mi><mi>t</mi></msub></mrow><mo stretchy="false">]</mo></mrow><mo>∈</mo><msup><mi>ℝ</mi><mn>404</mn></msup></mrow><mo lspace="0em">.</mo></mrow><annotation encoding="application/x-tex">Z=[Z_{0};Z_{t}]\in\mathbb{R}^{404}.</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(4)</span></td></tr></tbody>
+</table></div>
+</div>
+<div class="ltx_para" id="S4.SS3.p2">
+<p class="ltx_p" id="S4.SS3.p2.1">动作分支模型模拟了 16 -步骤， 31 -D action chunk 采用条件性扩散方法。 <math alttext="\mathbf{x}_{0}=\mathcal{N}_{e}(\mathbf{A}_{t})\in\mathbb{R}^{16\times 31}" class="ltx_Math" display="inline" id="S4.SS3.p2.m1" intent=":literal"><semantics><mrow><msub><mi>𝐱</mi><mn>0</mn></msub><mo>=</mo><mrow><msub><mi class="ltx_font_mathcaligraphic">𝒩</mi><mi>e</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msub><mi>𝐀</mi><mi>t</mi></msub><mo stretchy="false">)</mo></mrow></mrow><mo>∈</mo><msup><mi>ℝ</mi><mrow><mn>16</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>31</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\mathbf{x}_{0}=\mathcal{N}_{e}(\mathbf{A}_{t})\in\mathbb{R}^{16\times 31}</annotation></semantics></math> ，其中 <math alttext="e\in\{\mathrm{H},\mathrm{R}\}" class="ltx_Math" display="inline" id="S4.SS3.p2.m2" intent=":literal"><semantics><mrow><mi>e</mi><mo>∈</mo><mrow><mo maxsize="0.900em" minsize="0.900em">{</mo><mrow><mi>H</mi><mo>,</mo><mi>R</mi></mrow><mo maxsize="0.900em" minsize="0.900em">}</mo></mrow></mrow><annotation encoding="application/x-tex">e\in\{\mathrm{H},\mathrm{R}\}</annotation></semantics></math> 选取样本本体的归一化统计信息，每一步均包含一项 9 - D 相对手腕目标 3 - 动态翻译与 6 - D 旋转) 和 22 绝对手指关节目标。在扩散步骤中 <math alttext="k" class="ltx_Math" display="inline" id="S4.SS3.p2.m3" intent=":literal"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> , 高斯噪声 <math alttext="\boldsymbol{\epsilon}\sim\mathcal{N}(\mathbf{0},\mathbf{I})" class="ltx_Math" display="inline" id="S4.SS3.p2.m4" intent=":literal"><semantics><mrow><mi class="ltx_mathvariant_bold-italic" mathvariant="bold-italic">ϵ</mi><mo>∼</mo><mrow><mi class="ltx_font_mathcaligraphic">𝒩</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><mn>𝟎</mn><mo>,</mo><mi>𝐈</mi><mo stretchy="false">)</mo></mrow></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol{\epsilon}\sim\mathcal{N}(\mathbf{0},\mathbf{I})</annotation></semantics></math> 作为策略被添加</p><p class="source-paragraph" lang="en">The action branch models a 16-step, 31-D action chunk with conditional diffusion. Let 𝐱 0 = 𝒩 e ​ ( 𝐀 t ) ∈ ℝ 16 × 31 , where e ∈ { H , R } selects the normalization statistics of the sample’s embodiment, and each step contains a 9-D relative wrist target (3-D translation and 6-D rotation) and 22 absolute finger-joint targets. At diffusion step k , Gaussian noise ϵ ∼ 𝒩 ⁡ ( 𝟎 , 𝐈 ) is added as</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E5">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="\mathbf{x}_{k}=\sqrt{\bar{\alpha}_{k}}\mathbf{x}_{0}+\sqrt{1-\bar{\alpha}_{k}}\boldsymbol{\epsilon}." class="ltx_Math" display="block" id="S4.E5.m1" intent=":literal"><semantics><mrow><mrow><msub><mi>𝐱</mi><mi>k</mi></msub><mo>=</mo><mrow><mrow><msqrt><msub><mover accent="true"><mi>α</mi><mo mathsize="0.900em">¯</mo></mover><mi>k</mi></msub></msqrt><mo lspace="0em" rspace="0em">​</mo><msub><mi>𝐱</mi><mn>0</mn></msub></mrow><mo>+</mo><mrow><msqrt><mrow><mn>1</mn><mo>−</mo><msub><mover accent="true"><mi>α</mi><mo mathsize="0.900em">¯</mo></mover><mi>k</mi></msub></mrow></msqrt><mo lspace="0em" rspace="0em">​</mo><mi class="ltx_mathvariant_bold-italic" mathvariant="bold-italic">ϵ</mi></mrow></mrow></mrow><mo lspace="0em">.</mo></mrow><annotation encoding="application/x-tex">\mathbf{x}_{k}=\sqrt{\bar{\alpha}_{k}}\mathbf{x}_{0}+\sqrt{1-\bar{\alpha}_{k}}\boldsymbol{\epsilon}.</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(5)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="S4.SS3.p2.2">一个基于 FiLM 条件的 1 -D U-Net <math alttext="\epsilon_{\phi}(\mathbf{x}_{k},k,Z)" class="ltx_Math" display="inline" id="S4.SS3.p2.m5" intent=":literal"><semantics><mrow><msub><mi>ϵ</mi><mi>ϕ</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msub><mi>𝐱</mi><mi>k</mi></msub><mo>,</mo><mi>k</mi><mo>,</mo><mi>Z</mi><mo stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\epsilon_{\phi}(\mathbf{x}_{k},k,Z)</annotation></semantics></math> 模型能够预测注入的噪声。其通道宽度分别为 256、512 和 1024。与此同时，触觉世界头模块是一个由两个线性层组成的 MLP，其中第一个层将 404 -D 交互表示映射为 512 -D 隐藏特征，并应用 Mish 激活函数，而第二个层则生成 320 -D 输出。该模块能够直接从无噪声状态中反推完整的未来触觉轨迹。</p><p class="source-paragraph" lang="en">A FiLM-conditioned 1-D U-Net ϵ ϕ ​ ( 𝐱 k , k , Z ) predicts the injected noise. Its channel widths are 256, 512, and 1024. In parallel, the tactile world head is an MLP comprising two linear layers: the first maps the 404-D interaction representation to a 512-D hidden feature and applies a Mish activation, while the second produces a 320-D output. It directly regresses the complete future tactile trajectory from the noise-free condition:</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E6">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="\widehat{Y}_{t}=g_{\psi}(Z)\in\mathbb{R}^{16\times 20}." class="ltx_Math" display="block" id="S4.E6.m1" intent=":literal"><semantics><mrow><mrow><msub><mover accent="true"><mi>Y</mi><mo mathsize="0.900em">^</mo></mover><mi>t</mi></msub><mo>=</mo><mrow><msub><mi>g</mi><mi>ψ</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mi>Z</mi><mo stretchy="false">)</mo></mrow></mrow><mo>∈</mo><msup><mi>ℝ</mi><mrow><mn>16</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>20</mn></mrow></msup></mrow><mo lspace="0em">.</mo></mrow><annotation encoding="application/x-tex">\widehat{Y}_{t}=g_{\psi}(Z)\in\mathbb{R}^{16\times 20}.</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(6)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="S4.SS3.p2.3">触觉目标向前移动一步，并与动作范围对齐。将其置于扩散轨迹之外，可避免触觉去噪错误进入迭代动作生成过程，同时其回归损失仍通过 <math alttext="Z" class="ltx_Math" display="inline" id="S4.SS3.p2.m6" intent=":literal"><semantics><mi>Z</mi><annotation encoding="application/x-tex">Z</annotation></semantics></math> 更新共享视觉编码器。</p><p class="source-paragraph" lang="en">The tactile target is shifted one step ahead and aligned with the action horizon. Keeping it outside the diffusion trajectory prevents tactile denoising errors from entering the iterative action-generation process, while its regression loss still updates the shared visual encoder through Z .</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S4.SS4">
+<h3 class="ltx_title ltx_title_subsection">IV-D 训练配方</h3>
+<div class="ltx_para" id="S4.SS4.p1">
+<p class="ltx_p" id="S4.SS4.p1.1">我们在单次人机联合训练过程中即可对每个任务特定模型进行训练，而非采用顺序化的预训练、训练中阶段及训练后阶段。训练集为 <math alttext="\mathcal{D}^{\mathrm{H}}\cup\mathcal{D}^{\mathrm{R}}" class="ltx_Math" display="inline" id="S4.SS4.p1.m1" intent=":literal"><semantics><mrow><msup><mi class="ltx_font_mathcaligraphic">𝒟</mi><mi>H</mi></msup><mo>∪</mo><msup><mi class="ltx_font_mathcaligraphic">𝒟</mi><mi>R</mi></msup></mrow><annotation encoding="application/x-tex">\mathcal{D}^{\mathrm{H}}\cup\mathcal{D}^{\mathrm{R}}</annotation></semantics></math> 的并集。加权随机采样器对人和机器人数据集赋予相等的概率权重，并采用替换采样方式，从而避免不同帧数比例影响混合比例。</p><p class="source-paragraph" lang="en">We train each task-specific model in a single human–robot co-training run, rather than using sequential pretraining, mid-training, and post-training stages. The training set is the union 𝒟 H ∪ 𝒟 R . A weighted random sampler assigns equal probability mass to the human and robot datasets and samples with replacement, preventing their different numbers of frames from determining the mixture ratio.</p>
+</div>
+<div class="ltx_para" id="S4.SS4.p2">
+<p class="ltx_p" id="S4.SS4.p2.1">我们对每个本体分别应用最小-最大归一化，使得人类与机器人的通道处于相同的数值范围内；所保存的机器人统计信息被用于部署时的预测解码。为了应对触觉传感器固有的噪声问题，在归一化之前，需对每条记录中的触觉信号进行基线校正。对于人类数据，基线为前五帧的平均值；对于机器人数据，则取第一帧的值。</p><p class="source-paragraph" lang="en">We apply min–max normalization separately to each embodiment so that both human and robot channels occupy the same numerical range; the saved robot statistics are used to decode predictions at deployment. To deal with tactile sensor native noise problem, tactile signals are baseline-corrected per recording before normalization. For human data, the baseline is the mean of the first five frames; for robot data, it is the first frame.</p>
+</div>
+<div class="ltx_para" id="S4.SS4.p3">
+<p class="ltx_p" id="S4.SS4.p3.1">对于每个样本，我们从 50 训练噪声水平中均匀抽取一个扩散步长 <math alttext="k" class="ltx_Math" display="inline" id="S4.SS4.p3.m1" intent=":literal"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>。去噪目标分别平均计算手腕和手部的误差，并对这两组误差赋予相同的权重，因此 22 -D 手部模块不会主导 9 -D 手腕模块。</p><p class="source-paragraph" lang="en">For each sample, we draw a diffusion step k uniformly from 50 training noise levels. The denoising objective averages the wrist and hand errors separately and weights the two groups equally, so the 22-D hand block does not dominate the 9-D wrist block:</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E7">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="\mathcal{L}_{\mathrm{action}}=\tfrac{1}{2}\operatorname{MSE}(\boldsymbol{\epsilon}_{\mathrm{wrist}},\widehat{\boldsymbol{\epsilon}}_{\mathrm{wrist}})+\tfrac{1}{2}\operatorname{MSE}(\boldsymbol{\epsilon}_{\mathrm{hand}},\widehat{\boldsymbol{\epsilon}}_{\mathrm{hand}})," class="ltx_Math" display="block" id="S4.E7.m1" intent=":literal"><semantics><mrow><mrow><msub><mi class="ltx_font_mathcaligraphic">ℒ</mi><mi>action</mi></msub><mo>=</mo><mrow><mrow><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mo lspace="0.167em" rspace="0em">​</mo><mrow><mi>MSE</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><msub><mi class="ltx_mathvariant_bold-italic" mathvariant="bold-italic">ϵ</mi><mi>wrist</mi></msub><mo>,</mo><msub><mover accent="true"><mi class="ltx_mathvariant_bold-italic" mathvariant="bold-italic">ϵ</mi><mo mathsize="0.900em">^</mo></mover><mi>wrist</mi></msub><mo stretchy="false">)</mo></mrow></mrow></mrow><mo>+</mo><mrow><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mo lspace="0.167em" rspace="0em">​</mo><mrow><mi>MSE</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><msub><mi class="ltx_mathvariant_bold-italic" mathvariant="bold-italic">ϵ</mi><mi>hand</mi></msub><mo>,</mo><msub><mover accent="true"><mi class="ltx_mathvariant_bold-italic" mathvariant="bold-italic">ϵ</mi><mo mathsize="0.900em">^</mo></mover><mi>hand</mi></msub><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\mathcal{L}_{\mathrm{action}}=\tfrac{1}{2}\operatorname{MSE}(\boldsymbol{\epsilon}_{\mathrm{wrist}},\widehat{\boldsymbol{\epsilon}}_{\mathrm{wrist}})+\tfrac{1}{2}\operatorname{MSE}(\boldsymbol{\epsilon}_{\mathrm{hand}},\widehat{\boldsymbol{\epsilon}}_{\mathrm{hand}}),</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(7)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="S4.SS4.p3.2">其中每个 <math alttext="\operatorname{MSE}" class="ltx_Math" display="inline" id="S4.SS4.p3.m2" intent=":literal"><semantics><mi>MSE</mi><annotation encoding="application/x-tex">\operatorname{MSE}</annotation></semantics></math> 值都是对该组内批次、时间及维度进行平均后得到的。未来触觉损失为</p><p class="source-paragraph" lang="en">where each MSE is itself averaged over batch, time, and dimensions within that group. The future-tactile loss is</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E8">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="\mathcal{L}_{\mathrm{tactile}}=\operatorname{MSE}\!\left(g_{\psi}(Z),\mathcal{N}_{e}(Y_{t})\right)," class="ltx_Math" display="block" id="S4.E8.m1" intent=":literal"><semantics><mrow><mrow><msub><mi class="ltx_font_mathcaligraphic">ℒ</mi><mi>tactile</mi></msub><mo>=</mo><mrow><mpadded style="width:2.376em;" width="2.376em"><mi>MSE</mi></mpadded><mo>⁡</mo><mrow><mo>(</mo><mrow><msub><mi>g</mi><mi>ψ</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><mi>Z</mi><mo stretchy="false">)</mo></mrow></mrow><mo>,</mo><mrow><msub><mi class="ltx_font_mathcaligraphic">𝒩</mi><mi>e</mi></msub><mo lspace="0em" rspace="0em">​</mo><mrow><mo stretchy="false">(</mo><msub><mi>Y</mi><mi>t</mi></msub><mo stretchy="false">)</mo></mrow></mrow><mo>)</mo></mrow></mrow></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\mathcal{L}_{\mathrm{tactile}}=\operatorname{MSE}\!\left(g_{\psi}(Z),\mathcal{N}_{e}(Y_{t})\right),</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(8)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="S4.SS4.p3.3">且优化目标为</p><p class="source-paragraph" lang="en">and the optimized objective is</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E9">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="\mathcal{L}_{\mathrm{action+tactile}}=\mathcal{L}_{\mathrm{action}}+\lambda\mathcal{L}_{\mathrm{tactile}}." class="ltx_Math" display="block" id="S4.E9.m1" intent=":literal"><semantics><mrow><mrow><msub><mi class="ltx_font_mathcaligraphic">ℒ</mi><mrow><mi>action</mi><mo>+</mo><mi>tactile</mi></mrow></msub><mo>=</mo><mrow><msub><mi class="ltx_font_mathcaligraphic">ℒ</mi><mi>action</mi></msub><mo>+</mo><mrow><mi>λ</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi class="ltx_font_mathcaligraphic">ℒ</mi><mi>tactile</mi></msub></mrow></mrow></mrow><mo lspace="0em">.</mo></mrow><annotation encoding="application/x-tex">\mathcal{L}_{\mathrm{action+tactile}}=\mathcal{L}_{\mathrm{action}}+\lambda\mathcal{L}_{\mathrm{tactile}}.</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(9)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="S4.SS4.p3.4">所有实验中的触觉损失权重 <math alttext="\lambda" class="ltx_Math" display="inline" id="S4.SS4.p3.m3" intent=":literal"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math> 均被设置为 0.2。我们采用 AdamW 算法，在 250 批次下，通过联合优化所有模块，共进行了 300 轮次的训练。</p><p class="source-paragraph" lang="en">The tactile-loss weight λ is set to 0.2 in all experiments. We optimize all modules jointly for 300 epochs with batches of 250 using AdamW.</p>
+</div>
+<div class="ltx_para" id="S4.SS4.p4">
+<p class="ltx_p" id="S4.SS4.p4.1">在部署过程中，DDIM 使用 16 逆步骤来生成 16 步长的机器人状态 action chunk。我们反转机器人的归一化过程，将 6 -D 旋转转换回 <math alttext="\mathrm{SO}(3)" class="ltx_Math" display="inline" id="S4.SS4.p4.m1" intent=":literal"><semantics><mrow><mi>SO</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><mn>3</mn><mo stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathrm{SO}(3)</annotation></semantics></math>，并将手腕的相对预测值与实时姿态绑定为 <math alttext="\widehat{\mathbf{T}}_{t+k}=\mathbf{T}_{t}\Delta\widehat{\mathbf{T}}_{t,k}" class="ltx_Math" display="inline" id="S4.SS4.p4.m2" intent=":literal"><semantics><mrow><msub><mover accent="true"><mi>𝐓</mi><mo mathsize="0.900em">^</mo></mover><mrow><mi>t</mi><mo>+</mo><mi>k</mi></mrow></msub><mo>=</mo><mrow><msub><mi>𝐓</mi><mi>t</mi></msub><mo lspace="0em" rspace="0em">​</mo><mi mathvariant="normal">Δ</mi><mo lspace="0em" rspace="0em">​</mo><msub><mover accent="true"><mi>𝐓</mi><mo mathsize="0.900em">^</mo></mover><mrow><mi>t</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></mrow><annotation encoding="application/x-tex">\widehat{\mathbf{T}}_{t+k}=\mathbf{T}_{t}\Delta\widehat{\mathbf{T}}_{t,k}</annotation></semantics></math>。控制器在替换新的视觉-触觉反馈之前，会执行前八个手腕和手部的路径点。触觉-头部输出不用于控制。</p><p class="source-paragraph" lang="en">During rollout, DDIM uses 16 reverse steps to sample a 16-step robot action chunk. We invert the robot normalization, convert the 6-D rotations back to SO ⁡ ( 3 ) , and anchor the relative predictions of the wrist to the live pose as 𝐓 ^ t + k = 𝐓 t ​ Δ ​ 𝐓 ^ t , k . The controller executes the first eight wrist and hand waypoints before replacing the newly visual-tactile feedback. The tactile-head output is not used for control.</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S5">
+<h2 class="ltx_title ltx_title_section">V 实验</h2>
+<figure class="ltx_table" id="S5.T1">
+<figcaption class="ltx_caption ltx_centering">表 1：我们方法与基准方法及消融方法在五种任务中的对比。成功率（%）是依据每个任务下的 10 实验结果计算后，再跨任务平均得出的。最后一行为完整模型结果；上述各块分别将其与代表性基准方法，以及仅使用人类数据、未来触觉预测、触觉输入和本体感知条件的消融方案进行了比较。</figcaption>
+<div class="table-scroll"><table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle" id="S5.T1.4">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="S5.T1.4.1">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_r ltx_border_tt" id="S5.T1.4.1.1" style="padding-left:7.0pt;padding-right:7.0pt;">配置</th>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S5.T1.4.1.2" style="padding-left:7.0pt;padding-right:7.0pt;">翻页操作</td>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S5.T1.4.1.3" style="padding-left:7.0pt;padding-right:7.0pt;">灯泡</td>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S5.T1.4.1.4" style="padding-left:7.0pt;padding-right:7.0pt;">切换开关</td>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S5.T1.4.1.5" style="padding-left:7.0pt;padding-right:7.0pt;">球类分类</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_tt" id="S5.T1.4.1.6" style="padding-left:7.0pt;padding-right:7.0pt;">液体传输</td>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S5.T1.4.1.7" style="padding-left:7.0pt;padding-right:7.0pt;">平均</td></tr>
+<tr class="ltx_tr" id="S5.T1.4.2" style="--ltx-bg-color:#EFEFEF;">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_t" colspan="7" id="S5.T1.4.2.1" style="padding-left:7.0pt;padding-right:7.0pt;">基线方法</th></tr>
+<tr class="ltx_tr" id="S5.T1.4.3">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_r" id="S5.T1.4.3.1" style="padding-left:7.0pt;padding-right:7.0pt;">ViTacFormer <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib24" title="">28</a>]</cite></th>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.3.2" style="padding-left:7.0pt;padding-right:7.0pt;">0</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.3.3" style="padding-left:7.0pt;padding-right:7.0pt;">4</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.3.4" style="padding-left:7.0pt;padding-right:7.0pt;">0</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.3.5" style="padding-left:7.0pt;padding-right:7.0pt;">0</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.4.3.6" style="padding-left:7.0pt;padding-right:7.0pt;">0      </td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.3.7" style="padding-left:7.0pt;padding-right:7.0pt;">1</td></tr>
+<tr class="ltx_tr" id="S5.T1.4.4">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_r" id="S5.T1.4.4.1" style="padding-left:7.0pt;padding-right:7.0pt;">RDP <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib25" title="">43</a>]</cite></th>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.4.2" style="padding-left:7.0pt;padding-right:7.0pt;">10</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.4.3" style="padding-left:7.0pt;padding-right:7.0pt;">20</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.4.4" style="padding-left:7.0pt;padding-right:7.0pt;">20</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.4.5" style="padding-left:7.0pt;padding-right:7.0pt;">18</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.4.4.6" style="padding-left:7.0pt;padding-right:7.0pt;">0      </td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.4.7" style="padding-left:7.0pt;padding-right:7.0pt;">14</td></tr>
+<tr class="ltx_tr" id="S5.T1.4.5">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_r" id="S5.T1.4.5.1" style="padding-left:7.0pt;padding-right:7.0pt;">T-Rex <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib1" title="">4</a>]</cite></th>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.5.2" style="padding-left:7.0pt;padding-right:7.0pt;">43</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.5.3" style="padding-left:7.0pt;padding-right:7.0pt;">26</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.5.4" style="padding-left:7.0pt;padding-right:7.0pt;">24</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.5.5" style="padding-left:7.0pt;padding-right:7.0pt;">36</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.4.5.6" style="padding-left:7.0pt;padding-right:7.0pt;">15      </td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.5.7" style="padding-left:7.0pt;padding-right:7.0pt;">29</td></tr>
+<tr class="ltx_tr" id="S5.T1.4.6" style="--ltx-bg-color:#EFEFEF;">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_t" colspan="7" id="S5.T1.4.6.1" style="padding-left:7.0pt;padding-right:7.0pt;">消融方法</th></tr>
+<tr class="ltx_tr" id="S5.T1.4.7">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_r" id="S5.T1.4.7.1" style="padding-left:7.0pt;padding-right:7.0pt;">仅人类数据</th>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.7.2" style="padding-left:7.0pt;padding-right:7.0pt;">0</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.7.3" style="padding-left:7.0pt;padding-right:7.0pt;">0</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.7.4" style="padding-left:7.0pt;padding-right:7.0pt;">0</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.7.5" style="padding-left:7.0pt;padding-right:7.0pt;">0</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.4.7.6" style="padding-left:7.0pt;padding-right:7.0pt;">0      </td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.7.7" style="padding-left:7.0pt;padding-right:7.0pt;">0</td></tr>
+<tr class="ltx_tr" id="S5.T1.4.8">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_r" id="S5.T1.4.8.1" style="padding-left:7.0pt;padding-right:7.0pt;">无触觉预测</th>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.8.2" style="padding-left:7.0pt;padding-right:7.0pt;">58</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.8.3" style="padding-left:7.0pt;padding-right:7.0pt;">38</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.8.4" style="padding-left:7.0pt;padding-right:7.0pt;">50</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.8.5" style="padding-left:7.0pt;padding-right:7.0pt;">44</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.4.8.6" style="padding-left:7.0pt;padding-right:7.0pt;">21      </td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.8.7" style="padding-left:7.0pt;padding-right:7.0pt;">42</td></tr>
+<tr class="ltx_tr" id="S5.T1.4.9">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_r" id="S5.T1.4.9.1" style="padding-left:7.0pt;padding-right:7.0pt;">仅视觉的感知</th>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.9.2" style="padding-left:7.0pt;padding-right:7.0pt;">47</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.9.3" style="padding-left:7.0pt;padding-right:7.0pt;">23</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.9.4" style="padding-left:7.0pt;padding-right:7.0pt;">26</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.9.5" style="padding-left:7.0pt;padding-right:7.0pt;">20</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.4.9.6" style="padding-left:7.0pt;padding-right:7.0pt;">14      </td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.9.7" style="padding-left:7.0pt;padding-right:7.0pt;">26</td></tr>
+<tr class="ltx_tr" id="S5.T1.4.10">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_r" id="S5.T1.4.10.1" style="padding-left:7.0pt;padding-right:7.0pt;">基于本体感知</th>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.10.2" style="padding-left:7.0pt;padding-right:7.0pt;">22</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.10.3" style="padding-left:7.0pt;padding-right:7.0pt;">20</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.10.4" style="padding-left:7.0pt;padding-right:7.0pt;">14</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.10.5" style="padding-left:7.0pt;padding-right:7.0pt;">20</td>
+<td class="ltx_td ltx_align_center ltx_border_r" id="S5.T1.4.10.6" style="padding-left:7.0pt;padding-right:7.0pt;">15      </td>
+<td class="ltx_td ltx_align_center" id="S5.T1.4.10.7" style="padding-left:7.0pt;padding-right:7.0pt;">18</td></tr>
+<tr class="ltx_tr" id="S5.T1.4.11">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_bb ltx_border_r ltx_border_t" id="S5.T1.4.11.1" style="padding-left:7.0pt;padding-right:7.0pt;">我们的研究</th>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_t" id="S5.T1.4.11.2" style="padding-left:7.0pt;padding-right:7.0pt;"><span class="ltx_text ltx_font_bold" id="S5.T1.4.11.2.1">83</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_t" id="S5.T1.4.11.3" style="padding-left:7.0pt;padding-right:7.0pt;"><span class="ltx_text ltx_font_bold" id="S5.T1.4.11.3.1">80</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_t" id="S5.T1.4.11.4" style="padding-left:7.0pt;padding-right:7.0pt;"><span class="ltx_text ltx_font_bold" id="S5.T1.4.11.4.1">88</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_t" id="S5.T1.4.11.5" style="padding-left:7.0pt;padding-right:7.0pt;"><span class="ltx_text ltx_font_bold" id="S5.T1.4.11.5.1">56</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r ltx_border_t" id="S5.T1.4.11.6" style="padding-left:7.0pt;padding-right:7.0pt;"><span class="ltx_text ltx_font_bold" id="S5.T1.4.11.6.1">44</span>      </td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_t" id="S5.T1.4.11.7" style="padding-left:7.0pt;padding-right:7.0pt;"><span class="ltx_text ltx_font_bold" id="S5.T1.4.11.7.1">70</span></td></tr>
+</tbody>
+</table></div>
+</figure>
+<figure class="ltx_figure" id="S5.F5"><object class="ltx_graphics ltx_centering ltx_img_landscape" data="2609.34182v2/human_scaling.svg" height="119" id="S5.F5.g1" style="aspect-ratio:476/119;" type="image/svg+xml" width="476"></object>
+<figcaption class="ltx_caption ltx_centering">图 5：人类触觉数据缩放曲线。在增加人类演示的固定机器人演示预算后，在三种接触丰富的任务上的成功率及其平均值。随着更多人类数据的输入，性能持续提升，且在 1,000 轨迹阶段并未达到饱和。</figcaption>
+</figure>
+<div class="ltx_para" id="S5.p1">
+<p class="ltx_p" id="S5.p1.1">在本节中，我们通过实验旨在回答以下问题：<br class="ltx_break"/> RQ1：富含接触操作的灵巧操作中，人类触觉数据的价值究竟如何？<br class="ltx_break"/> RQ2：对人类触觉数据进行缩放是否能提升真实机器人的性能？<br class="ltx_break"/> RQ3：世界模型的架构与训练设计究竟有多重要？</p><p class="source-paragraph" lang="en">In this section, we aim to answer the following questions through our experiments: RQ1: What is the value of human tactile data for contact-rich dexterous manipulation? RQ2: Does scaling human tactile data improve real-robot performance? RQ3: How important are the architecture and training design of the world model?</p>
+</div>
+<section class="ltx_subsection" id="S5.SS1">
+<h3 class="ltx_title ltx_title_subsection">V-A 实验设置</h3>
+<div class="ltx_para" id="S5.SS1.p1">
+<p class="ltx_p" id="S5.SS1.p1.1">任务：为了评估策略性能，我们设计了五项具有接触操作的操控任务。每个任务均包含 150 机器人演示与 1,000 人类演示。<br class="ltx_break"/>（任务一）翻页操作。机器人靠近书本，在页面附近减速，并协调手指动作，在向左转动之前揉搓并分离单页。<br class="ltx_break"/>（任务二）拧灯泡。机器人靠近松放在插座中的灯泡，协调手腕与手指动作，将灯泡拧入插座直至其亮起。<br class="ltx_break"/>（任务三）拨动开关。机器人靠近桌上的电路断路器，用食指和中指固定它，然后用拇指用力推动开关，直至其完全开启。<br class="ltx_break"/>（任务四）球分类。 该机器人能够识别由不同材料制成的外观相似的球体，通过触觉交互推断出其材料特性，并将它们分类放入相应的杯子中。<br class="ltx_break"/>：使用滴管进行液体转移任务。机器人握住滴管，将其插入烧瓶中以取水，再将水倒入目标杯子中，确保不洒出。<br class="ltx_break"/>：机器人平台与动作空间：所有现实实验均使用具有两个22 - DoF Sharpa Wave灵巧手的固定基座北向机器人。策略系统接收来自右臂单目腕式摄像机的RGB图像以及来自指尖的校准后的触觉信号。动作控制采用右臂的相对末端执行器增量控制方式，以及右手手指的绝对关节控制方式。 <br class="ltx_break"/> 基线方法：我们将我们的方法与三种典型的视觉-触觉策略进行了比较：( 1 ) ViTacFormer <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib24" title="">28</a>]</cite>，这是一种 ACT 风格的灵巧模仿策略，通过跨注意力机制与辅助未来触觉预测来学习跨模态视觉-触觉表征；( 2 ) Reactive Diffusion Policy (RDP) <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib25" title="">43</a>]</cite>，一种慢速-快速扩散策略，结合低频视觉动作块生成与高频触觉反应优化以实现丰富的接触操作；以及 ( 3 ) T-Rex <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib1" title="">4</a>]</cite>，一个预训练的触觉反应灵巧基础模型，采用可变速率的混合Transformer架构，将低频视觉-运动规划与高频触觉动作优化相结合。</p><p class="source-paragraph" lang="en">Tasks: To evaluate policy performance, we design five contact-rich manipulation tasks.
+Each task is provided with 150 robot demonstrations and 1,000 human demonstrations. (Task I) Flip Page. The robot approaches the book, slows down near the page, and coordinates its fingers to rub and separate a single page before turning it to the left. (Task II) Screw Light Bulb. The robot approaches a light bulb loosely placed in its socket and coordinates its wrist and fingers to screw the bulb into the socket until it lights up. (Task III) Toggle Switch. The robot approaches a circuit breaker on the table, stabilizes it with the index and middle fingers, and uses the thumb to firmly push the switch until it is fully turned on. (Task IV) Ball Classification. The robot approaches visually similar balls made of different materials, infers their material properties through tactile interaction, and sorts them into the corresponding cups. (Task V) Liquid Transfer with a Dropper. The robot grasps a dropper, inserts it into a flask to draw water, transfers it to a target cup, and dispenses the water without spilling. Robot Platform and Action Space: All real-world experiments use
+a fixed-base North robot with two 22-DoF Sharpa Wave dexterous hands.
+The policy receives the RGB images from the right-arm monocular wrist camera and calibrated tactile readings from the fingertips. Actions use relative end-effector delta control for the right arm and absolute joint control for the right-hand fingers. Baselines: We compare our method with three representative visuo-tactile policies:
+(1) ViTacFormer [ 28 ] , an ACT-style dexterous imitation policy that learns cross-modal visual-tactile representations through cross-attention and auxiliary future tactile prediction; (2) Reactive Diffusion Policy (RDP) [ 43 ] , a slow-fast diffusion policy that combines low-frequency visual action-chunk generation with high-frequency tactile-reactive refinement for contact-rich manipulation; and (3) T-Rex [ 4 ] , a pretrained tactile-reactive dexterous foundation model that uses a variable-rate Mixture-of-Transformers to couple low-frequency visuo-motor planning with high-frequency tactile action refinement.</p>
+</div>
+<div class="ltx_para" id="S5.SS1.p2">
+<p class="ltx_p" id="S5.SS1.p2.1">为了进行公平比较，所有方法均采用相同的手腕模型 RGB 通过单指触觉观测，预测相同的右臂及右手动作空间，并采用相同的人与机器人任务特定示范分割及评估方案。每个基线模型均保留其原有的触觉融合策略架构，并在与我们的方法相同数量的机器人示范数据上进行训练或后训练。 <br class="ltx_break"/> 评估指标：我们对每种方法及消融实验进行了评估 10 针对每个任务进行的真实机器人试验，其中物体位置和高度均经过随机化。我们并非将每次运行都视为二元结果进行评分，而是采用分阶段成功率机制，对达到不同中间阶段给予部分分数。 例如，在翻页任务中，机器人因成功分离页面而获得 0.3 分，因翻动多页而获得 0.7 分，因恰好翻动一页而获得 1.0 分。</p><p class="source-paragraph" lang="en">For a fair comparison, all methods receive the same wrist RGB and per-finger tactile observations, predict the same right-arm and right-hand action space, and use identical task-specific human and robot demonstration splits and evaluation protocols. Each baseline retains its original tactile fusion and policy architecture and is trained or post-trained on the same number of robot demonstrations as our method. Evaluation Metric: We evaluate each method and ablation over 10 real-robot trials per task, with randomized object positions and heights. Rather than scoring each rollout as a binary outcome, we report a stage-wise success rate that awards partial credit for reaching intermediate stages. For example, in the flip page task, a rollout receives a score of 0.3 for successfully separating the pages, 0.7 for turning multiple pages, and 1.0 for successfully turning exactly one page.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S5.SS2">
+<h3 class="ltx_title ltx_title_subsection">V-B 主要结果与分析</h3>
+<div class="ltx_para" id="S5.SS2.p1">
+<p class="ltx_p" id="S5.SS2.p1.1">表 <a class="ltx_ref" href="#S5.T1" title="TABLE 1 ‣ V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">1</span></a> 同时展示了基线对比结果与受控消融实验数据。评分是基于 10 真实机器人测试数据计算后取平均值，并以百分比形式呈现。最后一列则代表五项任务的平均未加权值。</p><p class="source-paragraph" lang="en">Table 1 jointly reports the baseline comparison and controlled ablations. Scores are averaged over 10 real-robot rollouts and reported as percentages. The final column is the unweighted mean over the five tasks.</p>
+</div>
+<div class="ltx_para" id="S5.SS2.p2">
+<p class="ltx_p" id="S5.SS2.p2.1">人类触觉数据是构建高接触性操控策略的关键。我们的方法实现了 70% 的平均成功率，并在所有五项任务中表现最佳，比最强大的基线方案 T-Rex 高出 41 个百分点。这种提升在拨动开关任务（88% 对 24%）和螺旋灯泡任务（80% 对 26%）中尤为显著，因为这些任务的成功执行依赖于仅凭手腕视觉难以识别的接触事件。相比之下，仅使用人类数据进行训练只能获得 0% 的效果，因为人类的运动轨迹无法被机器人直接执行。结合在图 <a class="ltx_ref" href="#S5.F5" title="Fig. 5 ‣ V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">5</span></a> 中未使用人类轨迹所得到的 0% 结果来看，这些结果表明，在现有数据预算下，这两种来源单独使用都不足以实现目标。 因此，改进效果源于通过统一协同训练，将多样的人类交互经验与机器人特有的动作监督相结合。</p><p class="source-paragraph" lang="en">Human Tactile Data is Key to Strong Contact-Rich Manipulation Policy. Our method achieves a 70% average success rate and performs best on all five tasks, exceeding the strongest baseline, T-Rex, by 41 percentage points. The gains are particularly pronounced on Toggle Switch (88% versus 24%) and Screw Light Bulb (80% versus 26%), where successful execution depends on contact events that are difficult to resolve from wrist vision alone. In contrast, training with human data alone yields 0% because human trajectories are not directly executable by the robot. Together with the 0% result obtained with no human trajectories in Fig. 5 , these results show that neither source is sufficient in isolation under the available data budget. The improvement therefore comes from combining diverse human interaction experience with robot-specific action supervision through unified co-training.</p>
+</div>
+<div class="ltx_para" id="S5.SS2.p3">
+<p class="ltx_p" id="S5.SS2.p3.1">性能随人类触觉数据而提升，且尚未达到饱和状态。图 <a class="ltx_ref" href="#S5.F5" title="Fig. 5 ‣ V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">5</span></a> 改变了人类路径的数量，同时保持每个任务中的 150 机器人演示数量不变。在翻页、螺丝灯泡和拨动开关三项任务中，成功率从没有人类数据的 0% 逐步上升至有人类路径的 8%、29%、51% 和 84%、250、500、750 和 1,000。所有三项任务均呈现相同的正趋势，表明这一优势并不仅限于某种特定的操作行为。此外，最大的平均增益 33 个百分点出现在 750 与 1,000 路径之间。因此，曲线在最大数据集规模下依然陡峭，表明性能尚未达到饱和，可能还能从更多的人类触觉演示中获得进一步提升。</p><p class="source-paragraph" lang="en">Performance scales with human tactile data and has not saturated. Fig. 5 varies the number of human trajectories while keeping the 150 robot demonstrations per task fixed. Averaged over Flip Page , Screw Light Bulb , and Toggle Switch , success increases monotonically from 0% without human data to 8%, 29%, 51%, and 84% with 250, 500, 750, and 1,000 human trajectories, respectively. All three tasks exhibit the same positive trend, indicating that the benefit is not confined to a single manipulation behavior. Moreover, the largest average gain, 33 percentage points, occurs between 750 and 1,000 trajectories. The curve thus remains steep at the largest dataset size evaluated, suggesting that performance has not yet saturated and may continue to benefit from additional human tactile demonstrations.</p>
+</div>
+<div class="ltx_para" id="S5.SS2.p4">
+<p class="ltx_p" id="S5.SS2.p4.1">未来触觉预测对模型性能至关重要。表 <a class="ltx_ref" href="#S5.T1" title="TABLE 1 ‣ V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">1</span></a> 中的消融实验揭示了触觉条件与未来触觉预测的贡献。移除触觉预测模块而保留触觉输入时，平均成功率从 70% 降至 42%，这表明未来触觉监督并非仅仅是辅助输出，而是促使共享表示编码动作的物理后果。同时移除触觉输入时，性能进一步下降至 26%，证实当前接触观测信息提供了仅通过视觉无法获得的信息。最后，加入本体感知条件后，性能下降最为显著，仅达到 18%。 我们观察到，基于本体感知的策略在预测动作时严重依赖当前状态，因此产生的行为类似于重复执行一个几乎固定的示范轨迹。这种依赖性限制了其根据视觉和触觉观测的变化来调整动作的能力，这支持了我们将预测头以统一的视觉-触觉表征为条件这一选择。</p><p class="source-paragraph" lang="en">Future Tactile Prediction is Critical to the Model. The ablations in Table 1 isolate the contributions of tactile conditioning and future-tactile prediction. Removing the tactile prediction head while retaining tactile input reduces the average success rate from 70% to 42%, demonstrating that future tactile supervision is more than an auxiliary output: it encourages the shared representation to encode the physical consequences of actions. Removing tactile input as well further reduces performance to 26%, confirming that current contact observations provide information unavailable from vision alone. Finally, adding proprioceptive conditioning produces the largest degradation, reaching only 18%. We observe that the proprioception-conditioned policy relies heavily on its current state when predicting actions and consequently produces behaviors resembling the replay of a nearly fixed demonstration trajectory. This reliance limits its ability to adapt actions in response to changing visual and tactile observations, supporting our choice to condition both prediction heads on the unified visual-tactile representation.</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S6">
+<h2 class="ltx_title ltx_title_section">VI 结论</h2>
+<div class="ltx_para" id="S6.p1">
+<p class="ltx_p" id="S6.p1.1">我们提出了 UVTA 框架，旨在利用可扩展的人类触觉演示来实现多接触环境下的灵巧操作。基于这样一个前提：尽管手部的本体结构可能有所不同，但交互的底层物理机制却是一致的，我们开发了一种可穿戴触觉运动捕捉系统，能够同步记录以手腕为中心的视觉信息、指尖触觉数据以及手部运动。通过该系统，我们收集了涵盖五项任务的数据集，每项任务均包含 1,000 多种人类演示及 150 机器人演示。我们的统一视觉-触觉-动作模型能够整合这两种本体结构，并共同预测未来的动作与触觉轨迹，从而让人类数据用于监督注重接触关系的表征学习，同时保留机器人特有的执行方式。 在五项真实机器人任务中，所得到的策略平均成功率为 70%，而最强大的视觉-触觉基线则达到 29%。进一步分析表明，移除未来触觉预测会导致性能降至 42%，这证实了对行为物理后果进行建模的重要性。最后，随着人类数据量的增加，性能仍保持稳定，且在每项任务中均未达到 1,000 的水平。这些结果表明，人类触觉交互是实现灵巧机器人学习的实用且可扩展的物理监督来源。</p><p class="source-paragraph" lang="en">We presented UVTA, a framework for leveraging scalable human tactile demonstrations in contact-rich dexterous manipulation. Motivated by the premise that hand embodiments may differ while the underlying physics of interaction remains shared, we developed a wearable tactile motion-capture system that synchronously records wrist-centric vision, fingertip tactile measurements, and hand motion. Using this system, we collected a dataset spanning five tasks, with 1,000 diverse human demonstrations and 150 robot demonstrations per task. Our Unified Visual-Tactile-Action Model aligns the two embodiments and jointly predicts future action and tactile trajectories, allowing human data to supervise contact-aware representation learning while retaining robot-specific execution. Across five real-robot tasks, the resulting policy achieves a 70% average success rate, compared with 29% for the strongest visual-tactile baseline. Ablations further show that removing future-tactile prediction reduces performance to 42%, confirming the importance of modeling the physical consequences of actions. Finally, performance improves consistently as human data scales and remains unsaturated at 1,000 demonstrations per task. These results establish human tactile interaction as a practical and scalable source of physical supervision for dexterous robot learning.</p>
+</div>
+</section>
+<section class="ltx_bibliography" id="bib">
+<h2 class="ltx_title ltx_title_bibliography">参考文献</h2>
+<ul class="ltx_biblist" id="bib.L1">
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib16"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[1]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. R. Hogan, J. Ballester, S. Dong, and A. Rodriguez</span><span class="ltx_text ltx_bib_year"> (2020)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib16.9" style="font-size:90%;">Tactile dexterity: manipulation primitives with tactile feedback</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib16.10" style="font-size:90%;">arXiv preprint arXiv:2002.03236</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p1.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib17"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[2]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">I. Guzey <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2023)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib17.4" style="font-size:90%;">See to touch: learning tactile dexterity through visual incentives</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib17.5" style="font-size:90%;">arXiv preprint arXiv:2309.12300</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p1.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib18"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[3]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">X. Zhang <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib18.4" style="font-size:90%;">DexTac: learning contact-aware visuotactile policies via hand-by-hand teaching</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib18.5" style="font-size:90%;">arXiv preprint arXiv:2601.21474</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p1.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib1"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[4]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. Niu <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib1.4" style="font-size:90%;">T-Rex: tactile-reactive dexterous manipulation</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib1.5" style="font-size:90%;">arXiv preprint arXiv:2606.17055</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p1.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>,
+<a class="ltx_ref" href="#S5.SS1.p1.1" title="V-A Experiment Setup ‣ V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§V-A</span></a>,
+<a class="ltx_ref" href="#S5.T1.4.5.1" title="In V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">TABLE 1</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib2"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[5]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. Zhang <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib2.4" style="font-size:90%;">Human-centric transferable tactile pre-training for dexterous robotic manipulation</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib2.5" style="font-size:90%;">arXiv preprint arXiv:2607.01067</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p1.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib6"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[6]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">K. Grauman <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2021)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib6.4" style="font-size:90%;">Ego4D: around the world in 3,000 hours of egocentric video</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib6.5" style="font-size:90%;">arXiv preprint arXiv:2110.07058</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib7"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[7]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">Y. Liu <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2022)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib7.4" style="font-size:90%;">HOI4D: a 4d egocentric dataset for category-level human-object interaction</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib7.5" style="font-size:90%;">arXiv preprint arXiv:2203.01577</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib8"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[8]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">T. Xiao, I. Radosavovic, T. Darrell, and J. Malik</span><span class="ltx_text ltx_bib_year"> (2022)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib8.9" style="font-size:90%;">Masked visual pre-training for motor control</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib8.10" style="font-size:90%;">arXiv preprint arXiv:2203.06173</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib9"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[9]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. Nair, A. Rajeswaran, V. Kumar, C. Finn, and A. Gupta</span><span class="ltx_text ltx_bib_year"> (2022)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib9.11" style="font-size:90%;">R3M: a universal visual representation for robot manipulation</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib9.12" style="font-size:90%;">arXiv preprint arXiv:2203.12601</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib10"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[10]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. Wang <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2023)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib10.4" style="font-size:90%;">MimicPlay: long-horizon imitation learning by watching human play</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib10.5" style="font-size:90%;">arXiv preprint arXiv:2302.12422</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib11"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[11]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">Y. Qin <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2021)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib11.4" style="font-size:90%;">DexMV: imitation learning for dexterous manipulation from human videos</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib11.5" style="font-size:90%;">arXiv preprint arXiv:2108.05877</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib12"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[12]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. Wang <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2024)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib12.4" style="font-size:90%;">DexCap: scalable and portable mocap data collection system for dexterous manipulation</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib12.5" style="font-size:90%;">arXiv preprint arXiv:2403.07788</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib13"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[13]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. Kareer <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2024)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib13.4" style="font-size:90%;">EgoMimic: scaling imitation learning via egocentric video</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib13.5" style="font-size:90%;">arXiv preprint arXiv:2410.24221</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib14"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[14]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Mu <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib14.4" style="font-size:90%;">DexImit: learning bimanual dexterous manipulation from monocular human videos</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib14.5" style="font-size:90%;">arXiv preprint arXiv:2602.10105</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib15"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[15]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. Yang <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2025)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib15.4" style="font-size:90%;">EgoVLA: learning vision-language-action models from egocentric human videos</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib15.5" style="font-size:90%;">arXiv preprint arXiv:2507.12440</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib3"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[16]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. Zheng <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib3.4" style="font-size:90%;">EgoScale: scaling dexterous manipulation with diverse egocentric human data</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib3.5" style="font-size:90%;">arXiv preprint arXiv:2602.16710</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p2.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib28"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[17]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">Y. Du <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2023)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib28.4" style="font-size:90%;">Learning universal policies via text-guided video generation</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib28.5" style="font-size:90%;">arXiv preprint arXiv:2302.00111</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib29"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[18]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">H. Wu <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2023)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib29.4" style="font-size:90%;">Unleashing large-scale video generative pre-training for visual robot manipulation</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib29.5" style="font-size:90%;">arXiv preprint arXiv:2312.13139</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib30"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[19]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. Zhou <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2024)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib30.4" style="font-size:90%;">RoboDreamer: learning compositional world models for robot imagination</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib30.5" style="font-size:90%;">arXiv preprint arXiv:2404.12377</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib31"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[20]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">Y. Hu <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2024)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib31.4" style="font-size:90%;">Video prediction policy: a generalist robot policy with predictive visual representations</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib31.5" style="font-size:90%;">arXiv preprint arXiv:2412.14803</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib32"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[21]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. Li, Y. Gao, D. Sadigh, and S. Song</span><span class="ltx_text ltx_bib_year"> (2025)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib32.9" style="font-size:90%;">Unified video action model</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib32.10" style="font-size:90%;">arXiv preprint arXiv:2503.00200</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib33"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[22]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. Zheng <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2025)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib33.4" style="font-size:90%;">FLARE: robot learning with implicit world modeling</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib33.5" style="font-size:90%;">arXiv preprint arXiv:2505.15659</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib34"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[23]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. Gao <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib34.4" style="font-size:90%;">DreamDojo: a generalist robot world model from large-scale human videos</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib34.5" style="font-size:90%;">arXiv preprint arXiv:2602.06949</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib35"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[24]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. Ye <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib35.4" style="font-size:90%;">World action models are zero-shot policies</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib35.5" style="font-size:90%;">arXiv preprint arXiv:2602.15922</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib4"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[25]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">B. Li, X. Yin, M. Lin, Y. Zhang, and D. Xu</span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib4.11" style="font-size:90%;">EgoWAM: world action models beyond pixels with in-the-wild egocentric human data</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib4.12" style="font-size:90%;">arXiv preprint arXiv:2607.08436</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib36"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[26]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">A. Ayad, A. Röfer, N. Heppert, and A. Valada</span><span class="ltx_text ltx_bib_year"> (2024)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib36.9" style="font-size:90%;">Imagine2touch: predictive tactile sensing for robotic manipulation using efficient low-dimensional signals</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib36.10" style="font-size:90%;">arXiv preprint arXiv:2405.01192</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib37"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[27]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Zhou <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib37.4" style="font-size:90%;">TouchWorld: a predictive and reactive tactile foundation model for dexterous manipulation</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib37.5" style="font-size:90%;">arXiv preprint arXiv:2607.07287</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib24"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[28]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">L. Heng, H. Geng, K. Zhang, P. Abbeel, and J. Malik</span><span class="ltx_text ltx_bib_year"> (2025)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib24.11" style="font-size:90%;">ViTacFormer: learning cross-modal representation for visuo-tactile dexterous manipulation</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib24.12" style="font-size:90%;">arXiv preprint arXiv:2506.15953</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>,
+<a class="ltx_ref" href="#S5.SS1.p1.1" title="V-A Experiment Setup ‣ V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§V-A</span></a>,
+<a class="ltx_ref" href="#S5.T1.4.3.1" title="In V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">TABLE 1</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib27"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[29]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">H. Yuan <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib27.4" style="font-size:90%;">VTAM: video-tactile-action models for complex physical interaction beyond VLAs</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib27.5" style="font-size:90%;">arXiv preprint arXiv:2603.23481</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S1.p4.1" title="I INTRODUCTION ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§I</span></a>,
+<a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib38"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[30]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. Damen <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2022)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib38.4" style="font-size:90%;">Rescaling egocentric vision: collection, pipeline and challenges for EPIC-KITCHENS-100</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib38.5" style="font-size:90%;">International Journal of Computer Vision</span></span> <span class="ltx_text ltx_bib_volume"><span class="ltx_text" id="bib.bib38.6" style="font-size:90%;">130</span></span>, <span class="ltx_text ltx_bib_pages">pp. <span class="ltx_text" id="bib.bib38.7" style="font-size:90%;">33–55</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_inproceedings" id="bib.bib39"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[31]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">K. Grauman <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2024)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib39.4" style="font-size:90%;">Ego-Exo4D: understanding skilled human activity from first- and third-person perspectives</span></span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook"><span class="ltx_text" id="bib.bib39.5" style="font-size:90%;">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</span></span>,
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_inproceedings" id="bib.bib40"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[32]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">Y. J. Ma, S. Sodhani, D. Jayaraman, O. Bastani, V. Kumar, and A. Zhang</span><span class="ltx_text ltx_bib_year"> (2023)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib40.13" style="font-size:90%;">VIP: towards universal visual reward and representation via value-implicit pre-training</span></span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook"><span class="ltx_text" id="bib.bib40.14" style="font-size:90%;">International Conference on Learning Representations</span></span>,
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_inproceedings" id="bib.bib41"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[33]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">A. Majumdar <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2023)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib41.4" style="font-size:90%;">Where are we in the search for an artificial visual cortex for embodied intelligence?</span></span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook"><span class="ltx_text" id="bib.bib41.5" style="font-size:90%;">Advances in Neural Information Processing Systems</span></span>,
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib5"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[34]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">Z. Wang, B. He, K. Yu, S. Lee, R. Gao, F. Huang, and Y. Aloimonos</span><span class="ltx_text ltx_bib_year"> (2026)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib5.15" style="font-size:90%;">HumanEgo: zero-shot robot learning from minutes of human egocentric videos</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib5.16" style="font-size:90%;">arXiv preprint arXiv:2605.24934</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p1.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_inproceedings" id="bib.bib42"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[35]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. Calandra, A. Owens, M. Upadhyaya, W. Yuan, J. Lin, E. H. Adelson, and S. Levine</span><span class="ltx_text ltx_bib_year"> (2017)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib42.15" style="font-size:90%;">The feeling of success: does touch sensing help predict grasp outcomes?</span></span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook"><span class="ltx_text" id="bib.bib42.16" style="font-size:90%;">Conference on Robot Learning</span></span>,
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_inproceedings" id="bib.bib43"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[36]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. A. Lee, Y. Zhu, K. Srinivasan, P. Shah, S. Savarese, L. Fei-Fei, A. Garg, and J. Bohg</span><span class="ltx_text ltx_bib_year"> (2019)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib43.17" style="font-size:90%;">Making sense of vision and touch: self-supervised learning of multimodal representations for contact-rich tasks</span></span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook"><span class="ltx_text" id="bib.bib43.18" style="font-size:90%;">IEEE International Conference on Robotics and Automation</span></span>,
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_inproceedings" id="bib.bib44"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[37]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Yang, C. Ma, J. Zhang, J. Zhu, W. Yuan, and A. Owens</span><span class="ltx_text ltx_bib_year"> (2022)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib44.13" style="font-size:90%;">Touch and go: learning from human-collected vision and touch</span></span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook"><span class="ltx_text" id="bib.bib44.14" style="font-size:90%;">Advances in Neural Information Processing Systems Datasets and Benchmarks Track</span></span>,
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>,
+<a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib19"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[38]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">I. Guzey, B. Evans, S. Chintala, and L. Pinto</span><span class="ltx_text ltx_bib_year"> (2023)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib19.9" style="font-size:90%;">Dexterity from touch: self-supervised pre-training of tactile representations with robotic play</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib19.10" style="font-size:90%;">arXiv preprint arXiv:2303.12076</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib20"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[39]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. Sferrazza, Y. Seo, H. Liu, Y. Lee, and P. Abbeel</span><span class="ltx_text ltx_bib_year"> (2023)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib20.11" style="font-size:90%;">The power of the senses: generalizable manipulation from vision and touch through masked multimodal learning</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib20.12" style="font-size:90%;">arXiv preprint arXiv:2311.00924</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib21"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[40]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. Higuera <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2024)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib21.4" style="font-size:90%;">Sparsh: self-supervised touch representations for vision-based tactile sensing</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib21.5" style="font-size:90%;">arXiv preprint arXiv:2410.24090</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib22"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[41]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. Feng <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2025)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib22.4" style="font-size:90%;">AnyTouch: learning unified static-dynamic representation across multiple visuo-tactile sensors</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib22.5" style="font-size:90%;">arXiv preprint arXiv:2502.12191</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib23"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[42]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">T. Lin <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2024)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib23.4" style="font-size:90%;">Learning visuotactile skills with two multifingered hands</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib23.5" style="font-size:90%;">arXiv preprint arXiv:2404.16823</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_inproceedings" id="bib.bib25"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[43]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">H. Xue, J. Ren, W. Chen, G. Zhang, Y. Fang, G. Gu, H. Xu, and C. Lu</span><span class="ltx_text ltx_bib_year"> (2025)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib25.17" style="font-size:90%;">Reactive Diffusion Policy: Slow-Fast visual-tactile policy learning for contact-rich manipulation</span></span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook"><span class="ltx_text" id="bib.bib25.18" style="font-size:90%;">Proceedings of Robotics: Science and Systems</span></span>,
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>,
+<a class="ltx_ref" href="#S5.SS1.p1.1" title="V-A Experiment Setup ‣ V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§V-A</span></a>,
+<a class="ltx_ref" href="#S5.T1.4.4.1" title="In V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">TABLE 1</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib26"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[44]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Huang <span class="ltx_text ltx_bib_etal">et al.</span></span><span class="ltx_text ltx_bib_year"> (2025)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib26.4" style="font-size:90%;">Tactile-VLA: unlocking vision-language-action model’s physical knowledge for tactile generalization</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib26.5" style="font-size:90%;">arXiv preprint arXiv:2507.09160</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p2.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib45"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[45]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. Ha and J. Schmidhuber</span><span class="ltx_text ltx_bib_year"> (2018)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib45.5" style="font-size:90%;">World models</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib45.6" style="font-size:90%;">arXiv preprint arXiv:1803.10122</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_inproceedings" id="bib.bib46"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[46]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. Hafner, T. Lillicrap, I. Fischer, R. Villegas, D. Ha, H. Lee, and J. Davidson</span><span class="ltx_text ltx_bib_year"> (2019)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib46.15" style="font-size:90%;">Learning latent dynamics for planning from pixels</span></span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook"><span class="ltx_text" id="bib.bib46.16" style="font-size:90%;">International Conference on Machine Learning</span></span>,
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_article" id="bib.bib47"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[47]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. Wu, A. Escontrela, D. Hafner, K. Goldberg, and P. Abbeel</span><span class="ltx_text ltx_bib_year"> (2022)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib47.11" style="font-size:90%;">DayDreamer: world models for physical robot learning</span></span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal"><span class="ltx_text" id="bib.bib47.12" style="font-size:90%;">arXiv preprint arXiv:2206.14176</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+<li class="ltx_bibitem ltx_bib_inproceedings" id="bib.bib48"><span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[48]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">N. Hansen, H. Su, and X. Wang</span><span class="ltx_text ltx_bib_year"> (2024)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title"><span class="ltx_text" id="bib.bib48.7" style="font-size:90%;">TD-MPC2: scalable, robust world models for continuous control</span></span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook"><span class="ltx_text" id="bib.bib48.8" style="font-size:90%;">International Conference on Learning Representations</span></span>,
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a class="ltx_ref" href="#S2.p3.1" title="II Related Work ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">§II</span></a>.
+</span></li>
+</ul>
+</section>
+
+<section class="ltx_appendix" id="A1">
+<h2 class="ltx_title ltx_title_appendix" style="font-size:90%;">附录 A 附加系统与数据细节</h2>
+<section class="ltx_subsection" id="A1.SS1">
+<h3 class="ltx_title ltx_title_subsection" style="font-size:90%;">A-A 跨本体校准</h3>
+<div class="ltx_para" id="A1.SS1.p1">
+<p class="ltx_p" id="A1.SS1.p1.1">人和机器人的数据流在观察与动作层面均保持一致。对于视觉方面，运动捕捉系统上的腕部-相机适配器经过校准，使其相机到腕部的变换与机器人中使用的相机到执行器变换相匹配。在运动方面，一个 VIVE 跟踪器定义了桌子参考框架，另一个跟踪器则测量人腕的姿势。经过校准的跟踪器到腕部变换将这些测量值转换为腕部姿势，而受限逆运动学则把被动外骨骼的测量结果转换为 Sharpa Wave 手的 22 关节角度。随后，腕部目标通过 3 -D 平移和连续的 6 -D 旋转表示方式，相对于当前腕部框架进行表达。这种设计方式避免了人和机器人需要共享一个全局工作空间。</p><p class="source-paragraph" lang="en">The human and robot streams are aligned at both the observation and action levels. For vision, the wrist-camera adapter on the motion-capture system is calibrated so that its camera-to-wrist transformation matches the camera-to-end-effector transformation used on the robot. For motion, one VIVE tracker defines the table reference frame and a second tracker measures the human wrist pose. The calibrated tracker-to-wrist transformation converts these measurements into wrist poses, while constrained inverse kinematics maps the passive exoskeleton measurements to the 22 joint angles of the Sharpa Wave hand. Wrist targets are then expressed relative to the current wrist frame using 3-D translation and a continuous 6-D rotation representation. This construction avoids requiring the human and robot to share a global workspace.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="A1.SS2">
+<h3 class="ltx_title ltx_title_subsection" style="font-size:90%;">A-B 触觉处理与同步</h3>
+<div class="ltx_para" id="A1.SS2.p1">
+<p class="ltx_p" id="A1.SS2.p1.1">每个人类指尖均包含四个 FSR 感知区域。因此，五个指尖共同产生与 VTPM 用于机器人感知的 20 -D 触觉布局。所有图像、触觉信号、手腕姿态及手部运动数据均使用共享主机时钟进行时间戳标记，并被重采样为 30 Hz 格式。在归一化之前，每次记录中的触觉读数均独立进行基线校正。对于人类记录，我们减去前五帧的平均值；对于机器人记录，则减去第一帧的平均值，以反映两种传感器不同的静噪特性。随后，人类和机器人的触觉通道利用特定本体的统计特征进行归一化处理。</p><p class="source-paragraph" lang="en">Each human fingertip contains four FSR sensing regions. The five fingertips therefore produce the same 20-D tactile layout used by VTPM for robot observations. All image, tactile, wrist-pose, and hand-motion streams are timestamped with a shared host clock and resampled to 30 Hz. Before normalization, tactile readings are baseline corrected independently for each recording. We subtract the mean of the first five frames for human recordings and the first frame for robot recordings, reflecting the different resting-noise characteristics of the two sensors. Human and robot tactile channels are subsequently normalized using embodiment-specific statistics.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="A1.SS3">
+<h3 class="ltx_title ltx_title_subsection" style="font-size:90%;">A-C 数据集构建</h3>
+<div class="ltx_para" id="A1.SS3.p1">
+<p class="ltx_p" id="A1.SS3.p1.1">完整数据集包含五个任务中的 5,750 类演示：5,000 人类演示与 750 机器人演示。机器人数据提供了在目标平台上的可执行指令，而人类数据则增加了物体实例、背景、手部外观、运动及接触模式等方面的多样性。每个训练样本都包含同步的手腕图像、20 -D 触觉 token 信号，以及 31 -D 运动目标。人类目标有助于统一动作空间中的表征学习，但永远不会直接作为机器人指令被发出。</p><p class="source-paragraph" lang="en">The complete dataset contains 5,750 demonstrations across five tasks: 5,000 human demonstrations and 750 robot demonstrations. Robot data provide executable commands on the target platform, whereas human data expand the variation in object instances, backgrounds, hand appearance, motion, and contact patterns. Every training sample contains a synchronized wrist image, a 20-D tactile token, and a 31-D motion target. Human targets supervise representation learning in the unified action space but are never issued directly as robot commands.</p>
+</div>
+</section>
+</section>
+<section class="ltx_appendix" id="A2">
+<h2 class="ltx_title ltx_title_appendix" style="font-size:90%;">附录 B 实施细节</h2>
+<div class="ltx_para" id="A2.p1">
+<p class="ltx_p" id="A2.p1.1">表 <a class="ltx_ref" href="#A2.T2" style="font-size:90%;" title="TABLE 2 ‣ Appendix B Implementation Details ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">2</span></a> 汇总了所有实验中所使用的模型与优化设置。我们针对每个任务训练一个策略。加权采样器给人类数据集和机器人数据集分配相同的概率权重，并采用替换采样方式，从而防止较大的人类数据集影响训练混合比例。两种本体分别计算最小-最大统计值；在部署阶段，仅使用机器人统计值来解码可执行的动作。推理过程中采用指数移动平均权重。</p><p class="source-paragraph" lang="en">Table 2 summarizes the model and optimization settings used in all experiments. We train one policy per task. The weighted sampler assigns equal probability mass to the human and robot datasets and samples with replacement, preventing the larger human dataset from determining the training mixture. Min–max statistics are computed separately for the two embodiments; at deployment, only the robot statistics are used to decode executable actions. Exponential moving average weights are used for inference.</p>
+</div>
+<figure class="ltx_table" id="A2.T2">
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;">表 2：实现细节。所有任务特定 UVTA 策略共用的设置。</figcaption>
+<div class="table-scroll"><table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle" id="A2.T2.6">
+<thead class="ltx_thead">
+<tr class="ltx_tr" id="A2.T2.6.1">
+<th class="ltx_td ltx_align_left ltx_align_top ltx_th ltx_th_column ltx_border_tt" id="A2.T2.6.1.1" style="padding:0.35pt 4.0pt;">组件</th>
+<th class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top ltx_th ltx_th_column ltx_border_tt" id="A2.T2.6.1.2" style="padding:0.35pt 4.0pt;">设定</th></tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="A2.T2.6.2">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A2.T2.6.2.1" style="padding:0.35pt 4.0pt;">视觉观察</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top ltx_border_t" id="A2.T2.6.2.2" style="padding:0.35pt 4.0pt;"><math alttext="224\times 224" class="ltx_Math" display="inline" id="A2.T2.m1" intent=":literal"><semantics><mrow><mn mathsize="0.900em">224</mn><mo lspace="0.222em" mathsize="0.900em" rspace="0.222em">×</mo><mn mathsize="0.900em">224</mn></mrow><annotation encoding="application/x-tex">224\times 224</annotation></semantics></math> 手腕 RGB</td></tr>
+<tr class="ltx_tr" id="A2.T2.6.3">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.3.1" style="padding:0.35pt 4.0pt;">视觉编码器</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.3.2" style="padding:0.35pt 4.0pt;">ViT -S/ 8，从零开始进行训练</td></tr>
+<tr class="ltx_tr" id="A2.T2.6.4">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.4.1" style="padding:0.35pt 4.0pt;">视觉/触觉 token</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.4.2" style="padding:0.35pt 4.0pt;">
+<span class="ltx_inline-block ltx_align_top" id="A2.T2.6.4.2.1" style="width:158.7pt;">
+<span class="ltx_p" id="A2.T2.6.4.2.1.1"><span class="ltx_text" id="A2.T2.6.4.2.1.1.1" style="font-size:90%;">384-D / 20-D</span></span>
+</span></td></tr>
+<tr class="ltx_tr" id="A2.T2.6.5">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.5.1" style="padding:0.35pt 4.0pt;">融合表示</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.5.2" style="padding:0.35pt 4.0pt;">
+<span class="ltx_inline-block ltx_align_top" id="A2.T2.6.5.2.1" style="width:158.7pt;">
+<span class="ltx_p" id="A2.T2.6.5.2.1.1"><span class="ltx_text" id="A2.T2.6.5.2.1.1.1" style="font-size:90%;">404-D</span></span>
+</span></td></tr>
+<tr class="ltx_tr" id="A2.T2.6.6">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.6.1" style="padding:0.35pt 4.0pt;">预测范围</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.6.2" style="padding:0.35pt 4.0pt;">16 步骤</td></tr>
+<tr class="ltx_tr" id="A2.T2.6.7">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.7.1" style="padding:0.35pt 4.0pt;">每步动作</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.7.2" style="padding:0.35pt 4.0pt;">9 -D 手腕 + 22 -D 手</td></tr>
+<tr class="ltx_tr" id="A2.T2.6.8">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.8.1" style="padding:0.35pt 4.0pt;">扩散 U-Net 宽度</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.8.2" style="padding:0.35pt 4.0pt;">
+<span class="ltx_inline-block ltx_align_top" id="A2.T2.6.8.2.1" style="width:158.7pt;">
+<span class="ltx_p" id="A2.T2.6.8.2.1.1"><span class="ltx_text" id="A2.T2.6.8.2.1.1.1" style="font-size:90%;">256, 512, 1024</span></span>
+</span></td></tr>
+<tr class="ltx_tr" id="A2.T2.6.9">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.9.1" style="padding:0.35pt 4.0pt;">触觉头</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.9.2" style="padding:0.35pt 4.0pt;"><math alttext="404\rightarrow 512\rightarrow 320" class="ltx_Math" display="inline" id="A2.T2.m2" intent=":literal"><semantics><mrow><mn mathsize="0.900em">404</mn><mo mathsize="0.900em" stretchy="false">→</mo><mn mathsize="0.900em">512</mn><mo mathsize="0.900em" stretchy="false">→</mo><mn mathsize="0.900em">320</mn></mrow><annotation encoding="application/x-tex">404\rightarrow 512\rightarrow 320</annotation></semantics></math> , Mish</td></tr>
+<tr class="ltx_tr" id="A2.T2.6.10">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.10.1" style="padding:0.35pt 4.0pt;">训练扩散步数</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.10.2" style="padding:0.35pt 4.0pt;">
+<span class="ltx_inline-block ltx_align_top" id="A2.T2.6.10.2.1" style="width:158.7pt;">
+<span class="ltx_p" id="A2.T2.6.10.2.1.1"><span class="ltx_text" id="A2.T2.6.10.2.1.1.1" style="font-size:90%;">50</span></span>
+</span></td></tr>
+<tr class="ltx_tr" id="A2.T2.6.11">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.11.1" style="padding:0.35pt 4.0pt;">DDIM 反向步骤</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.11.2" style="padding:0.35pt 4.0pt;">
+<span class="ltx_inline-block ltx_align_top" id="A2.T2.6.11.2.1" style="width:158.7pt;">
+<span class="ltx_p" id="A2.T2.6.11.2.1.1"><span class="ltx_text" id="A2.T2.6.11.2.1.1.1" style="font-size:90%;">16</span></span>
+</span></td></tr>
+<tr class="ltx_tr" id="A2.T2.6.12">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.12.1" style="padding:0.35pt 4.0pt;">执行路径点</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.12.2" style="padding:0.35pt 4.0pt;">每个 16 步块的第一个 8</td></tr>
+<tr class="ltx_tr" id="A2.T2.6.13">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.13.1" style="padding:0.35pt 4.0pt;">人机采样</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.13.2" style="padding:0.35pt 4.0pt;">等概率质量</td></tr>
+<tr class="ltx_tr" id="A2.T2.6.14">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.14.1" style="padding:0.35pt 4.0pt;">触觉损失权重 <math alttext="\lambda" class="ltx_Math" display="inline" id="A2.T2.m3" intent=":literal"><semantics><mi mathsize="0.900em">λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.14.2" style="padding:0.35pt 4.0pt;">
+<span class="ltx_inline-block ltx_align_top" id="A2.T2.6.14.2.1" style="width:158.7pt;">
+<span class="ltx_p" id="A2.T2.6.14.2.1.1"><span class="ltx_text" id="A2.T2.6.14.2.1.1.1" style="font-size:90%;">0.2</span></span>
+</span></td></tr>
+<tr class="ltx_tr" id="A2.T2.6.15">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A2.T2.6.15.1" style="padding:0.35pt 4.0pt;">优化器</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A2.T2.6.15.2" style="padding:0.35pt 4.0pt;">AdamW策略</td></tr>
+<tr class="ltx_tr" id="A2.T2.6.16">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_bb" id="A2.T2.6.16.1" style="padding:0.35pt 4.0pt;">批次大小 / 训练周期</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top ltx_border_bb" id="A2.T2.6.16.2" style="padding:0.35pt 4.0pt;">
+<span class="ltx_inline-block ltx_align_top" id="A2.T2.6.16.2.1" style="width:158.7pt;">
+<span class="ltx_p" id="A2.T2.6.16.2.1.1"><span class="ltx_text" id="A2.T2.6.16.2.1.1.1" style="font-size:90%;">250 / 300</span></span>
+</span></td></tr>
+</tbody>
+</table></div>
+</figure>
+<div class="ltx_para" id="A2.p2">
+<p class="ltx_p" id="A2.p2.1">动作损失首先对手腕与手组内的误差进行平均，然后平等地加权这两个组的均值。这样就能避免 22 -D 手指目标仅仅因为包含更多坐标而主导 9 -D 手腕目标。触觉头从无噪声的互动表示中还原出完整的 <math alttext="16\times 20" class="ltx_Math" display="inline" id="A2.p2.m1" intent=":literal"><semantics><mrow><mn mathsize="0.900em">16</mn><mo lspace="0.222em" mathsize="0.900em" rspace="0.222em">×</mo><mn mathsize="0.900em">20</mn></mrow><annotation encoding="application/x-tex">16\times 20</annotation></semantics></math> 未来轨迹。其损失更新机制同时作用于头部和共享视觉编码器，但其预测结果不会被传入扩散轨迹或控制器中。</p><p class="source-paragraph" lang="en">The action loss first averages errors within the wrist and hand groups and then weights the two group means equally. This prevents the 22-D finger target from dominating the 9-D wrist target solely because it contains more coordinates. The tactile head regresses the complete 16 × 20 future trajectory from the noise-free interaction representation. Its loss updates both the head and the shared visual encoder, but its prediction is not passed into the diffusion trajectory or the controller.</p>
+</div>
+</section>
+<section class="ltx_appendix" id="A3">
+<h2 class="ltx_title ltx_title_appendix" style="font-size:90%;">附录 C 推广与评估细节</h2>
+<figure class="ltx_figure" id="A3.F6"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="318" id="A3.F6.g1" loading="lazy" src="../media/2609.34182/figures/result_1.jpg" style="aspect-ratio:419/318;" width="419"/>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;">图 6：真实机器人部署轨迹。在五个接触密集任务上成功执行 UVTA 的示例。从上到下依次为：翻页操作、灯泡旋动、拨动开关、球类分类以及滴管液体转移。每一行均展示一个执行序列，时间从左至右递增。</figcaption>
+</figure>
+<figure class="ltx_table" id="A3.T3">
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;">表 3：任务特定评估标准。一个发布版本会根据其达到的里程碑获得最高分；各里程碑的分数不进行累加。如果某个发布版本未达到所列任何里程碑，则得 0。1.0 分数表示任务完全成功。</figcaption>
+<div class="table-scroll"><table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle" id="A3.T3.6">
+<thead class="ltx_thead">
+<tr class="ltx_tr" id="A3.T3.6.1">
+<th class="ltx_td ltx_align_left ltx_align_top ltx_th ltx_th_column ltx_border_tt" id="A3.T3.6.1.1" style="padding:0.65pt 5.0pt;">任务</th>
+<th class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top ltx_th ltx_th_column ltx_border_tt" id="A3.T3.6.1.2" style="padding:0.65pt 5.0pt;">里程碑与得分</th></tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="A3.T3.6.2">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_t" id="A3.T3.6.2.1" style="padding:0.65pt 5.0pt;">翻页操作</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top ltx_border_t" id="A3.T3.6.2.2" style="padding:0.65pt 5.0pt;">0.3：分离并抬起页面边缘；0.7：同时翻动多页；1.0：精确翻动一页。</td></tr>
+<tr class="ltx_tr" id="A3.T3.6.3">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A3.T3.6.3.1" style="padding:0.65pt 5.0pt;">螺旋灯管</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A3.T3.6.3.2" style="padding:0.65pt 5.0pt;">0.2：与灯泡建立稳定接触；0.5：将灯泡旋转完整一圈；1.0：持续旋转多圈，直至灯泡保持亮灯状态。</td></tr>
+<tr class="ltx_tr" id="A3.T3.6.4">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A3.T3.6.4.1" style="padding:0.65pt 5.0pt;">切换开关</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A3.T3.6.4.2" style="padding:0.65pt 5.0pt;">0.2：建立稳定接触；0.6：部分激活开关；1.0：将开关完全推至开启位置。</td></tr>
+<tr class="ltx_tr" id="A3.T3.6.5">
+<td class="ltx_td ltx_align_left ltx_align_top" id="A3.T3.6.5.1" style="padding:0.65pt 5.0pt;">球类分类</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top" id="A3.T3.6.5.2" style="padding:0.65pt 5.0pt;">0.2：安全抓取球体；0.6：将其放入容器中；1.0：根据材质将其放入正确的容器中。</td></tr>
+<tr class="ltx_tr" id="A3.T3.6.6">
+<td class="ltx_td ltx_align_left ltx_align_top ltx_border_bb" id="A3.T3.6.6.1" style="padding:0.65pt 5.0pt;">液体传输</td>
+<td class="ltx_td ltx_nopad_r ltx_align_left ltx_align_top ltx_border_bb" id="A3.T3.6.6.2" style="padding:0.65pt 5.0pt;">0.2：与滴管建立稳定接触；0.5：将液体吸入滴管中；0.7：提起并运送充满液体的滴管；1.0：将液体分配到目标容器中。</td></tr>
+</tbody>
+</table></div>
+</figure>
+<section class="ltx_subsection" id="A3.SS1">
+<h3 class="ltx_title ltx_title_subsection" style="font-size:90%;">C-A 闭环执行</h3>
+<div class="ltx_para" id="A3.SS1.p1">
+<p class="ltx_p" id="A3.SS1.p1.1">在每次策略更新时，UVTA 会获取当前的手腕图像及触觉数据 token，利用 16 DDIM 反向步长对 16 -步机器人模型 action chunk 进行采样，并通过机器人统计数据对数据块进行去归一化处理。相对手腕预测以实时手腕姿态为基准，而手指预测则被解释为绝对关节目标。控制器首先执行前八个手腕和手部的路径点，随后获取新的视觉-触觉观测数据并重新规划。这种后视视野处理机制能够在接触过程中保持反馈连续性，同时避免在每个低级控制步骤中进行完整的样本扩散。</p><p class="source-paragraph" lang="en">At every policy update, UVTA consumes the current wrist image and tactile token, samples a 16-step robot action chunk with 16 DDIM reverse steps, and denormalizes the chunk with the robot statistics. Relative wrist predictions are anchored to the live wrist pose, while finger predictions are interpreted as absolute joint targets. The controller executes the first eight wrist and hand waypoints, then acquires a new visual-tactile observation and replans. This receding-horizon procedure preserves feedback during contact while avoiding a full diffusion sample at every low-level control step.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="A3.SS2">
+<h3 class="ltx_title ltx_title_subsection" style="font-size:90%;">C-B 阶段间成功率</h3>
+<div class="ltx_para" id="A3.SS2.p1">
+<p class="ltx_p" id="A3.SS2.p1.1">每种方法及消融实验均在 <math alttext="N=10" class="ltx_Math" display="inline" id="A3.SS2.p1.m1" intent=":literal"><semantics><mrow><mi mathsize="0.900em">N</mi><mo mathsize="0.900em">=</mo><mn mathsize="0.900em">10</mn></mrow><annotation encoding="application/x-tex">N=10</annotation></semantics></math> 个真实机器人任务中进行了评估，其中物体位置和高度均随机分配。表 <a class="ltx_ref" href="#A3.T3" style="font-size:90%;" title="TABLE 3 ‣ Appendix C Rollout and Evaluation Details ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">3</span></a> 列出了完整的评分标准，图 <a class="ltx_ref" href="#A3.F6" style="font-size:90%;" title="Fig. 6 ‣ Appendix C Rollout and Evaluation Details ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">6</span></a> 则展示了具有代表性的成功案例。所报告的成功率是一种阶段性评分，用于衡量任务进展程度，而非完全成功的实验比例。</p><p class="source-paragraph" lang="en">Each method and ablation is evaluated in N = 10 real-robot rollouts per task, with randomized object positions and heights. Table 3 lists the complete scoring criteria, and Fig. 6 illustrates representative successful rollouts. The reported success rate is a stage-wise score that gives partial credit for task progress, rather than the fraction of fully successful trials.</p>
+</div>
+<div class="ltx_para" id="A3.SS2.p2">
+<p class="ltx_p" id="A3.SS2.p2.1">对于任务 <math alttext="q" class="ltx_Math" display="inline" id="A3.SS2.p2.m1" intent=":literal"><semantics><mi mathsize="0.900em">q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math> 和部署 <math alttext="j" class="ltx_Math" display="inline" id="A3.SS2.p2.m2" intent=":literal"><semantics><mi mathsize="0.900em">j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>，令 <math alttext="w_{q,m}" class="ltx_Math" display="inline" id="A3.SS2.p2.m3" intent=":literal"><semantics><msub><mi mathsize="0.900em">w</mi><mrow><mi mathsize="0.900em">q</mi><mo mathsize="0.900em">,</mo><mi mathsize="0.900em">m</mi></mrow></msub><annotation encoding="application/x-tex">w_{q,m}</annotation></semantics></math> 为分配给里程碑 <math alttext="m" class="ltx_Math" display="inline" id="A3.SS2.p2.m4" intent=":literal"><semantics><mi mathsize="0.900em">m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math> 的得分，而 <math alttext="C_{q,j,m}" class="ltx_Math" display="inline" id="A3.SS2.p2.m5" intent=":literal"><semantics><msub><mi mathsize="0.900em">C</mi><mrow><mi mathsize="0.900em">q</mi><mo mathsize="0.900em">,</mo><mi mathsize="0.900em">j</mi><mo mathsize="0.900em">,</mo><mi mathsize="0.900em">m</mi></mrow></msub><annotation encoding="application/x-tex">C_{q,j,m}</annotation></semantics></math> 则表示该里程碑是否达成。我们设定一个单一的部署得分。</p><p class="source-paragraph" lang="en">For task q and rollout j , let w q , m be the score assigned to milestone m , and let C q , j , m indicate whether that milestone is achieved. We assign a single rollout score</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="A3.E10">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="s_{q,j}=\max\!\left(\{0\}\cup\{w_{q,m}\mid C_{q,j,m}=1\}\right)." class="ltx_Math" display="block" id="A3.E10.m1" intent=":literal"><semantics><mrow><mrow><msub><mi mathsize="0.900em">s</mi><mrow><mi mathsize="0.900em">q</mi><mo mathsize="0.900em">,</mo><mi mathsize="0.900em">j</mi></mrow></msub><mo mathsize="0.900em">=</mo><mrow><mpadded style="width:1.828em;" width="1.828em"><mi mathsize="0.900em">max</mi></mpadded><mo>⁡</mo><mrow><mo>(</mo><mrow><mrow><mo maxsize="0.900em" minsize="0.900em">{</mo><mn mathsize="0.900em">0</mn><mo maxsize="0.900em" minsize="0.900em">}</mo></mrow><mo mathsize="0.900em">∪</mo><mrow><mo maxsize="0.900em" minsize="0.900em">{</mo><msub><mi mathsize="0.900em">w</mi><mrow><mi mathsize="0.900em">q</mi><mo mathsize="0.900em">,</mo><mi mathsize="0.900em">m</mi></mrow></msub><mo fence="true" lspace="0em" mathsize="0.900em" rspace="0em">∣</mo><mrow><msub><mi mathsize="0.900em">C</mi><mrow><mi mathsize="0.900em">q</mi><mo mathsize="0.900em">,</mo><mi mathsize="0.900em">j</mi><mo mathsize="0.900em">,</mo><mi mathsize="0.900em">m</mi></mrow></msub><mo mathsize="0.900em">=</mo><mn mathsize="0.900em">1</mn></mrow><mo maxsize="0.900em" minsize="0.900em">}</mo></mrow></mrow><mo>)</mo></mrow></mrow></mrow><mo lspace="0em" mathsize="0.900em">.</mo></mrow><annotation encoding="application/x-tex">s_{q,j}=\max\!\left(\{0\}\cup\{w_{q,m}\mid C_{q,j,m}=1\}\right).</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(10)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="A3.SS2.p2.2">因此，如果某个部署未能达成任何列出的里程碑，则获得 0 分；如果完全完成任务，则获得 1 分。里程碑得分为绝对值，而非叠加奖励。例如，翻动多页可获得 0.7 分，而翻动恰好一页则获得 1.0 分。</p><p class="source-paragraph" lang="en">Thus, a rollout receives 0 if it achieves no listed milestone and 1 only if it fully completes the task. Milestone scores are absolute values, not additive rewards. For example, turning multiple pages receives 0.7, while turning exactly one page receives 1.0.</p>
+</div>
+<div class="ltx_para" id="A3.SS2.p3">
+<p class="ltx_p" id="A3.SS2.p3.1">任务级百分比与五项任务的平均值</p><p class="source-paragraph" lang="en">The task-level percentage and the five-task average are</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="A3.E11">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="\mathrm{SR}_{q}=\frac{100}{N}\sum_{j=1}^{N}s_{q,j},\hskip 18.49988pt\overline{\mathrm{SR}}=\frac{1}{5}\sum_{q=1}^{5}\mathrm{SR}_{q}." class="ltx_Math" display="block" id="A3.E11.m1" intent=":literal"><semantics><mrow><mrow><mrow><msub><mi mathsize="0.900em">SR</mi><mi mathsize="0.900em">q</mi></msub><mo mathsize="0.900em">=</mo><mrow><mfrac><mn mathsize="0.900em">100</mn><mi mathsize="0.900em">N</mi></mfrac><mo lspace="0em" rspace="0em">​</mo><mrow><munderover><mo maxsize="0.900em" minsize="0.900em" movablelimits="false" stretchy="true">∑</mo><mrow><mi mathsize="0.900em">j</mi><mo mathsize="0.900em">=</mo><mn mathsize="0.900em">1</mn></mrow><mi mathsize="0.900em">N</mi></munderover><msub><mi mathsize="0.900em">s</mi><mrow><mi mathsize="0.900em">q</mi><mo mathsize="0.900em">,</mo><mi mathsize="0.900em">j</mi></mrow></msub></mrow></mrow></mrow><mo mathsize="0.900em" rspace="2.017em">,</mo><mrow><mover accent="true"><mi mathsize="0.900em">SR</mi><mo stretchy="true">¯</mo></mover><mo mathsize="0.900em">=</mo><mrow><mfrac><mn mathsize="0.900em">1</mn><mn mathsize="0.900em">5</mn></mfrac><mo lspace="0em" rspace="0em">​</mo><mrow><munderover><mo maxsize="0.900em" minsize="0.900em" movablelimits="false" stretchy="true">∑</mo><mrow><mi mathsize="0.900em">q</mi><mo mathsize="0.900em">=</mo><mn mathsize="0.900em">1</mn></mrow><mn mathsize="0.900em">5</mn></munderover><msub><mi mathsize="0.900em">SR</mi><mi mathsize="0.900em">q</mi></msub></mrow></mrow></mrow></mrow><mo lspace="0em" mathsize="0.900em">.</mo></mrow><annotation encoding="application/x-tex">\mathrm{SR}_{q}=\frac{100}{N}\sum_{j=1}^{N}s_{q,j},\hskip 18.49988pt\overline{\mathrm{SR}}=\frac{1}{5}\sum_{q=1}^{5}\mathrm{SR}_{q}.</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(11)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="A3.SS2.p3.2">表 <a class="ltx_ref" href="#S5.T1" style="font-size:90%;" title="TABLE 1 ‣ V Experiments ‣ Unified Visual-Tactile-Action Modeling from Human Demonstrations for Dexterous Manipulation"><span class="ltx_text ltx_ref_tag">1</span></a> 的最后一列列出了这一无权重五项任务平均值，结果已四舍五入到最近的整数百分比。这些分数不应被理解为二元完成率。</p><p class="source-paragraph" lang="en">The final column of Table 1 reports this unweighted five-task mean, rounded to the nearest integer percentage. These scores should not be interpreted as binary completion rates.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="A3.SS3">
+<h3 class="ltx_title ltx_title_subsection" style="font-size:90%;">C-C 人类-数据扩展协议</h3>
+<div class="ltx_para" id="A3.SS3.p1">
+<p class="ltx_p" id="A3.SS3.p1.1">在人类数据缩放研究中，机器人数据集的每任务演示数量固定为 150，而人类子集的演示数量则从 0 增加至 250、500、750 和 1,000。该研究涵盖了翻页、螺旋灯泡和拨动开关三种任务，并在所有数据规模下采用相同的策略架构、训练目标及评估流程。其平均值则是通过相同的阶段性评分规则，针对这三项任务进行计算得出的。</p><p class="source-paragraph" lang="en">For the human-data scaling study, the robot dataset is fixed at 150 demonstrations per task while the human subset is increased from 0 to 250, 500, 750, and 1,000 demonstrations. The study covers Flip Page, Screw Light Bulb, and Toggle Switch, and uses the same policy architecture, training objective, and evaluation procedure at every data scale.
+Its average is computed over these three tasks using the same stage-wise scoring rule.</p>
+</div>
+
+</section>
+</section>
+<section class="ltx_appendix" id="A4">
+<h2 class="ltx_title ltx_title_appendix" style="font-size:90%;">附录 D 局限性与未来研究方向</h2>
+<div class="ltx_para" id="A4.p1">
+<p class="ltx_p" id="A4.p1.1">仅通过指尖的感知方式。当前的触觉运动捕捉系统仅能检测指尖的接触情况。这一设计源于一个尚未解决的感知限制：适用于数据收集场景的全手式触觉手套，目前仍无法有效抑制大范围手部运动产生的噪声。此类干扰使得难以区分物体与手部的接触信号与手套自身运动产生的信号。因此，我们将感知范围限制在指尖，以获得更可靠的接触监测。这种选择导致手掌及背部手部的接触无法被感知，也限制了数据集中所呈现的互动模式。扩大感知范围则需要改进传感器集成技术，并加强对运动引起的干扰的补偿处理。</p><p class="source-paragraph" lang="en">Fingertip-only sensing. The current tactile motion-capture system measures contact only at the fingertips. This design is motivated by an unresolved sensing limitation: whole-hand tactile gloves available for our data-collection setting cannot yet reliably suppress motion-induced noise during large-range hand movements. Such artifacts make it difficult to distinguish object-contact signals from signals caused by the motion of the glove itself. We therefore restrict sensing to the fingertips to obtain more reliable contact supervision. This choice leaves palm and dorsal-hand contacts unobserved and limits the interaction patterns represented in the dataset. Extending coverage will require improved sensor integration and compensation for motion-induced artifacts.</p>
+</div>
+<div class="ltx_para" id="A4.p2">
+<p class="ltx_p" id="A4.p2.1">数据与模型规模。实验采用了五项实验室任务、一个机器人平台、任务特定的策略、每项任务最多 1,000 个人演示，以及一种模型规模。因此，当前结果无法揭示 UVTA 在更大、更多样化的人类数据集、更大模型或新机器人本体情况下的表现。未来的研究将扩大数据与模型规模，并探讨多任务及跨平台策略，同时实现更广泛的触觉覆盖。</p><p class="source-paragraph" lang="en">Data and model scale. The experiments use five laboratory tasks, a single robot platform, task-specific policies, at most 1,000 human demonstrations per task, and one model scale. Consequently, the present results do not establish how UVTA behaves with substantially larger and more diverse human datasets, larger models, or new robot embodiments. Future work will scale both data and model capacity and investigate multi-task and cross-platform policies alongside more extensive tactile coverage.</p>
+</div>
+</section>
+</article></main>
+</html>

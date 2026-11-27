@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>机器人联觉｜基于视触觉感知的手内操作</title><link rel="stylesheet" href="../reading.css">
+<main><nav class="top"><a href="../index.html">返回目录</a><label class="language-toggle"><input type="checkbox" id="show-original"> 显示英文段落</label></nav><div class="paper-meta">
+        <p class="original-title" lang="en">Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing</p>
+        <p>Yuan, Ying · Che, Haichuan · Qin, Yuzhe · Huang, Binghao · Yin, Zhao-Heng · Lee, Kang-Won · Wu, Yi · Lim, Soo-Chul · Wang, Xiaolong · arXiv:2312.01853v3</p>
+        <p>正文与附录为机器译稿，中文标题和摘要已对照原文校订。公式、参考文献及图内文字保留原样。</p><p><a href="https://arxiv.org/html/2312.01853v3">英文 HTML</a> · <a href="https://arxiv.org/pdf/2312.01853v3">英文 PDF</a> · <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p><p>本中文译稿采用与原文相同的授权。</p>
+        </div><details class="contents"><summary>章节目录</summary><ul><li><a href="#S1">I 引言</a></li><li><a href="#S2">II 相关工作</a></li><li><a href="#S3">III 视觉触觉灵巧操作</a></li><li><a href="#S3.SS1">III-A 系统配置</a></li><li><a href="#S3.SS2">III-B 基准测试问题</a></li><li><a href="#S4">IV 学习视觉触觉灵巧性</a></li><li><a href="#S4.SS1">IV-A 问题表述</a></li><li><a href="#S4.SS2">IV-B 触觉-视觉联觉</a></li><li><a href="#S4.SS3">IV-C 教师-学生培训流程</a></li><li><a href="#S5">V 实验</a></li><li><a href="#S5.SS1">V-A 设置</a></li><li><a href="#S5.SS2">V-B 阶段 I：具有不同感知能力的强化学习训练</a></li><li><a href="#S5.SS3">V-C 阶段 II：具有不同感知能力的模仿学习</a></li><li><a href="#S5.SS4">V-D 实际部署</a></li><li><a href="#S5.SS5">V-E 定性分析：PointNet 中间体的可视化</a></li><li><a href="#S6">VI 结论</a></li><li><a href="#S7">VII 致谢</a></li><li><a href="#bib">参考文献</a></li></ul></details><article class="ltx_document ltx_authors_1line ltx_pruned_first" lang="zh-CN">
+<h1 class="ltx_title ltx_font_bold ltx_title_document" style="font-size:173%;">机器人联觉｜基于视触觉感知的手内操作</h1>
+<div class="ltx_authors">
+<span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Ying Yuan
+</span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Haichuan Che
+</span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Yuzhe Qin
+</span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Binghao Huang
+</span><span class="ltx_note ltx_note_frontmatter ltx_thanks_note ltx_role_thanks" id="1"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">thanks: </span> University of Illinois Urbana-Champaign, IL, USA</span></span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Zhao-Heng Yin
+</span><span class="ltx_note ltx_note_frontmatter ltx_thanks_note ltx_role_thanks" id="2"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">thanks: </span> University of California Berkeley, CA, USA</span></span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Kang-Won Lee
+</span><span class="ltx_note ltx_note_frontmatter ltx_thanks_note ltx_role_thanks" id="3"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">thanks: </span> Dongguk University, Seoul, South Korea</span></span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Yi Wu
+</span><span class="ltx_note ltx_note_frontmatter ltx_thanks_note ltx_role_thanks" id="4"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">thanks: </span> Tsinghua University, Beijing, China</span></span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Soo-Chul Lim
+</span><span class="ltx_note ltx_note_frontmatter ltx_thanks_note ltx_role_thanks" id="5"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">thanks: </span> Dongguk University, Seoul, South Korea</span></span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Xiaolong Wang
+</span><span class="ltx_note ltx_note_frontmatter ltx_thanks_contribution ltx_role_thanks" id="6"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">thanks: </span><sup class="ltx_sup" id="6.1">*</sup> Equal contributions.</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_thanks_note ltx_role_thanks" id="7"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">thanks: </span> University of California San Diego, CA, USA</span></span></span></span></div>
+<div class="ltx_abstract" id="abstract1"><h6 class="ltx_title ltx_title_abstract">摘要</h6>
+<p class="ltx_p" id="abstract1.1">接触密集的操作任务需要融合视觉与触觉反馈，而两种模态的性质不同，使融合变得困难。本文提出一套结合视觉和触觉输入的系统，以实现灵巧的手内操作。受人类触觉与视觉联觉的启发，我们提出一种基于点云的触觉表征，称为 Robot Synesthesia。该表征在同一框架中融合两种输入，提供更丰富的空间信息，便于推断机器人应采取的动作。我们通过一系列消融实验检验视觉与触觉的融合如何改善强化学习和从仿真到真机的迁移效果。项目主页为 <a class="ltx_ref ltx_href" href="https://yingyuan0414.github.io/visuotactile/" title="">https://yingyuan0414.github.io/visuotactile/</a>。</p><p class="source-paragraph" lang="en">Executing contact-rich manipulation tasks necessitates the fusion of tactile and visual feedback. However, the distinct nature of these modalities poses significant challenges. In this paper, we introduce a system that leverages visual and tactile sensory inputs to enable dexterous in-hand manipulation. Specifically, we propose Robot Synesthesia , a novel point cloud-based tactile representation inspired by human tactile-visual synesthesia. This approach allows for the simultaneous and seamless integration of both sensory inputs, offering richer spatial information and facilitating better reasoning about robot actions.
+Comprehensive ablations are performed on how the integration of vision and touch can improve reinforcement learning and Sim2Real performance. Our project page is available at https://yingyuan0414.github.io/visuotactile/ .</p>
+</div>
+<div class="ltx_logical-block" id="8">
+<div class="ltx_para" id="p1"><img alt="[Uncaptioned image]" class="ltx_graphics ltx_centering ltx_img_landscape" height="245" id="g1" loading="lazy" src="../media/2312.01853/figure1.png" style="aspect-ratio:476/245;" width="476"/><span class="ltx_ERROR ltx_centering undefined" id="p1.1">\captionof</span>
+<p class="ltx_p ltx_align_center" id="p1.2">图：我们提出了“机器人通感”这一新型视觉触觉方法，通过视觉与触觉模式实现手持物体的旋转操作。我们在模拟环境中训练策略，以处理围绕特定轴旋转的单个或多个物体，随后无需任何真实世界数据即可将其应用于真实机器人手。</p><p class="source-paragraph" lang="en">figureWe propose Robot Synesthesia , a novel visuotactile approach to perform in-hand object rotation with visual and tactile modalities. We train our policy in simulation on rotating single or multiple objects around a certain axis and then transfer it to the real robot hand without any real-world data.</p>
+</div>
+</div><span class="ltx_note ltx_role_footnote" id="footnote1"><sup class="ltx_note_mark">†</sup> <sup class="ltx_note_mark">†</sup> <br class="ltx_break"/> <sup class="ltx_sup" id="footnote1.2"><math alttext="1" class="ltx_Math" display="inline" id="footnote1.m1" intent=":literal"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></sup> 加州大学圣地亚哥分校 <br class="ltx_break"/> <sup class="ltx_sup" id="footnote1.3"><math alttext="2" class="ltx_Math" display="inline" id="footnote1.m2" intent=":literal"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math></sup> 清华大学 <br class="ltx_break"/> <sup class="ltx_sup" id="footnote1.4"><math alttext="3" class="ltx_Math" display="inline" id="footnote1.m3" intent=":literal"><semantics><mn>3</mn><annotation encoding="application/x-tex">3</annotation></semantics></math></sup> 伊利诺伊大学厄巴纳-香槟分校 <br class="ltx_break"/> <sup class="ltx_sup" id="footnote1.5"><math alttext="4" class="ltx_Math" display="inline" id="footnote1.m4" intent=":literal"><semantics><mn>4</mn><annotation encoding="application/x-tex">4</annotation></semantics></math></sup> 加州大学伯克利分校 <br class="ltx_break"/> <sup class="ltx_sup" id="footnote1.6"><math alttext="5" class="ltx_Math" display="inline" id="footnote1.m5" intent=":literal"><semantics><mn>5</mn><annotation encoding="application/x-tex">5</annotation></semantics></math></sup> 东国大学 <br class="ltx_break"/> <sup class="ltx_sup" id="footnote1.7">*</sup> 均衡贡献。<br class="ltx_break"/> <sup class="ltx_sup" id="footnote1.8"><math alttext="{\dagger}" class="ltx_Math" display="inline" id="footnote1.m6" intent=":literal"><semantics><mo>†</mo><annotation encoding="application/x-tex">{\dagger}</annotation></semantics></math></sup> 在加州大学圣地亚哥分校实习期间的工作。</span>
+<section class="ltx_section" id="S1">
+<h2 class="ltx_title ltx_title_section">I 引言</h2>
+<div class="ltx_para" id="S1.p1">
+<p class="ltx_p" id="S1.p1.1">在日常生活中，人类能够轻松完成复杂的操作任务，通过视觉与触觉的协同作用实现。以穿针这一复杂任务为例，我们首先通过视觉定位针眼并估算其大小。手持针时，利用触觉信息来引导线材的走向。我们的视觉感知帮助我们将线材与针眼对齐，而指尖的触觉则使我们能够感知线材的位置，即使线材被遮挡，无法被眼睛准确识别。这种视觉与触觉的协同作用，使我们能够以极高的灵活性以及强大的抗遮挡能力与环境进行互动。</p><p class="source-paragraph" lang="en">In everyday life, humans effortlessly perform complex manipulation tasks, intuitively using a combination of vision and touch. Considering the intricate task of threading a needle, we begin by visually locating the needle’s eye and estimating its size. Holding the needle steady in hand, we use touch information to guide the thread. Our visual sensing guides us in aligning the thread with the needle’s eye, while it’s the sense of touch from our fingertips that helps us feel the thread’s position, even when it’s occluded for our eyes to discern accurately. This synergy of vision and touch enables us to interact with our environment with remarkable flexibility and great robustness against occlusion.</p>
+</div>
+<div class="ltx_para" id="S1.p2">
+<p class="ltx_p" id="S1.p2.1">然而，对于承担类似操作任务的机器人而言，达到这种复杂程度仍是一项挑战。存在两个主要障碍，阻碍机器人学习算法实现相同的协同效应。(i) 触觉与视觉模态在性质上有所不同。触觉信息通常较为稀疏且维度较低，来自不同的触觉传感器，且缺乏上下文细节；而视觉数据则丰富且维度高，包含丰富的环境细节。当将这两种数据整合到单一神经网络中时，模型必须有效处理并解释每种模态的信息，同时找到一种方式将这些信息协同起来，以推动智能决策。 (ii) 此类任务需要大量的训练数据，而这些数据通常是在模拟环境中生成的。 然而，将模拟器中学到的视觉触觉技能迁移到现实世界中是一个非简单的任务。视觉与触觉这两种感知方式各自存在不同的领域差异。同时实现这两种感知的融合，以构建综合视觉-触觉模型，进一步增加了其复杂性。</p><p class="source-paragraph" lang="en">Yet, for robots tasked with similar manipulation tasks, achieving this level of sophistication remains a challenge. There are two primary hurdles that stand in the way of replicating the same level of synergy for robot learning algorithms. (i) Tactile and visual modality are distinct in nature. Tactile information is typically sparse and low-dimensional, captured from distinct tactile sensors and provides little contextual details. On the other hand, visual data is dense and high-dimensional, offering a rich tapestry of environmental details. When integrating these two types of data into a single neural network, the model must process and interpret each modality effectively, while also finding a way to synergize this information to facilitate intelligent decision-making. (ii) Vast amounts of training data are required for such tasks , which is typically generated within a simulated environment. However, transferring the visuotactile skills learned in a simulator to the real world is a non-trivial problem. Each modality, vision and touch, has its own domain gap. Bridging them concurrently for a combined visual-tactile model even heightens the complexity significantly.</p>
+</div>
+<div class="ltx_para" id="S1.p3">
+<p class="ltx_p" id="S1.p3.1">在本文中，我们旨在为机器人配备一种策略，以有效利用多模态反馈。在神经科学研究中，某些个体在触摸物体时能够感知颜色，这被称为触觉-视觉联觉 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib1" title="">1</a>, <a class="ltx_ref" href="#bib.bib2" title="">2</a>]</cite>。受此启发，我们提出了一种基于点云的触觉表示方法，而非在表示学习中分别处理各模态数据，之后再合并所学习到的特征。我们以这样一种方式构建该表示：将来自力传感器电阻器的触觉数据与来自相机的点云结合，形成统一的 3 D空间。这种方法能够保留机器人关节、力传感器与被操作物体之间的空间关系。实际上，机器人能够“感知”其触觉交互，我们将其称为机器人联觉。 该方法能够从一开始就无缝整合各种感官输入，从而提供丰富的空间信息，有助于更精准地理解机器人的行为。此外，利用机器人的运动学特性，我们可以轻松在模拟环境与真实环境中生成这些触觉点云。这种策略通过将视觉与触觉两种模式视为一个整体，能够减少在 Sim-to-Real 传输过程中视觉与触觉带来的累积误差。</p><p class="source-paragraph" lang="en">In this paper, we aim to equip the robot with a policy that effectively leverages multi-modal feedback.
+In neuroscience studies, certain individuals can perceive color when they touch things, which refers to Tactile-Visual Synesthesia [ 1 , 2 ] .
+Inspired by it, instead of processing each modality separately in representation learning and merging the learned features later, we propose a novel point cloud-based tactile representation.
+We formulate this representation in a way that “paints” the tactile data from Force-Sensing Resistor (FSR) in conjunction with the point cloud from the camera into a unified 3D space.
+This approach preserves the spatial relationship among the robot links, FSR sensors, and the object being manipulated. Effectively, the robot is equipped to “see” its tactile interactions, a concept we call Robot Synesthesia .
+This method allows for the seamless integration of both sensory inputs from the outset, which offers abundant spatial information, facilitating better reasoning about robot actions. Furthermore, we can easily generate these tactile point clouds in both simulated and real-world using the robot’s kinematics. This strategy can reduce the compounding errors of vision and touch during Sim-to-Real transfer, by treating these two modalities as an integrated entity.</p>
+</div>
+<div class="ltx_para" id="S1.p4">
+<p class="ltx_p" id="S1.p4.1">我们专注于涉及一个或两个物体的手持物体旋转操作，且需在 x、y 和 z 轴上进行操作。机器人需要通过视觉触觉感知与多种物体互动，同时学会防止物体从手中滑落。当涉及两个球的旋转时（如《机器人感官体验：视觉触觉感知下的手持操作》第一行所示），由于该双球系统具有高度的自由度及复杂的互动模式，任务难度会进一步增加。微小的手指动作不足以使它们旋转，而过度的动作则可能导致它们掉落。我们首先在物理模拟器中利用强化学习（RL）结合预言状态信息来训练教师策略，随后通过结合视觉与触觉输入的点云网络 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib3" title="">3</a>]</cite> 编码器将策略压缩为学生策略，最后将学生策略应用于现实环境。</p><p class="source-paragraph" lang="en">We focus on in-hand object rotation involving one or two objects, and along the x, y, and z axes. The robot is required to interact with a variety of objects via visuotactile sensing, while learning to prevent the objects from slipping off the hand at the same time.
+The task becomes more challenging when rotating two balls (the first row of Figure Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing ), due to the high degree of freedom and complex interaction pattern of this double-ball system. Small finger movements are insufficient to rotate them, while excessive motion risks dropping them.
+We first train a teacher policy in a physical simulator using Reinforcement Learning (RL) with oracle state information, which is then distilled to a student policy utilizing a PointNet [ 3 ] encoder with visual and tactile inputs. The student policy is then deployed in the real world.</p>
+</div>
+<div class="ltx_para" id="S1.p5">
+<p class="ltx_p" id="S1.p5.1">在实验中，我们使用八种真实物体对该策略进行了评估。该策略能够解决具有挑战性的双球旋转任务，并能够推广到新的三维旋转任务中。此外，我们研究了点云编码器的临界点集合，结果表明所提出的触觉表征有助于 PointNet 定位关键点，例如指尖、物体表面以及对动作预测至关重要的触觉点。</p><p class="source-paragraph" lang="en">In our experiments, we evaluate the policy with eight real-world objects. Our policy can solve the challenging double-ball rotation task and generalize to novel objects for the three-axis rotation task. Furthermore, we investigate the critical point sets of the point cloud encoder and show that the proposed tactile representation assists the PointNet in locating critical points, such as fingertips, object surfaces, and tactile points that are crucial for action prediction.</p>
+</div>
+</section>
+<section class="ltx_section" id="S2">
+<h2 class="ltx_title ltx_title_section">II 相关工作</h2>
+<div class="ltx_para" id="S2.p1">
+<p class="ltx_p" id="S2.p1.1">灵巧操作为各种应用提供了丰富的机会 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib4" title="">4</a>, <a class="ltx_ref" href="#bib.bib5" title="">5</a>, <a class="ltx_ref" href="#bib.bib6" title="">6</a>, <a class="ltx_ref" href="#bib.bib7" title="">7</a>, <a class="ltx_ref" href="#bib.bib8" title="">8</a>, <a class="ltx_ref" href="#bib.bib9" title="">9</a>]</cite>。它使得复杂的操作任务得以实现，例如滑动 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib10" title="">10</a>, <a class="ltx_ref" href="#bib.bib11" title="">11</a>]</cite>、滚动 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib12" title="">12</a>, <a class="ltx_ref" href="#bib.bib13" title="">13</a>, <a class="ltx_ref" href="#bib.bib14" title="">14</a>, <a class="ltx_ref" href="#bib.bib15" title="">15</a>, <a class="ltx_ref" href="#bib.bib16" title="">16</a>]</cite>、旋转 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib17" title="">17</a>, <a class="ltx_ref" href="#bib.bib18" title="">18</a>]</cite> 以及重新抓取 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib19" title="">19</a>, <a class="ltx_ref" href="#bib.bib20" title="">20</a>, <a class="ltx_ref" href="#bib.bib21" title="">21</a>]</cite>。以往用于解决灵巧操作问题的方法基于经典控制理论 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib22" title="">22</a>, <a class="ltx_ref" href="#bib.bib23" title="">23</a>]</cite>。然而，这些方法依赖于专家设计的动力学模型，这限制了其在更复杂任务中的应用。为了克服这些限制，近期研究利用无模型深度强化学习来实现灵巧操作 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib24" title="">24</a>, <a class="ltx_ref" href="#bib.bib25" title="">25</a>, <a class="ltx_ref" href="#bib.bib26" title="">26</a>, <a class="ltx_ref" href="#bib.bib27" title="">27</a>, <a class="ltx_ref" href="#bib.bib28" title="">28</a>]</cite>。此外，模仿学习以及将常见强化学习与示范学习相结合，进一步提升了样本效率，并带来了更自然的操作行为 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib29" title="">29</a>, <a class="ltx_ref" href="#bib.bib30" title="">30</a>, <a class="ltx_ref" href="#bib.bib31" title="">31</a>, <a class="ltx_ref" href="#bib.bib32" title="">32</a>, <a class="ltx_ref" href="#bib.bib33" title="">33</a>, <a class="ltx_ref" href="#bib.bib34" title="">34</a>, <a class="ltx_ref" href="#bib.bib35" title="">35</a>, <a class="ltx_ref" href="#bib.bib36" title="">36</a>, <a class="ltx_ref" href="#bib.bib37" title="">37</a>]</cite>。近期，灵巧的手部操作已成为研究关注的焦点 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib38" title="">38</a>, <a class="ltx_ref" href="#bib.bib39" title="">39</a>, <a class="ltx_ref" href="#bib.bib40" title="">40</a>, <a class="ltx_ref" href="#bib.bib41" title="">41</a>, <a class="ltx_ref" href="#bib.bib42" title="">42</a>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">extreme</span>, <a class="ltx_ref" href="#bib.bib43" title="">43</a>]</cite>。 为了适应新物体，研究人员探索了多种传感器以捕捉物体的几何形态与动态特性。Qi等人<cite class="ltx_cite ltx_citemacro_cite"><span class="ltx_text ltx_font_upright" id="S2.p1.1.2.1">[</span><a class="ltx_ref" href="#bib.bib41" title="">41</a><span class="ltx_text ltx_font_upright" id="S2.p1.1.2.2">]</span></cite>证明，通过本体感知历史，策略能够推断物体的位置及物理属性。但在缺乏明确物体信息的情况下，该方法仅适用于Z轴旋转任务。Yin等人<cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib42" title="">42</a>]</cite>则提出将二进制触觉信号与本体感知相结合以完成该任务。然而，触觉信号过于稀疏，无法捕捉详细的几何特征，因此无法处理非凸形状的物体。为解决这一问题，Chen等人<cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib44" title="">44</a>]</cite>利用深度信息辅助物体旋转，而Guzey等人<cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib45" title="">45</a>]</cite>则学习了基于视觉与触觉信号的非参数策略。与我们的研究最为相似的是，一项最新研究<cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib46" title="">46</a>]</cite>利用光学触觉传感器拍摄的RGB图像与深度图像来实现手持旋转。 然而，这要求物体与触觉传感器之间保持持续接触，因此只能用于可在指尖上旋转的较小物体。相比之下，我们的研究不对物体的初始位置提出任何特定要求，能够处理各种形状和大小的物体。此外，我们的触觉点云表示能够提供关于物体及触觉传感器位置的明确 3 D 信息，而它们的模型则基于 2 D 图像。因此，我们的策略能够解决需要更复杂 3 D 空间推理的任务，例如同时旋转两个球体。</p><p class="source-paragraph" lang="en">Dexterous Manipulation presents a wealth of opportunities for broad applications [ 4 , 5 , 6 , 7 , 8 , 9 ] .
+It enables the execution of intricate manipulative tasks, such as sliding [ 10 , 11 ] , rolling [ 12 , 13 , 14 , 15 , 16 ] , pivoting [ 17 , 18 ] , and regrasping [ 19 , 20 , 21 ] .
+Earlier methods addressing dexterous manipulation were grounded in classical control [ 22 , 23 ] . However, these methods rely on expert-engineered dynamics models, which restricts their utility for more complex tasks.
+To overcome these limitations, recent research has leveraged deep model-free RL for dexterous manipulation [ 24 , 25 , 26 , 27 , 28 ] .
+Further enriching these advancements, imitation learning and combining common RL with demonstrations has led to higher sample efficiency and more natural manipulation behaviors [ 29 , 30 , 31 , 32 , 33 , 34 , 35 , 36 , 37 ] .
+Dexterous in-hand manipulation has been a focal point of research interest recently [ 38 , 39 , 40 , 41 , 42 , extreme , 43 ] .
+To generalize to new objects, researchers have explored different sensors to capture object geometry and dynamic properties.
+Qi et al. [ 41 ] demonstrated that policy could infer object position and physical properties using proprioceptive history. But without explicit object information, it was only effective for z-axis rotation tasks. Yin et al. [ 42 ] proposed integrating binary tactile signals with proprioception for this task. However, the tactile signal was too sparse to capture detailed geometric attributes and thus could not handle objects with non-convex shapes. To solve this, Chen et al. [ 44 ] utilized depth information to aid object rotation while Guzey et al. [ 45 ] learned non-parametric policies on both vision and touch signal.
+Most similar to us, a recent study [ 46 ] utilizes RGB images from optical tactile sensors and depth images for in-hand rotation. However, it necessitated continuous contact between the object and tactile sensors, constraining it to smaller objects that can be rotated on the fingertips. In contrast, our work does not impose any specific requirements on the object’s initial location and can handle objects of diverse shapes and sizes. Furthermore, our tactile point cloud representation provides explicit 3D information about the object and tactile sensors’ location, while their models are based on 2D images. As a result, our policy can solve tasks requiring more complex 3D spatial reasoning, such as rotating two balls simultaneously.</p>
+</div>
+<div class="ltx_para" id="S2.p2">
+<p class="ltx_p" id="S2.p2.1">视觉触觉操控——即视觉与触觉模式的融合——是人类与环境互动的基本机制 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib47" title="">47</a>]</cite> ，具有显著提升机器人操作能力的可能性 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib48" title="">48</a>, <a class="ltx_ref" href="#bib.bib49" title="">49</a>, <a class="ltx_ref" href="#bib.bib50" title="">50</a>, <a class="ltx_ref" href="#bib.bib51" title="">51</a>, <a class="ltx_ref" href="#bib.bib45" title="">45</a>]</cite> 视觉模态提供了对环境的全面、非接触式视角，而触觉模态则通过提供诸如纹理、温度、硬度及重量等依赖接触条件的详细特性，对这一视角进行补充。在机器人操作中整合这些模态的关键在于两个方面：(i) 各模态的表征方式，以及 (ii) 融合这些模态所采用的策略。 RGB 由于图像具有广泛的可用性，因此成为常见的选择 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib49" title="">49</a>, <a class="ltx_ref" href="#bib.bib52" title="">52</a>]</cite> . 但这些图像并未天然包含距离信息，而距离信息在操控任务中往往至关重要。 为了克服这一限制，研究人员 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib46" title="">46</a>, <a class="ltx_ref" href="#bib.bib44" title="">44</a>]</cite> 提出利用深度信息来处理更多需要大量接触的任务，例如手持旋转操作。与这些方法不同，我们的方法利用相机捕获的点云，从而自然地将 3 D 信息融入视觉表示中。对于触觉模态，原始传感器数据是一个自然的选择 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib53" title="">53</a>, <a class="ltx_ref" href="#bib.bib54" title="">54</a>, <a class="ltx_ref" href="#bib.bib55" title="">55</a>]</cite>。然而，对于较小的 Sim-to-Real 间隙，则使用二进制接触向量 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib42" title="">42</a>, <a class="ltx_ref" href="#bib.bib56" title="">56</a>, <a class="ltx_ref" href="#bib.bib57" title="">57</a>, <a class="ltx_ref" href="#bib.bib58" title="">58</a>]</cite>。值得注意的是，基于视觉的触觉传感器，如 DIGIT、<cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib59" title="">59</a>]</cite> 和 GelSighT、<cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib60" title="">60</a>]</cite>，也可以将触觉信息编码到 RGB 图像中。另一个关键考虑点在于多模态学习范式的设计。 大多数现有方法倾向于在特征层面结合不同模态，即针对每种模态分别训练独立的特征提取器，并将预测出的特征进行拼接以形成多模态表示 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib53" title="">53</a>, <a class="ltx_ref" href="#bib.bib61" title="">61</a>]</cite>。当使用光学触觉传感器与触觉图像时，也可以在输入层面进行组合处理，因为视觉和触觉信息均被表示为 RGB 图像 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib50" title="">50</a>, <a class="ltx_ref" href="#bib.bib52" title="">52</a>]</cite>。相比之下，我们的方法将触觉数据表示为点云，并在输入层面与相机点云进行融合。这种处理方式将合并后的视觉与触觉数据视为策略网络的单一输入。这种创新设计我们称之为“机器人通感”，它能够增强两种模态的上下文理解能力，并将感官数据编码为统一的 3 D 空间。</p><p class="source-paragraph" lang="en">Visuotactile Manipulation ,
+the integration of visual and tactile modalities, is a fundamental mechanism for human interaction with the environment [ 47 ] , which presents significant potential for enhancing robot manipulation capabilities [ 48 , 49 , 50 , 51 , 45 ] . The visual modality offers a comprehensive, non-contact perspective of the environment, while the tactile modality complements this by offering detailed, contact-dependent properties such as texture, temperature, hardness, and weight.
+The key to integrating these modalities in robotic manipulation lies in two aspects: (i) the representation of each modality, and (ii) the strategy employed to fuse these modalities.
+In the visual modality, RGB images are a common choice due to their widespread availability [ 49 , 52 ] . But these images do not inherently capture distance information, which is often critical in manipulation tasks. To address this limitation, researchers [ 46 , 44 ] proposed using depth to handle more contact-intensive tasks such as in-hand rotation. Different from these methods, our approach utilizes the point cloud captured by a camera, inherently incorporating 3D information into the visual representation.
+For the tactile modality, raw sensor readings are a natural choice [ 53 , 54 , 55 ] .
+However, for a smaller Sim-to-Real gap, the binary contact vector has been used [ 42 , 56 , 57 , 58 ] . Notably, vision-based tactile sensors, such as DIGIT [ 59 ] and GelSighT [ 60 ] , can also encode tactile information into RGB images.
+Another critical consideration is the design of a multi-modal learning paradigm. Most existing approaches favor combining modalities at the feature level, where separate feature extractors are trained for each modality, and the predicted features are concatenated as a multi-modal representation [ 53 , 61 ] . When utilizing optical tactile sensors with tactile images, the combination can also be performed at the input level, as both vision and touch are represented as RGB images [ 50 , 52 ] . In contrast, our method represents tactile data as a point cloud and merges with the camera point cloud at the input level. This approach treats the combined visual and tactile data as a single input to the policy network. This innovative design, which we term Robot Synesthesia, enriches the contextual understanding for both modalities and encodes the sensory data into a cohesive 3D space.</p>
+</div>
+</section>
+<section class="ltx_section" id="S3">
+<h2 class="ltx_title ltx_title_section">III 视觉触觉灵巧操作</h2>
+<section class="ltx_subsection" id="S3.SS1">
+<h3 class="ltx_title ltx_title_subsection">III-A 系统配置</h3>
+<div class="ltx_para" id="S3.SS1.p1">
+<p class="ltx_p" id="S3.SS1.p1.1">如图 <a class="ltx_ref" href="#S3.F1" title="Fig. 1 ‣ III-A System Setup ‣ III Visuotactile Dexterous Manipulation ‣ Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing"><span class="ltx_text ltx_ref_tag">1</span></a> 所示，我们的硬件配置包括一个 XArm6 机械臂和一个配备深度相机的 16 - DOF Allegro 手。按照 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib42" title="">42</a>]</cite> 的建议，我们在机器人手的掌部与手指连接处安装了 16 力传感器电阻作为触觉传感器。我们收集每个传感器的接触信号，然后根据预设阈值 <math alttext="\theta_{th}" class="ltx_Math" display="inline" id="S3.SS1.p1.m1" intent=":literal"><semantics><msub><mi>θ</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>h</mi></mrow></msub><annotation encoding="application/x-tex">\theta_{th}</annotation></semantics></math> 将测量值二值化，以缩小 Sim-to-Real 的误差。我们使用 Isaac Gym <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib62" title="">62</a>]</cite> 作为刚体物理模拟器。该模拟设置在《机器人通感：视觉触觉感知下的手部操作》图中得到可视化展示。</p><p class="source-paragraph" lang="en">As is shown in Figure 1 , our hardware setup consists of an XArm6 robot arm and a 16-DOF Allegro Hand with a depth camera. We attach 16 Force-Sensing Resistors (FSR) as tactile sensors to the palm and finger links of the robot hand as suggested by [ 42 ] . We gather the contact signal from each sensor, then binarize the measurement according to a predetermined threshold θ t ​ h to abridge the Sim-to-Real gap. We use Isaac Gym [ 62 ] as the rigid body physics simulator. The simulation setup is visualized in Figure Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing .</p>
+</div>
+<figure class="ltx_figure" id="S3.F1"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="275" id="S3.F1.g1" loading="lazy" src="../media/2312.01853/real_setup.png" style="aspect-ratio:381/275;" width="381"/>
+<figcaption class="ltx_caption ltx_centering">图 1：真实环境设置。我们使用连接了 16 力传感器电阻的 Allegro Hand 手爪。一台 Microsoft Azure Kinect 摄像头被置于机器人前方。</figcaption>
+</figure>
+<div class="ltx_para" id="S3.SS1.p2">
+<p class="ltx_p" id="S3.SS1.p2.1">为了获取视觉观测数据，我们在真实与模拟环境中，将 Microsoft Azure Kinect 摄像头置于手旁。随后利用深度图像生成点云。如图 <a class="ltx_ref" href="#S4.F3" title="Fig. 3 ‣ IV Learning Visuotactile Dexterity ‣ Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing"><span class="ltx_text ltx_ref_tag">3</span></a> 所示，模拟环境中的点云与真实环境中的点云非常相似，尤其是与 RGB 图像相比。我们通过机器人本体感知技术，从机器人的网格数据中提取增强点云 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib25" title="">25</a>]</cite>，以模拟手与物体之间的空间关系，并在当前姿态下对网格数据进行采样。为了区分相机生成的点云与增强点云，我们在每个点后添加了一个独热向量。点云可视化结果如图 <a class="ltx_ref" href="#S4.F2" title="Fig. 2 ‣ IV Learning Visuotactile Dexterity ‣ Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing"><span class="ltx_text ltx_ref_tag">2</span></a> 所示。在模拟与真实环境中，控制频率均保持为 10Hz。</p><p class="source-paragraph" lang="en">To obtain visual observations, we place a Microsoft Azure Kinect camera beside the hand in both real and simulated settings.
+We then generate the point cloud using the depth image.
+As illustrated in Figure 3 , the point clouds in simulation closely mirror those in reality, especially compared with RGB images. We create an augmented point cloud [ 25 ] from the robot’s proprioception to model the spatial relationship between the hand and the object, by sampling on the robot’s mesh at the current pose. To differentiate between the camera-generated point cloud and the augmented one, we append a one-hot vector to each point. Point cloud visualizations are shown in Figure 2 .
+The control frequency remains consistent at 10Hz in both simulated and real environments.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S3.SS2">
+<h3 class="ltx_title ltx_title_subsection">III-B 基准测试问题</h3>
+<div class="ltx_para" id="S3.SS2.p1">
+<p class="ltx_p" id="S3.SS2.p1.1">我们通过手持物体旋转任务来研究机器人的灵巧性，其目标是操作一个或多个手持物体，使其沿特定轴旋转。在本文中，我们主要关注三个不同的基准测试任务：(i) 轮式扳手旋转：该任务灵感来源于用户在使用扳手时必须切换手柄的场景，要求机器人在不掉落扳手的情况下，沿 z 轴旋转一个人工多向扳手。为了成功完成此任务，机器人必须视觉识别下一个“可能的”手柄以进行交互，同时通过触摸感知扳手的旋转情况。(ii) 双球旋转：该任务要求同时操作两个相同的球体，使其沿 z 轴相互旋转。 由于仅靠触觉反馈无法区分这些球体，机器人必须通过视觉手段找到两者。（iii）三轴旋转：该任务不仅限于 z 轴，还要求机器人围绕固定的 x 或 y 轴旋转物体。此外，策略应能够操控各种不同形状的物体，从而提升其对训练集中未包含物体的操作能力。</p><p class="source-paragraph" lang="en">We study the dexterity of Robot Synesthesia through an in-hand object rotation task, where the goal is manipulating one or more hand-held objects to rotate along a specific axis. In this paper, we mainly focus on three distinct benchmark problems: (i) Wheel-Wrench Rotation : Inspired by scenarios where a user must switch handles on a wrench during use, this task involves rotating an artificial multi-way wheel wrench along the z-axis in hand without dropping it. To successfully complete this task, the robot must visually identify the next ”possible” handle for interaction while concurrently sensing the wrench’s rotation via touch. (ii) Double-Ball Rotation : This task requires the simultaneous manipulation of two identical balls to rotate around each other along the z-axis. Given that tactile feedback alone cannot distinguish between the balls, it is crucial for the robot to visually locate both. (iii) Three-Axis Rotation : This task extends beyond the z-axis to require the robot to rotate objects around a fixed x or y-axis. Moreover, the policy should demonstrate the ability to manipulate a variety of objects with different shapes, extending its dexterity to objects not included in the training set.</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S4">
+<h2 class="ltx_title ltx_title_section">IV 学习视觉触觉灵巧性</h2>
+<figure class="ltx_figure" id="S4.F2"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="224" id="S4.F2.g1" loading="lazy" src="../media/2312.01853/pipeline.png" style="aspect-ratio:419/224;" width="419"/>
+<figcaption class="ltx_caption ltx_centering">图 2：训练流程。我们的教师策略以机器人本体感知、二元接触状态、物体姿态以及物体形状嵌入作为输入。通过强化学习对教师策略进行训练后，将其简化为基于视觉触觉的学生策略。除了机器人本体感知和触觉信号外，学生策略还包含来自深度相机的点云、基于机器人本体感知的增强点云，以及所提出的触觉点云。我们使用独热向量来区分这些点云。需要注意的是，为了更清晰，我们去除了点云中的噪声。</figcaption>
+</figure>
+<figure class="ltx_figure" id="S4.F3"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="103" id="S4.F3.g1" loading="lazy" src="../media/2312.01853/pointcloud.png" style="aspect-ratio:476/103;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 3：模拟与现实中的点云可视化。与点云相比，RGB 图像中的 Sim-to-Real 差距显著更大，因此我们将点云作为我们策略的视觉观测对象。</figcaption>
+</figure>
+<section class="ltx_subsection" id="S4.SS1">
+<h3 class="ltx_title ltx_title_subsection">IV-A 问题表述</h3>
+<div class="ltx_para" id="S4.SS1.p1">
+<p class="ltx_p" id="S4.SS1.p1.1">我们将手持物体旋转任务建模为马尔可夫决策过程 <math alttext="(\mathcal{S},\mathcal{A},\mathcal{P},\mathcal{R},\gamma)" class="ltx_Math" display="inline" id="S4.SS1.p1.m1" intent=":literal"><semantics><mrow><mo stretchy="false">(</mo><mi class="ltx_font_mathcaligraphic">𝒮</mi><mo>,</mo><mi class="ltx_font_mathcaligraphic">𝒜</mi><mo>,</mo><mi class="ltx_font_mathcaligraphic">𝒫</mi><mo>,</mo><mi class="ltx_font_mathcaligraphic">ℛ</mi><mo>,</mo><mi>γ</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(\mathcal{S},\mathcal{A},\mathcal{P},\mathcal{R},\gamma)</annotation></semantics></math>。其中，<math alttext="\mathcal{S}" class="ltx_Math" display="inline" id="S4.SS1.p1.m2" intent=":literal"><semantics><mi class="ltx_font_mathcaligraphic">𝒮</mi><annotation encoding="application/x-tex">\mathcal{S}</annotation></semantics></math> 代表状态空间，<math alttext="\mathcal{A}" class="ltx_Math" display="inline" id="S4.SS1.p1.m3" intent=":literal"><semantics><mi class="ltx_font_mathcaligraphic">𝒜</mi><annotation encoding="application/x-tex">\mathcal{A}</annotation></semantics></math> 代表动作空间，<math alttext="\mathcal{P}(s^{\prime}|s,a)" class="ltx_Math" display="inline" id="S4.SS1.p1.m4" intent=":literal"><semantics><mrow><mi class="ltx_font_mathcaligraphic">𝒫</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><msup><mi>s</mi><mo>′</mo></msup><mo lspace="0em" rspace="0em">|</mo><mrow><mi>s</mi><mo>,</mo><mi>a</mi></mrow><mo stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{P}(s^{\prime}|s,a)</annotation></semantics></math> 代表转移概率，<math alttext="\mathcal{R}" class="ltx_Math" display="inline" id="S4.SS1.p1.m5" intent=":literal"><semantics><mi class="ltx_font_mathcaligraphic">ℛ</mi><annotation encoding="application/x-tex">\mathcal{R}</annotation></semantics></math> 代表奖励函数，<math alttext="\gamma" class="ltx_Math" display="inline" id="S4.SS1.p1.m6" intent=":literal"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math> 代表折扣因子。目标是找到最优的 <math alttext="\theta^{*}" class="ltx_Math" display="inline" id="S4.SS1.p1.m7" intent=":literal"><semantics><msup><mi>θ</mi><mo>∗</mo></msup><annotation encoding="application/x-tex">\theta^{*}</annotation></semantics></math>，以最大化预期累积奖励 <math alttext="\sum_{t=0}^{T}\gamma^{t}r_{t}" class="ltx_Math" display="inline" id="S4.SS1.p1.m8" intent=":literal"><semantics><mrow><msubsup><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mi>T</mi></msubsup><mrow><msup><mi>γ</mi><mi>t</mi></msup><mo lspace="0em" rspace="0em">​</mo><msub><mi>r</mi><mi>t</mi></msub></mrow></mrow><annotation encoding="application/x-tex">\sum_{t=0}^{T}\gamma^{t}r_{t}</annotation></semantics></math>。当满足重置条件或智能体达到最大步数 <math alttext="T" class="ltx_Math" display="inline" id="S4.SS1.p1.m9" intent=":literal"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math> 时，一个序列即告结束。当物体从手中掉落时，我们会剔除不必要的探索行为，从而提升训练效率。</p><p class="source-paragraph" lang="en">We formulate the in-hand object rotation task as a Markov Decision Process ( 𝒮 , 𝒜 , 𝒫 , ℛ , γ ) . Here, 𝒮 is the state space, 𝒜 is the action space, 𝒫 ⁡ ( s ′ | s , a ) is the transition probability, ℛ is the reward function, and γ is the discounted factor.  The objective is to find an optimal θ ∗ that maximizes the expected accumulated reward ∑ t = 0 T γ t ​ r t .
+An episode terminates when reset conditions are achieved or the agent reaches the maximum number of steps T . We prune unnecessary explorations when the object falls off the hand to facilitate efficient training.</p>
+</div>
+<section class="ltx_subsubsection" id="S4.SS1.SSS1">
+<h4 class="ltx_title ltx_title_subsubsection">IV-A 状态 1</h4>
+<div class="ltx_para" id="S4.SS1.SSS1.p1">
+<p class="ltx_p" id="S4.SS1.SSS1.p1.1">系统的状态由 Allegro 手的联合位置 <math alttext="q_{t}\in\mathbb{R}^{16}" class="ltx_Math" display="inline" id="S4.SS1.SSS1.p1.m1" intent=":literal"><semantics><mrow><msub><mi>q</mi><mi>t</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mn>16</mn></msup></mrow><annotation encoding="application/x-tex">q_{t}\in\mathbb{R}^{16}</annotation></semantics></math>、二进制触觉信号 <math alttext="o_{t}\in\{0,1\}^{16}" class="ltx_Math" display="inline" id="S4.SS1.SSS1.p1.m2" intent=":literal"><semantics><mrow><msub><mi>o</mi><mi>t</mi></msub><mo>∈</mo><msup><mrow><mo stretchy="false">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false">}</mo></mrow><mn>16</mn></msup></mrow><annotation encoding="application/x-tex">o_{t}\in\{0,1\}^{16}</annotation></semantics></math>、旋转轴 <math alttext="k\in\mathbb{S}^{2}" class="ltx_Math" display="inline" id="S4.SS1.SSS1.p1.m3" intent=":literal"><semantics><mrow><mi>k</mi><mo>∈</mo><msup><mi>𝕊</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">k\in\mathbb{S}^{2}</annotation></semantics></math>、之前的位置目标 <math alttext="\hat{q}_{t}\in\mathbb{R}^{16}" class="ltx_Math" display="inline" id="S4.SS1.SSS1.p1.m4" intent=":literal"><semantics><mrow><msub><mover accent="true"><mi>q</mi><mo>^</mo></mover><mi>t</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mn>16</mn></msup></mrow><annotation encoding="application/x-tex">\hat{q}_{t}\in\mathbb{R}^{16}</annotation></semantics></math>、相机点云 <math alttext="P^{c}_{t}\in\mathbb{R}^{N_{c}\times 3}" class="ltx_Math" display="inline" id="S4.SS1.SSS1.p1.m5" intent=":literal"><semantics><mrow><msubsup><mi>P</mi><mi>t</mi><mi>c</mi></msubsup><mo>∈</mo><msup><mi>ℝ</mi><mrow><msub><mi>N</mi><mi>c</mi></msub><mo lspace="0.222em" rspace="0.222em">×</mo><mn>3</mn></mrow></msup></mrow><annotation encoding="application/x-tex">P^{c}_{t}\in\mathbb{R}^{N_{c}\times 3}</annotation></semantics></math>、增强点云 <math alttext="P^{a}_{t}\in\mathbb{R}^{N_{a}\times 3}" class="ltx_Math" display="inline" id="S4.SS1.SSS1.p1.m6" intent=":literal"><semantics><mrow><msubsup><mi>P</mi><mi>t</mi><mi>a</mi></msubsup><mo>∈</mo><msup><mi>ℝ</mi><mrow><msub><mi>N</mi><mi>a</mi></msub><mo lspace="0.222em" rspace="0.222em">×</mo><mn>3</mn></mrow></msup></mrow><annotation encoding="application/x-tex">P^{a}_{t}\in\mathbb{R}^{N_{a}\times 3}</annotation></semantics></math> 以及触觉点云 <math alttext="P_{t}^{touch}\in\mathbb{R}^{N_{a}\times 3}" class="ltx_Math" display="inline" id="S4.SS1.SSS1.p1.m7" intent=":literal"><semantics><mrow><msubsup><mi>P</mi><mi>t</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi><mo lspace="0em" rspace="0em">​</mo><mi>h</mi></mrow></msubsup><mo>∈</mo><msup><mi>ℝ</mi><mrow><msub><mi>N</mi><mi>a</mi></msub><mo lspace="0.222em" rspace="0.222em">×</mo><mn>3</mn></mrow></msup></mrow><annotation encoding="application/x-tex">P_{t}^{touch}\in\mathbb{R}^{N_{a}\times 3}</annotation></semantics></math> 组成。</p><p class="source-paragraph" lang="en">The state of the system consists of the joint position q t ∈ ℝ 16 of the Allegro hand, the binary tactile signal o t ∈ { 0 , 1 } 16 , the rotation axis k ∈ 𝕊 2 , the previous position target q ^ t ∈ ℝ 16 , the camera point cloud P t c ∈ ℝ N c × 3 , the augmented point cloud P t a ∈ ℝ N a × 3 , and the tactile point cloud P t t ​ o ​ u ​ c ​ h ∈ ℝ N a × 3 .</p>
+</div>
+</section>
+<section class="ltx_subsubsection" id="S4.SS1.SSS2">
+<h4 class="ltx_title ltx_title_subsubsection">IV-A 策略 2 动作</h4>
+<div class="ltx_para" id="S4.SS1.SSS2.p1">
+<p class="ltx_p" id="S4.SS1.SSS2.p1.1">在每一步中，策略网络所提供的动作是一个相对控制指令 <math alttext="a_{t}\in\mathbb{R}^{16}" class="ltx_Math" display="inline" id="S4.SS1.SSS2.p1.m1" intent=":literal"><semantics><mrow><msub><mi>a</mi><mi>t</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mn>16</mn></msup></mrow><annotation encoding="application/x-tex">a_{t}\in\mathbb{R}^{16}</annotation></semantics></math>，而PD控制器则驱动机器人手向 <math alttext="\hat{q}_{t+1}=\hat{q}_{t}+\hat{a}_{t}" class="ltx_Math" display="inline" id="S4.SS1.SSS2.p1.m2" intent=":literal"><semantics><mrow><msub><mover accent="true"><mi>q</mi><mo>^</mo></mover><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mrow><msub><mover accent="true"><mi>q</mi><mo>^</mo></mover><mi>t</mi></msub><mo>+</mo><msub><mover accent="true"><mi>a</mi><mo>^</mo></mover><mi>t</mi></msub></mrow></mrow><annotation encoding="application/x-tex">\hat{q}_{t+1}=\hat{q}_{t}+\hat{a}_{t}</annotation></semantics></math> 靠近。需要注意的是，我们在实现过程中采用了指数移动平均算法，即 <math alttext="\hat{a}_{t}=\eta a_{t}+(1-\eta)\hat{a}_{t-1},t\geq 1" class="ltx_Math" display="inline" id="S4.SS1.SSS2.p1.m3" intent=":literal"><semantics><mrow><mrow><msub><mover accent="true"><mi>a</mi><mo>^</mo></mover><mi>t</mi></msub><mo>=</mo><mrow><mrow><mi>η</mi><mo lspace="0em" rspace="0em">​</mo><msub><mi>a</mi><mi>t</mi></msub></mrow><mo>+</mo><mrow><mrow><mo stretchy="false">(</mo><mrow><mn>1</mn><mo>−</mo><mi>η</mi></mrow><mo stretchy="false">)</mo></mrow><mo lspace="0em" rspace="0em">​</mo><msub><mover accent="true"><mi>a</mi><mo>^</mo></mover><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow></mrow></mrow><mo>,</mo><mrow><mi>t</mi><mo>≥</mo><mn>1</mn></mrow></mrow><annotation encoding="application/x-tex">\hat{a}_{t}=\eta a_{t}+(1-\eta)\hat{a}_{t-1},t\geq 1</annotation></semantics></math>，并将 <math alttext="\hat{a}_{0}=0" class="ltx_Math" display="inline" id="S4.SS1.SSS2.p1.m4" intent=":literal"><semantics><mrow><msub><mover accent="true"><mi>a</mi><mo>^</mo></mover><mn>0</mn></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\hat{a}_{0}=0</annotation></semantics></math> 用于特定设置。我们在实验中将 <math alttext="\eta=0.8" class="ltx_Math" display="inline" id="S4.SS1.SSS2.p1.m5" intent=":literal"><semantics><mrow><mi>η</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\eta=0.8</annotation></semantics></math> 设定为特定值。</p><p class="source-paragraph" lang="en">At each step, the action provided by the policy network is a relative control command a t ∈ ℝ 16 and a PD controller drives the robot hand to approach q ^ t + 1 = q ^ t + a ^ t . Note that we employ an exponential moving average in our implementation, i.e., a ^ t = η ​ a t + ( 1 − η ) ​ a ^ t − 1 , t ≥ 1 and let a ^ 0 = 0 . We set η = 0.8 in our experiments.</p>
+</div>
+</section>
+<section class="ltx_subsubsection" id="S4.SS1.SSS3">
+<h4 class="ltx_title ltx_title_subsubsection">IV-A 策略 3 奖励</h4>
+<div class="ltx_para" id="S4.SS1.SSS3.p1">
+<p class="ltx_p" id="S4.SS1.SSS3.p1.1">我们设计了一个用于稳健且可迁移的手部旋转奖励函数，该函数是由多个组件加权组合而成的。</p><p class="source-paragraph" lang="en">We design a reward function for robust and transferable in-hand rotation, which is a weighted composition of several components:</p>
+<div class="table-scroll"><table class="ltx_equation ltx_eqn_table" id="S4.E1">
+<tbody><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math alttext="r_{t}=c_{1}r_{rot}+c_{2}r_{vel}+c_{3}r_{dist}+c_{4}r_{torq}+c_{5}r_{work}+c_{6}r_{ctrl}." class="ltx_Math" display="block" id="S4.E1.m1" intent=":literal"><semantics><mrow><mrow><msub><mi>r</mi><mi>t</mi></msub><mo>=</mo><mrow><mrow><msub><mi>c</mi><mn>1</mn></msub><mo lspace="0em" rspace="0em">​</mo><msub><mi>r</mi><mrow><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi></mrow></msub></mrow><mo>+</mo><mrow><msub><mi>c</mi><mn>2</mn></msub><mo lspace="0em" rspace="0em">​</mo><msub><mi>r</mi><mrow><mi>v</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><mi>l</mi></mrow></msub></mrow><mo>+</mo><mrow><msub><mi>c</mi><mn>3</mn></msub><mo lspace="0em" rspace="0em">​</mo><msub><mi>r</mi><mrow><mi>d</mi><mo lspace="0em" rspace="0em">​</mo><mi>i</mi><mo lspace="0em" rspace="0em">​</mo><mi>s</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi></mrow></msub></mrow><mo>+</mo><mrow><msub><mi>c</mi><mn>4</mn></msub><mo lspace="0em" rspace="0em">​</mo><msub><mi>r</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>q</mi></mrow></msub></mrow><mo>+</mo><mrow><msub><mi>c</mi><mn>5</mn></msub><mo lspace="0em" rspace="0em">​</mo><msub><mi>r</mi><mrow><mi>w</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>k</mi></mrow></msub></mrow><mo>+</mo><mrow><msub><mi>c</mi><mn>6</mn></msub><mo lspace="0em" rspace="0em">​</mo><msub><mi>r</mi><mrow><mi>c</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>l</mi></mrow></msub></mrow></mrow></mrow><mo lspace="0em">.</mo></mrow><annotation encoding="application/x-tex">r_{t}=c_{1}r_{rot}+c_{2}r_{vel}+c_{3}r_{dist}+c_{4}r_{torq}+c_{5}r_{work}+c_{6}r_{ctrl}.</annotation></semantics></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right" rowspan="1"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1)</span></td></tr></tbody>
+</table></div>
+<p class="ltx_p" id="S4.SS1.SSS3.p1.2"><math alttext="r_{rot}" class="ltx_Math" display="inline" id="S4.SS1.SSS3.p1.m1" intent=":literal"><semantics><msub><mi>r</mi><mrow><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">r_{rot}</annotation></semantics></math> 奖励物体的旋转角度。<math alttext="r_{vel}" class="ltx_Math" display="inline" id="S4.SS1.SSS3.p1.m2" intent=":literal"><semantics><msub><mi>r</mi><mrow><mi>v</mi><mo lspace="0em" rspace="0em">​</mo><mi>e</mi><mo lspace="0em" rspace="0em">​</mo><mi>l</mi></mrow></msub><annotation encoding="application/x-tex">r_{vel}</annotation></semantics></math> 对物体的线速度进行惩罚，以抑制导致物体平移的运动。<math alttext="r_{dist}" class="ltx_Math" display="inline" id="S4.SS1.SSS3.p1.m3" intent=":literal"><semantics><msub><mi>r</mi><mrow><mi>d</mi><mo lspace="0em" rspace="0em">​</mo><mi>i</mi><mo lspace="0em" rspace="0em">​</mo><mi>s</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">r_{dist}</annotation></semantics></math> 是关于物体与指尖之间距离的递减函数，促使手指靠近物体并进行交互。<math alttext="r_{torq}" class="ltx_Math" display="inline" id="S4.SS1.SSS3.p1.m4" intent=":literal"><semantics><msub><mi>r</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>q</mi></mrow></msub><annotation encoding="application/x-tex">r_{torq}</annotation></semantics></math> 对大扭矩进行惩罚，<math alttext="r_{work}" class="ltx_Math" display="inline" id="S4.SS1.SSS3.p1.m5" intent=":literal"><semantics><msub><mi>r</mi><mrow><mi>w</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">r_{work}</annotation></semantics></math> 对控制器的工作进行惩罚，而 <math alttext="r_{ctrl}" class="ltx_Math" display="inline" id="S4.SS1.SSS3.p1.m6" intent=":literal"><semantics><msub><mi>r</mi><mrow><mi>c</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>r</mi><mo lspace="0em" rspace="0em">​</mo><mi>l</mi></mrow></msub><annotation encoding="application/x-tex">r_{ctrl}</annotation></semantics></math> 则对指令目标与实际机器人运动之间的控制误差进行惩罚。当物体从手中掉落时，我们还会施加较大的惩罚。<math alttext="c_{1},c_{2},\cdots,c_{6}" class="ltx_Math" display="inline" id="S4.SS1.SSS3.p1.m7" intent=":literal"><semantics><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>,</mo><msub><mi>c</mi><mn>2</mn></msub><mo>,</mo><mo lspace="0em" rspace="0em">⋯</mo><mo>,</mo><msub><mi>c</mi><mn>6</mn></msub></mrow><annotation encoding="application/x-tex">c_{1},c_{2},\cdots,c_{6}</annotation></semantics></math> 为超参数调整值。</p><p class="source-paragraph" lang="en">r r ​ o ​ t rewards the object’s rotation angle. r v ​ e ​ l penalizes the object’s linear velocity to discourage motions that translate the object. r d ​ i ​ s ​ t is a decreasing function regarding the distance between the object and the fingertips, encouraging the fingers to approach the object in hand and interact with it. r t ​ o ​ r ​ q penalizes large torques, r w ​ o ​ r ​ k penalizes the work of the controller, and r c ​ t ​ r ​ l penalizes the control error between command targets and real robot motion. We additionally implement a large penalty when the object falls off the hand. c 1 , c 2 , ⋯ , c 6 are tuned hyper-parameters.</p>
+</div>
+</section>
+</section>
+<section class="ltx_subsection" id="S4.SS2">
+<h3 class="ltx_title ltx_title_subsection">IV-B 触觉-视觉联觉</h3>
+<div class="ltx_para" id="S4.SS2.p1">
+<p class="ltx_p" id="S4.SS2.p1.1">我们不再分别处理触觉与视觉模态以进行特征提取，而是将两者统一到同一个 3 D 空间中，就如同人类在脑海中同时感知触觉与视觉刺激一样。具体而言，对于手上的每个检测信号的触觉传感器（即 <math alttext="o_{t,i}=1" class="ltx_Math" display="inline" id="S4.SS2.p1.m1" intent=":literal"><semantics><mrow><msub><mi>o</mi><mrow><mi>t</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">o_{t,i}=1</annotation></semantics></math>），我们会在传感器网格上采样点，从而生成基于触觉的点云 <math alttext="P_{t}^{touch}" class="ltx_Math" display="inline" id="S4.SS2.p1.m2" intent=":literal"><semantics><msubsup><mi>P</mi><mi>t</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi><mo lspace="0em" rspace="0em">​</mo><mi>h</mi></mrow></msubsup><annotation encoding="application/x-tex">P_{t}^{touch}</annotation></semantics></math>。当将 <math alttext="P_{t}^{touch}" class="ltx_Math" display="inline" id="S4.SS2.p1.m3" intent=":literal"><semantics><msubsup><mi>P</mi><mi>t</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi><mo lspace="0em" rspace="0em">​</mo><mi>h</mi></mrow></msubsup><annotation encoding="application/x-tex">P_{t}^{touch}</annotation></semantics></math>、<math alttext="P_{t}^{c}" class="ltx_Math" display="inline" id="S4.SS2.p1.m4" intent=":literal"><semantics><msubsup><mi>P</mi><mi>t</mi><mi>c</mi></msubsup><annotation encoding="application/x-tex">P_{t}^{c}</annotation></semantics></math> 和 <math alttext="P_{t}^{a}" class="ltx_Math" display="inline" id="S4.SS2.p1.m5" intent=":literal"><semantics><msubsup><mi>P</mi><mi>t</mi><mi>a</mi></msubsup><annotation encoding="application/x-tex">P_{t}^{a}</annotation></semantics></math> 结合时，我们便为策略网络提供了所有观测实体的空间关系。在我们的实现中，我们设定了采样点的数量 <math alttext="N_{c}=512,N_{a}=8n_{link}" class="ltx_Math" display="inline" id="S4.SS2.p1.m6" intent=":literal"><semantics><mrow><mrow><msub><mi>N</mi><mi>c</mi></msub><mo>=</mo><mn>512</mn></mrow><mo>,</mo><mrow><msub><mi>N</mi><mi>a</mi></msub><mo>=</mo><mrow><mn>8</mn><mo lspace="0em" rspace="0em">​</mo><msub><mi>n</mi><mrow><mi>l</mi><mo lspace="0em" rspace="0em">​</mo><mi>i</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>k</mi></mrow></msub></mrow></mrow></mrow><annotation encoding="application/x-tex">N_{c}=512,N_{a}=8n_{link}</annotation></semantics></math> 和 <math alttext="N_{t}=8n_{touch}" class="ltx_Math" display="inline" id="S4.SS2.p1.m7" intent=":literal"><semantics><mrow><msub><mi>N</mi><mi>t</mi></msub><mo>=</mo><mrow><mn>8</mn><mo lspace="0em" rspace="0em">​</mo><msub><mi>n</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi><mo lspace="0em" rspace="0em">​</mo><mi>h</mi></mrow></msub></mrow></mrow><annotation encoding="application/x-tex">N_{t}=8n_{touch}</annotation></semantics></math>，其中 <math alttext="n_{link}=21" class="ltx_Math" display="inline" id="S4.SS2.p1.m8" intent=":literal"><semantics><mrow><msub><mi>n</mi><mrow><mi>l</mi><mo lspace="0em" rspace="0em">​</mo><mi>i</mi><mo lspace="0em" rspace="0em">​</mo><mi>n</mi><mo lspace="0em" rspace="0em">​</mo><mi>k</mi></mrow></msub><mo>=</mo><mn>21</mn></mrow><annotation encoding="application/x-tex">n_{link}=21</annotation></semantics></math> 表示手上的连接数，<math alttext="n_{touch}\in\{0,\cdots,16\}" class="ltx_Math" display="inline" id="S4.SS2.p1.m9" intent=":literal"><semantics><mrow><msub><mi>n</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi><mo lspace="0em" rspace="0em">​</mo><mi>h</mi></mrow></msub><mo>∈</mo><mrow><mo stretchy="false">{</mo><mn>0</mn><mo>,</mo><mo lspace="0em" rspace="0em">⋯</mo><mo>,</mo><mn>16</mn><mo stretchy="false">}</mo></mrow></mrow><annotation encoding="application/x-tex">n_{touch}\in\{0,\cdots,16\}</annotation></semantics></math> 则表示被触发的触觉传感器数量。 我们的实验表明，从主动触觉传感器中采样的点数据，是由我们学习到的策略在表示学习过程中隐式选出的。需要注意的是，在将点云输入神经网络之前，我们均将其转换为手掌 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib63" title="">63</a>]</cite> 坐标系。</p><p class="source-paragraph" lang="en">Instead of processing tactile and visual modalities separately for feature extraction, we unify tactile and visual modalities by projecting them onto a single 3D space, similar to how humans might simultaneously perceive touch and visual stimuli in their minds.
+Concretely, for each tactile sensor on the hand that detects a signal (i.e., o t , i = 1 ), we sample points on the sensor’s meshes to create a tactile-based point cloud P t t ​ o ​ u ​ c ​ h . When combining P t t ​ o ​ u ​ c ​ h with P t c and P t a , we provide the policy network with a spatial relationship of all the observation entities. In our implementation, we set the number of sampled points N c = 512 , N a = 8 ​ n l ​ i ​ n ​ k , and N t = 8 ​ n t ​ o ​ u ​ c ​ h , where n l ​ i ​ n ​ k = 21 is the number of links on hand and n t ​ o ​ u ​ c ​ h ∈ { 0 , ⋯ , 16 } is the number of triggered tactile sensors. Our experiments demonstrate that points sampled from active tactile sensors are implicitly chosen by our learned policy for representation learning. Note that we transform all point clouds to the hand palm [ 63 ] frame before feeding them into the neural network.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S4.SS3">
+<h3 class="ltx_title ltx_title_subsection">IV-C 教师-学生培训流程</h3>
+<div class="ltx_para" id="S4.SS3.p1">
+<p class="ltx_p" id="S4.SS3.p1.1">当观测数据具有高维度特性时，例如点云数据，使用强化学习来学习控制器 <math alttext="\pi" class="ltx_Math" display="inline" id="S4.SS3.p1.m1" intent=":literal"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math> 会导致数据效率低下。为了缓解这一问题，我们采用教师-学生学习方法，从而无需使用强化学习来训练视觉策略，如图 <a class="ltx_ref" href="#S4.F2" title="Fig. 2 ‣ IV Learning Visuotactile Dexterity ‣ Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing"><span class="ltx_text ltx_ref_tag">2</span></a> 所示。</p><p class="source-paragraph" lang="en">Learning the controller π using RL is data inefficient when the observation is high-dimensional, e.g., point clouds. To mitigate this issue, we employ a teacher-student learning approach to obviate training vision policies with RL, as shown in Figure 2 .</p>
+</div>
+<section class="ltx_subsubsection" id="S4.SS3.SSS1">
+<h4 class="ltx_title ltx_title_subsubsection">IV-C 1 教师策略培训</h4>
+<div class="ltx_para" id="S4.SS3.SSS1.p1">
+<p class="ltx_p" id="S4.SS3.SSS1.p1.1">我们首先使用近端策略优化（PPO）<cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib64" title="">64</a>]</cite>来训练具有低维状态的教师策略。其输入包括Allegro手的位置<math alttext="q_{t}" class="ltx_Math" display="inline" id="S4.SS3.SSS1.p1.m1" intent=":literal"><semantics><msub><mi>q</mi><mi>t</mi></msub><annotation encoding="application/x-tex">q_{t}</annotation></semantics></math>、二进制触觉信号<math alttext="o_{t}" class="ltx_Math" display="inline" id="S4.SS3.SSS1.p1.m2" intent=":literal"><semantics><msub><mi>o</mi><mi>t</mi></msub><annotation encoding="application/x-tex">o_{t}</annotation></semantics></math>、旋转轴<math alttext="k" class="ltx_Math" display="inline" id="S4.SS3.SSS1.p1.m3" intent=":literal"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>、之前的位置目标<math alttext="\hat{q}_{t}" class="ltx_Math" display="inline" id="S4.SS3.SSS1.p1.m4" intent=":literal"><semantics><msub><mover accent="true"><mi>q</mi><mo>^</mo></mover><mi>t</mi></msub><annotation encoding="application/x-tex">\hat{q}_{t}</annotation></semantics></math>、物体位置<math alttext="x_{t}\in\mathbb{R}^{3}" class="ltx_Math" display="inline" id="S4.SS3.SSS1.p1.m5" intent=":literal"><semantics><mrow><msub><mi>x</mi><mi>t</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">x_{t}\in\mathbb{R}^{3}</annotation></semantics></math>、速度<math alttext="v_{t}\in\mathbb{R}^{3}" class="ltx_Math" display="inline" id="S4.SS3.SSS1.p1.m6" intent=":literal"><semantics><mrow><msub><mi>v</mi><mi>t</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">v_{t}\in\mathbb{R}^{3}</annotation></semantics></math>、角速度<math alttext="w_{t}\in\mathbb{R}^{3}" class="ltx_Math" display="inline" id="S4.SS3.SSS1.p1.m7" intent=":literal"><semantics><mrow><msub><mi>w</mi><mi>t</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">w_{t}\in\mathbb{R}^{3}</annotation></semantics></math>以及物体形状特征嵌入<math alttext="f\in\mathbb{R}^{32}" class="ltx_Math" display="inline" id="S4.SS3.SSS1.p1.m8" intent=":literal"><semantics><mrow><mi>f</mi><mo>∈</mo><msup><mi>ℝ</mi><mn>32</mn></msup></mrow><annotation encoding="application/x-tex">f\in\mathbb{R}^{32}</annotation></semantics></math>。对于需要跨多个物体泛化能力的任务，我们通过预训练的PointNet <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib3" title="">3</a>]</cite>编码器在<cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib33" title="">33</a>]</cite>中编码形状信息。需要注意的是，对于每个物体而言，形状特征嵌入在训练过程中保持不变。基于状态信息，我们采用多层感知器（MLP）用于策略网络与价值网络。我们将当前状态与历史状态3组合作为输入，以提升本体感知能力。</p><p class="source-paragraph" lang="en">We first use the proximal policy optimization (PPO) [ 64 ] to train teacher policies with low-dimensional states. Its input consists of the joint position of the Allegro hand q t , the binary tactile signal o t , the rotation axis k , the previous position target q ^ t , the object’s position x t ∈ ℝ 3 , its velocity v t ∈ ℝ 3 , its angular velocity w t ∈ ℝ 3 , and the object’s shape feature embedding f ∈ ℝ 32 . For tasks that require generalizability over multiple objects, we encode the shape information via a pre-trained PointNet [ 3 ] encoder in [ 33 ] . Note that for each object, the shape feature embedding remains the same throughout the training.
+Given the state information, we use a Multi Layer Perceptron (MLP) for both policy and value networks. We stack the current state with 3 historical states as input for better perception.</p>
+</div>
+</section>
+<section class="ltx_subsubsection" id="S4.SS3.SSS2">
+<h4 class="ltx_title ltx_title_subsubsection">IV-C 2 学生策略训练</h4>
+<div class="ltx_para" id="S4.SS3.SSS2.p1">
+<p class="ltx_p" id="S4.SS3.SSS2.p1.1">在利用强化学习训练教师策略后，我们通过视觉触觉输入将其转化为学生策略。具体而言，其输入包括关节位置 <math alttext="q_{t}" class="ltx_Math" display="inline" id="S4.SS3.SSS2.p1.m1" intent=":literal"><semantics><msub><mi>q</mi><mi>t</mi></msub><annotation encoding="application/x-tex">q_{t}</annotation></semantics></math>、二进制触觉信号 <math alttext="o_{t}" class="ltx_Math" display="inline" id="S4.SS3.SSS2.p1.m2" intent=":literal"><semantics><msub><mi>o</mi><mi>t</mi></msub><annotation encoding="application/x-tex">o_{t}</annotation></semantics></math>、旋转轴 <math alttext="k" class="ltx_Math" display="inline" id="S4.SS3.SSS2.p1.m3" intent=":literal"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>，以及之前的位置目标 <math alttext="\hat{q}_{t}" class="ltx_Math" display="inline" id="S4.SS3.SSS2.p1.m4" intent=":literal"><semantics><msub><mover accent="true"><mi>q</mi><mo>^</mo></mover><mi>t</mi></msub><annotation encoding="application/x-tex">\hat{q}_{t}</annotation></semantics></math>。我们将这些输入与历史状态 3 进行堆叠。对于视觉观测，输入包括相机点云 <math alttext="P_{t}^{c}" class="ltx_Math" display="inline" id="S4.SS3.SSS2.p1.m5" intent=":literal"><semantics><msubsup><mi>P</mi><mi>t</mi><mi>c</mi></msubsup><annotation encoding="application/x-tex">P_{t}^{c}</annotation></semantics></math>、增强点云 <math alttext="P_{t}^{a}" class="ltx_Math" display="inline" id="S4.SS3.SSS2.p1.m6" intent=":literal"><semantics><msubsup><mi>P</mi><mi>t</mi><mi>a</mi></msubsup><annotation encoding="application/x-tex">P_{t}^{a}</annotation></semantics></math>，以及所提出的触觉点云 <math alttext="P_{t}^{touch}" class="ltx_Math" display="inline" id="S4.SS3.SSS2.p1.m7" intent=":literal"><semantics><msubsup><mi>P</mi><mi>t</mi><mrow><mi>t</mi><mo lspace="0em" rspace="0em">​</mo><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>c</mi><mo lspace="0em" rspace="0em">​</mo><mi>h</mi></mrow></msubsup><annotation encoding="application/x-tex">P_{t}^{touch}</annotation></semantics></math>。我们为每个点附加一个独热向量，并将其串联起来作为 <math alttext="P_{t}" class="ltx_Math" display="inline" id="S4.SS3.SSS2.p1.m8" intent=":literal"><semantics><msub><mi>P</mi><mi>t</mi></msub><annotation encoding="application/x-tex">P_{t}</annotation></semantics></math>。</p><p class="source-paragraph" lang="en">After using RL to train the teacher policy, we distill it to a student policy with visuotactile input. Concretely, its input includes the joint position q t , the binary tactile signal o t , the rotation axis k , and the previous position target q ^ t . We stack it with 3 historical states. For the visual observation, the input includes camera point cloud P t c , augmented point cloud P t a , and the proposed tactile point cloud P t t ​ o ​ u ​ c ​ h . We attach a one-hot vector to each point and concatenate them together as P t .</p>
+</div>
+<div class="ltx_para" id="S4.SS3.SSS2.p2">
+<p class="ltx_p" id="S4.SS3.SSS2.p2.1">我们采用 PointNet <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib3" title="">3</a>]</cite> 作为点云编码器，并将潜变量向量及其他输入数据输入到 MLP 中。我们采用两阶段蒸馏流程：首先收集包含 <math alttext="5120k" class="ltx_Math" display="inline" id="S4.SS3.SSS2.p2.m2" intent=":literal"><semantics><mrow><mn>5120</mn><mo lspace="0em" rspace="0em">​</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">5120k</annotation></semantics></math> 转换模式的教师数据集 <math alttext="\mathcal{D}" class="ltx_Math" display="inline" id="S4.SS3.SSS2.p2.m1" intent=":literal"><semantics><mi class="ltx_font_mathcaligraphic">𝒟</mi><annotation encoding="application/x-tex">\mathcal{D}</annotation></semantics></math>，通过行为克隆（BC）技术对学生策略网络进行预训练；在第二阶段，通过数据集聚合（DAgger） <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib65" title="">65</a>]</cite> 对网络进行微调，以提升其行为的鲁棒性。</p><p class="source-paragraph" lang="en">We use PointNet [ 3 ] as the point cloud encoder and feed the latent vector and other inputs into an MLP. We adopt a two-stage distillation pipeline: We first collect a teacher dataset 𝒟 of 5120 ​ k transitions and use Behavior Cloning (BC) to pre-train our student policy network; in the second stage, we use Dataset Aggregation (DAgger) [ 65 ] to fine-tune the network for more robust behavior.</p>
+</div>
+</section>
+</section>
+</section>
+<section class="ltx_section" id="S5">
+<h2 class="ltx_title ltx_title_section">V 实验</h2>
+<div class="ltx_para" id="S5.p1">
+<p class="ltx_p" id="S5.p1.1">在这部分中，我们将在仿真与真实环境中，将我们的机器人联觉方法与多种基线方法进行对比。具体而言，我们关注以下问题：</p><p class="source-paragraph" lang="en">In this part, we compare our robot synesthesia approach to several baselines in both the simulation and the real. Specifically, we are interested in the following questions:</p>
+<ul class="ltx_itemize" id="S5.I1">
+<li class="ltx_item" id="S5.I1.ix1" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">1)</span>
+<div class="ltx_para" id="S5.I1.ix1.p1">
+<p class="ltx_p" id="S5.I1.ix1.p1.1">视觉和触觉模式能带来多大的收益？</p><p class="source-paragraph" lang="en">How much benefit do visual and tactile modalities offer?</p>
+</div></li>
+<li class="ltx_item" id="S5.I1.ix2" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">2)</span>
+<div class="ltx_para" id="S5.I1.ix2.p1">
+<p class="ltx_p" id="S5.I1.ix2.p1.1">在触觉和视觉两种输入方式下，是否必须采用教师-学生管道来进行高效训练？</p><p class="source-paragraph" lang="en">Is teacher-student pipeline necessary for efficient training given both tactile and visual modalities?</p>
+</div></li>
+<li class="ltx_item" id="S5.I1.ix3" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">3)</span>
+<div class="ltx_para" id="S5.I1.ix3.p1">
+<p class="ltx_p" id="S5.I1.ix3.p1.1">我们的策略网络如何通过联觉处理这两种模式呢？</p><p class="source-paragraph" lang="en">How does our policy network process the two modalities through synesthesia?</p>
+</div></li>
+</ul>
+</div>
+<section class="ltx_subsection" id="S5.SS1">
+<h3 class="ltx_title ltx_title_subsection">V-A 设置</h3>
+<section class="ltx_subsubsection" id="S5.SS1.SSS1">
+<h4 class="ltx_title ltx_title_subsubsection">V-A 1 物体数据集</h4>
+<div class="ltx_para" id="S5.SS1.SSS1.p1">
+<p class="ltx_p" id="S5.SS1.SSS1.p1.1">用于基准测试问题的物体如图 <a class="ltx_ref" href="#S5.F4" title="Fig. 4 ‣ V-A1 Object Dataset ‣ V-A Setup ‣ V Experiments ‣ Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing"><span class="ltx_text ltx_ref_tag">4</span></a> 所示。对于任务 (i)，我们在仿真和实际环境中均使用人工设计的四轮扳手。对于任务 (ii)，我们使用两个大小相同的球体。对于任务 (iii)，我们在仿真环境中使用一组具有共同几何形状的人造物体 <math alttext="\mathcal{S}" class="ltx_Math" display="inline" id="S5.SS1.SSS1.p1.m1" intent=":literal"><semantics><mi class="ltx_font_mathcaligraphic">𝒮</mi><annotation encoding="application/x-tex">\mathcal{S}</annotation></semantics></math>，如长方体、圆柱体、多边形等，以对策略进行训练与评估。在实际部署中，我们使用不同大小和形状的立方体及其他日常物体来测试策略的泛化能力。</p><p class="source-paragraph" lang="en">The objects used for the benchmark problems are shown in Figure 4 . For task (i), we use an artificially designed four-way wheel wrench in both simulation and real. For task (ii), we use two balls of the same size. For task (iii), we train and evaluate our policy on a set of artificial objects of common geometries 𝒮 , such as cuboids, cylinders, polygons, etc. in the simulation. For real deployment, we use cubes and other daily objects of distinct sizes and shapes to test our policy’s generalization ability.</p>
+</div>
+<figure class="ltx_figure" id="S5.F4"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="147" id="S5.F4.g1" loading="lazy" src="../media/2312.01853/figure/object_set_version2.png" style="aspect-ratio:476/147;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 4：模拟与现实中的物体集合。我们使用人造物体进行训练，使用日常物品进行测试。</figcaption>
+</figure>
+</section>
+<section class="ltx_subsubsection" id="S5.SS1.SSS2">
+<h4 class="ltx_title ltx_title_subsubsection">V-A 2 评估指标</h4>
+<div class="ltx_para" id="S5.SS1.SSS2.p1">
+<p class="ltx_p" id="S5.SS1.SSS2.p1.1">为了评估策略性能，我们采用 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib41" title="">41</a>]</cite> 建议的以下指标。</p><p class="source-paragraph" lang="en">To evaluate the policy performance, we use the following metrics as suggested by [ 41 ] .</p>
+<ul class="ltx_itemize" id="S5.I2">
+<li class="ltx_item" id="S5.I2.ix1" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">1)</span>
+<div class="ltx_para" id="S5.I2.ix1.p1">
+<p class="ltx_p" id="S5.I2.ix1.p1.1">累积旋转奖励（CRR）是我们的智能体在某一回合中获得的奖励。我们利用该奖励来评估策略在仿真环境中的旋转能力。</p><p class="source-paragraph" lang="en">Cumulative Rotation Reward (CRR) is the reward our agent obtains in an episode. We use it to evaluate the rotation capability of a policy in the simulation.</p>
+</div></li>
+<li class="ltx_item" id="S5.I2.ix2" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">2)</span>
+<div class="ltx_para" id="S5.I2.ix2.p1">
+<p class="ltx_p" id="S5.I2.ix2.p1.1">累计旋转角度（CRA）是指物体在某一回合中沿轴方向旋转的角度（以圈数计）。我们用它来评估现实场景中的策略。</p><p class="source-paragraph" lang="en">Cumulative Rotation Angle (CRA) is the angle (by rounds) the object rotates along the axis in an episode. We use it to evaluate a policy in the real.</p>
+</div></li>
+<li class="ltx_item" id="S5.I2.ix3" style="list-style-type:none;"><span class="ltx_tag ltx_tag_item">3)</span>
+<div class="ltx_para" id="S5.I2.ix3.p1">
+<p class="ltx_p" id="S5.I2.ix3.p1.1">落地时间（TTF/持续时间）是指一个行为周期的长度，以秒为单位。当物体在最大行为周期长度之前落地时，TTF会发生变化。</p><p class="source-paragraph" lang="en">Time-to-Fall (TTF/Duration) is the length of an episode (by seconds). TTF varies when the object falls off before the maximal episode length.</p>
+</div></li>
+</ul>
+</div>
+<figure class="ltx_figure" id="S5.F5"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="178" id="S5.F5.g1" loading="lazy" src="../media/2312.01853/curve.png" style="aspect-ratio:476/178;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 5：教师策略对双球旋转行为的学习曲线。结果基于 3 种子数据进行平均处理。</figcaption>
+</figure>
+<figure class="ltx_figure" id="S5.F6"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="266" id="S5.F6.g1" loading="lazy" src="../media/2312.01853/figure/pointnet_screenshot.png" style="aspect-ratio:476/266;" width="476"/>
+<figcaption class="ltx_caption ltx_centering">图 6：评估过程中所选点云（前景）与观测点云（背景）的可视化展示。红色点属于所提出的触觉点云。</figcaption>
+</figure>
+</section>
+</section>
+<section class="ltx_subsection" id="S5.SS2">
+<h3 class="ltx_title ltx_title_subsection">V-B 阶段 I：具有不同感知能力的强化学习训练</h3>
+<figure class="ltx_table" id="S5.T1">
+<figcaption class="ltx_caption ltx_centering">表 I：在模拟环境中针对三个基准问题，不同感知能力的强化学习策略评估结果。每种策略均经过 500 个episode的测试。结果基于在 3 个种子样本上训练的 3 种策略进行平均计算。每次试验持续 50 秒。</figcaption>
+<div class="ltx_inline-block ltx_align_center ltx_transformed_outer" id="S5.T1.2" style="width:351.9pt;height:33.1pt;vertical-align:-15.2pt;"><span class="ltx_transformed_inner" style="transform:translate(-149.8pt,14.1pt) scale(0.540105744702437,0.540105744702437) ;">
+<div class="table-scroll"><table class="ltx_tabular ltx_guessed_headers ltx_align_middle" id="S5.T1.2.1">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="S5.T1.2.1.1">
+<td class="ltx_td ltx_border_tt" id="S5.T1.2.1.1.1"></td>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" colspan="2" id="S5.T1.2.1.1.2">4 -方式扳手</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" colspan="2" id="S5.T1.2.1.1.3">双球机器人</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" colspan="2" id="S5.T1.2.1.1.4">多物体（x轴）</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" colspan="2" id="S5.T1.2.1.1.5">多物体（Y轴）</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" colspan="2" id="S5.T1.2.1.1.6">多物体（Z轴）</th></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.2">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.1">观察类型</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.2">CRR</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.3">TTF格式</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.4">CRR</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.5">TTF格式</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.6">CRR</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.7">TTF格式</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.8">CRR</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.9">TTF格式</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.10">CRR</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T1.2.1.2.11">TTF格式</th></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.3">
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.1">视觉强化学习</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.2">10.9<sub class="ltx_sub" id="S5.T1.2.1.3.2.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.3.2.1.1">±2.2</span></sub></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.3">8.1<sub class="ltx_sub" id="S5.T1.2.1.3.3.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.3.3.1.1">±3.2</span></sub></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.4">127.8<sub class="ltx_sub" id="S5.T1.2.1.3.4.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.3.4.1.1">±78.6</span></sub></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.5">10.5<sub class="ltx_sub" id="S5.T1.2.1.3.5.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.3.5.1.1">±3.7</span></sub></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.6">15.3<sub class="ltx_sub" id="S5.T1.2.1.3.6.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.3.6.1.1">±8.2</span></sub></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.7">16.8<sub class="ltx_sub" id="S5.T1.2.1.3.7.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.3.7.1.1">±11.8</span></sub></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.8">22.4<sub class="ltx_sub" id="S5.T1.2.1.3.8.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.3.8.1.1">±8.8</span></sub></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.9">21.4<sub class="ltx_sub" id="S5.T1.2.1.3.9.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.3.9.1.1">±17.8</span></sub></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.10">29.5<sub class="ltx_sub" id="S5.T1.2.1.3.10.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.3.10.1.1">±7.1</span></sub></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T1.2.1.3.11">2.9<sub class="ltx_sub" id="S5.T1.2.1.3.11.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.3.11.1.1">±0.4</span></sub></td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.4">
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.1">PS</td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.2">440.7<sub class="ltx_sub" id="S5.T1.2.1.4.2.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.4.2.1.1">±590.3</span></sub></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.3">22.6<sub class="ltx_sub" id="S5.T1.2.1.4.3.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.4.3.1.1">±18.5</span></sub></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.4">620.9<sub class="ltx_sub" id="S5.T1.2.1.4.4.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.4.4.1.1">±39.9</span></sub></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.5">28.8<sub class="ltx_sub" id="S5.T1.2.1.4.5.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.4.5.1.1">±0.7</span></sub></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.6">446.1<sub class="ltx_sub" id="S5.T1.2.1.4.6.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.4.6.1.1">±137.7</span></sub></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.7">33.1<sub class="ltx_sub" id="S5.T1.2.1.4.7.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.4.7.1.1">±7.1</span></sub></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.8">552.1<sub class="ltx_sub" id="S5.T1.2.1.4.8.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.4.8.1.1">±318.7</span></sub></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.9">33.5<sub class="ltx_sub" id="S5.T1.2.1.4.9.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.4.9.1.1">±8.3</span></sub></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.10">878.7<sub class="ltx_sub" id="S5.T1.2.1.4.10.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.4.10.1.1">±528.3</span></sub></td>
+<td class="ltx_td ltx_align_center" id="S5.T1.2.1.4.11">36.9<sub class="ltx_sub" id="S5.T1.2.1.4.11.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.4.11.1.1">±15.4</span></sub></td></tr>
+<tr class="ltx_tr" id="S5.T1.2.1.5">
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.1">我们的研究</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.2"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.5.2.1">1011.1<sub class="ltx_sub" id="S5.T1.2.1.5.2.1.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.5.2.1.1.1">±329.9</span></sub></span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.3"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.5.3.1">47.5<sub class="ltx_sub" id="S5.T1.2.1.5.3.1.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.5.3.1.1.1">±0.4</span></sub></span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.4"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.5.4.1">1045.3<sub class="ltx_sub" id="S5.T1.2.1.5.4.1.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.5.4.1.1.1">±64.9</span></sub></span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.5"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.5.5.1">36.2<sub class="ltx_sub" id="S5.T1.2.1.5.5.1.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.5.5.1.1.1">±2.3</span></sub></span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.6"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.5.6.1">985.9<sub class="ltx_sub" id="S5.T1.2.1.5.6.1.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.5.6.1.1.1">±174.1</span></sub></span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.7"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.5.7.1">45.1<sub class="ltx_sub" id="S5.T1.2.1.5.7.1.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.5.7.1.1.1">±2.6</span></sub></span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.8"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.5.8.1">987.3<sub class="ltx_sub" id="S5.T1.2.1.5.8.1.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.5.8.1.1.1">±141.9</span></sub></span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.9"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.5.9.1">46.8<sub class="ltx_sub" id="S5.T1.2.1.5.9.1.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.5.9.1.1.1">±1.0</span></sub></span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.10"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.5.10.1">1353.7<sub class="ltx_sub" id="S5.T1.2.1.5.10.1.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.5.10.1.1.1">±123.8</span></sub></span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T1.2.1.5.11"><span class="ltx_text ltx_font_bold" id="S5.T1.2.1.5.11.1">48.2<sub class="ltx_sub" id="S5.T1.2.1.5.11.1.1"><span class="ltx_text ltx_font_italic" id="S5.T1.2.1.5.11.1.1.1">±0.4</span></sub></span></td></tr>
+</tbody>
+</table></div>
+</span></div>
+</figure>
+<figure class="ltx_table" id="S5.T2">
+<figcaption class="ltx_caption ltx_centering">表二：在模拟环境中针对三个基准问题，对不同感知能力的学生策略的评估。每种策略均经过 500 个episode的测试。每次试验持续 50 秒。</figcaption>
+<div class="table-scroll"><table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle" id="S5.T2.2">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="S5.T2.2.1">
+<td class="ltx_td ltx_border_tt" id="S5.T2.2.1.1"></td>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" colspan="2" id="S5.T2.2.1.2">4 -方式扳手</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" colspan="2" id="S5.T2.2.1.3">双球机器人</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" colspan="2" id="S5.T2.2.1.4">多物体（x轴）</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" colspan="2" id="S5.T2.2.1.5">多物体（Y轴）</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt" colspan="2" id="S5.T2.2.1.6">多物体（Z轴）</th></tr>
+<tr class="ltx_tr" id="S5.T2.2.2">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.1">观察类型</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.2">CRR</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.3">TTF格式</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.4">CRR</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.5">TTF格式</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.6">CRR</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.7">TTF格式</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.8">CRR</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.9">TTF格式</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.10">CRR</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column" id="S5.T2.2.2.11">TTF格式</th></tr>
+<tr class="ltx_tr" id="S5.T2.2.3">
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.1">触摸</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.2">363.2</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.3">23.6</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.4">317.1</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.5">13.6</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.6">390.9</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.7">24.2</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.8">710.9</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.9">42.6</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.10">702.4</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T2.2.3.11">35.6</td></tr>
+<tr class="ltx_tr" id="S5.T2.2.4">
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.1">摄像头+增强</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.2">94.6</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.3">15.2</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.4">162.7</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.5">9.6</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.6">630.9</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.7">40.3</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.8"><span class="ltx_text ltx_font_bold" id="S5.T2.2.4.8.1">743.5</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.9"><span class="ltx_text ltx_font_bold" id="S5.T2.2.4.9.1">42.9</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.10">624.2</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.4.11">29.2</td></tr>
+<tr class="ltx_tr" id="S5.T2.2.5">
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.1">触觉+摄像头+增强技术</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.2">344.1</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.3">21.1</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.4">148.6</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.5">9.6</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.6"><span class="ltx_text ltx_font_bold" id="S5.T2.2.5.6.1">881.1</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.7"><span class="ltx_text ltx_font_bold" id="S5.T2.2.5.7.1">47.4</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.8">619.0</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.9">41.3</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.10">909.8</td>
+<td class="ltx_td ltx_align_center" id="S5.T2.2.5.11">37.7</td></tr>
+<tr class="ltx_tr" id="S5.T2.2.6">
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.1">触觉+摄像头+增强+协同</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.2"><span class="ltx_text ltx_font_bold" id="S5.T2.2.6.2.1">504.0</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.3"><span class="ltx_text ltx_font_bold" id="S5.T2.2.6.3.1">29.2</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.4"><span class="ltx_text ltx_font_bold" id="S5.T2.2.6.4.1">407.7</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.5"><span class="ltx_text ltx_font_bold" id="S5.T2.2.6.5.1">17.1</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.6">846.9</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.7">39.9</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.8">686.8</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.9">41.2</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.10"><span class="ltx_text ltx_font_bold" id="S5.T2.2.6.10.1">1035.0</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T2.2.6.11"><span class="ltx_text ltx_font_bold" id="S5.T2.2.6.11.1">41.3</span></td></tr>
+</tbody>
+</table></div>
+</figure>
+<figure class="ltx_table" id="S5.T3">
+<figcaption class="ltx_caption ltx_centering">表 III：现实场景部署中策略的评估结果（CRA/TTF）。上述两行分别指代非视觉方法与视觉策略。每种策略均在 5 个episode上进行了测试，每次测试持续 60 秒。</figcaption>
+<div class="table-scroll"><table class="ltx_tabular ltx_centering ltx_align_middle" id="S5.T3.2">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="S5.T3.2.1">
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S5.T3.2.1.1">观察类型</td>
+<td class="ltx_td ltx_border_tt" id="S5.T3.2.1.2"></td>
+<td class="ltx_td ltx_border_tt" id="S5.T3.2.1.3"></td>
+<td class="ltx_td ltx_border_tt" id="S5.T3.2.1.4"></td>
+<td class="ltx_td ltx_border_tt" id="S5.T3.2.1.5"></td>
+<td class="ltx_td ltx_border_tt" id="S5.T3.2.1.6"></td></tr>
+<tr class="ltx_tr" id="S5.T3.2.2">
+<td class="ltx_td ltx_align_center" id="S5.T3.2.2.1">(CRA/TTF)</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.2.2">4 -方式扳手</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.2.3">双球机器人</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.2.4">多物体（x轴）</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.2.5">多物体（Y轴）</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.2.6">多物体（Z轴）</td></tr>
+<tr class="ltx_tr" id="S5.T3.2.3">
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.3.1">非视觉强化学习</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.3.2">0.25/60.0</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.3.3">0.2/28.6</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.3.4">0.35/60.0</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.3.5">1.0/60.0</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.3.6">8.6/60.0</td></tr>
+<tr class="ltx_tr" id="S5.T3.2.4">
+<td class="ltx_td ltx_align_center" id="S5.T3.2.4.1">触摸</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.4.2">0.25/60.0</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.4.3">15.6/26.7</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.4.4">0.7/60.0</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.4.5">0.2/60.0</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.4.6">7.4/60.0</td></tr>
+<tr class="ltx_tr" id="S5.T3.2.5">
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.5.1">摄像头+增强</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.5.2">0.25/60.0</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.5.3">10.1/20.8</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.5.4">0.25/60.0</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.5.5">1.0/33.3</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S5.T3.2.5.6">5.1/60.0</td></tr>
+<tr class="ltx_tr" id="S5.T3.2.6">
+<td class="ltx_td ltx_align_center" id="S5.T3.2.6.1">触觉+摄像头+增强技术</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.6.2">0.25/60.0</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.6.3">18.8/32.7</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.6.4">0.5/60.0</td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.6.5"><span class="ltx_text ltx_font_bold" id="S5.T3.2.6.5.1">1.4/28.3</span></td>
+<td class="ltx_td ltx_align_center" id="S5.T3.2.6.6">5.1/57.1</td></tr>
+<tr class="ltx_tr" id="S5.T3.2.7">
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T3.2.7.1">触觉+摄像头+增强+协同</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T3.2.7.2"><span class="ltx_text ltx_font_bold" id="S5.T3.2.7.2.1">1.5/43.0</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T3.2.7.3"><span class="ltx_text ltx_font_bold" id="S5.T3.2.7.3.1">22.9/36.6</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T3.2.7.4"><span class="ltx_text ltx_font_bold" id="S5.T3.2.7.4.1">2.1/26.6</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T3.2.7.5">0.9/29.3</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S5.T3.2.7.6"><span class="ltx_text ltx_font_bold" id="S5.T3.2.7.6.1">10.2/60.0</span></td></tr>
+</tbody>
+</table></div>
+</figure>
+<div class="ltx_para" id="S5.SS2.p1">
+<p class="ltx_p" id="S5.SS2.p1.1">在本节中，我们在仿真环境中对强化学习教师策略进行训练实验。我们将我们的实现方案与两种基线方法进行了比较：部分可观测状态策略（PS/非视觉强化学习）策略 <cite class="ltx_cite ltx_citemacro_cite">[<a class="ltx_ref" href="#bib.bib42" title="">42</a>]</cite> 是一种仅基于机器人本体感知和接触信号进行感知的非视觉策略；视觉强化学习策略则是一种通过强化学习从零开始训练的视觉触觉策略。图 <a class="ltx_ref" href="#S5.F5" title="Fig. 5 ‣ V-A2 Evaluation Metric ‣ V-A Setup ‣ V Experiments ‣ Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing"><span class="ltx_text ltx_ref_tag">5</span></a> 展示了围绕 x 轴进行双球旋转和多物体旋转的学习曲线。我们发现，与 PS 相比，我们的方法能够获得更高的奖励，而视觉强化学习在相同的训练周期内几乎无法学习到高奖励动作。我们针对 500  episodes 在基准问题上训练出的策略进行了评估，结果如表 <a class="ltx_ref" href="#S5.T1" title="TABLE I ‣ V-B Stage I: RL training with different sensing capabilities ‣ V Experiments ‣ Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing"><span class="ltx_text ltx_ref_tag">I</span></a> 所示。我们的方法在所有任务中均优于 PS 和视觉强化学习。 这表明，真实物体姿态对于稳健且精细的操作至关重要，尤其是当物体（例如多路扳手）需要根据其方向变化而采取不同操作时。此外，基于视觉的强化学习策略学习过程效率低下，可能是因为该策略需要从高维输入中提取特征，并同时学习高回报动作。</p><p class="source-paragraph" lang="en">In this section, we experiment with training RL teacher policies in the simulation. We compare our implementation with two baselines: Partially-observable-State(PS/Non-visual RL) policy [ 42 ] is a non-visual policy that observes only robot proprioception and contact signals; Visual RL policy is a visuotactile policy trained via RL from scratch. Figure 5 shows learning curves of double-ball rotation and multi-object rotation around the x-axis. We find that our method achieves a higher reward compared with PS, and that visual RL hardly learns high-rewarding actions within the same number of training epochs. We evaluate policies trained on the benchmark problems for 500 episodes as is shown in Table I . Our approach outperforms PS and Visual RL in all the tasks. This indicates that the ground-truth object pose is essential for robust and meticulous manipulation, especially when the object, e.g. multi-way wrenches, requires different actions as its direction varies. Also, learning vision-based RL policies is data-inefficient, probably because the policy needs to extract features from high-dimensional inputs and learn high-rewarding actions simultaneously.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S5.SS3">
+<h3 class="ltx_title ltx_title_subsection">V-C 阶段 II：具有不同感知能力的模仿学习</h3>
+<div class="ltx_para" id="S5.SS3.p1">
+<p class="ltx_p" id="S5.SS3.p1.1">在此阶段，我们将教师策略转化为视觉触觉策略，并对不同感知能力进行消融实验。如表 <a class="ltx_ref" href="#S5.T2" title="TABLE II ‣ V-B Stage I: RL training with different sensing capabilities ‣ V Experiments ‣ Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing"><span class="ltx_text ltx_ref_tag">II</span></a> 所示，Touch表示二元接触，Cam表示基于摄像机的点云，Aug表示增强点云，Syn表示提出的触觉点云。对于规则形状的旋转物体，各种视觉策略的灵活性相当。然而，对于多方向扳手和两个球这类更具挑战性的物体，我们的方法优于所有基线方法。</p><p class="source-paragraph" lang="en">In this stage, we distill teacher policies to visuotactile policies and perform ablation study for different sensing capabilities. As shown in Table II , Touch refers to binary contact, Cam refers to camera-based point clouds, Aug refers to augmented point clouds, and Syn refers to proposed tactile point clouds. For rotating objects of regular shapes, visual policies achieve similar dexterity to each other. However, when it comes to more challenging objects like multi-way wrenches and two balls, our method outperforms all the baselines.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S5.SS4">
+<h3 class="ltx_title ltx_title_subsection">V-D 实际部署</h3>
+<div class="ltx_para" id="S5.SS4.p1">
+<p class="ltx_p" id="S5.SS4.p1.1">我们无需任何微调即可将视觉-触觉策略迁移到真实机器人上，并测试视觉策略是否仍能带来优势。结果见表 <a class="ltx_ref" href="#S5.T3" title="TABLE III ‣ V-B Stage I: RL training with different sensing capabilities ‣ V Experiments ‣ Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing"><span class="ltx_text ltx_ref_tag">III</span></a>。尽管在仿真环境中，视觉策略在简单几何形状处理上可能具有相当的性能，但当应用于现实世界时，融合视觉与触觉的优势更为显著。这些结果凸显了我们所提出的触觉点云表示方法的低领域差异。对触觉信号与点云提取特征进行简单拼接，可能会增加策略理解其内在关系的难度。相比之下，我们提出的视觉-触觉协同方法通常能带来更好的效果。 我们还观察到，视觉策略往往更为谨慎地运作，会进行偶尔的调整以将物体推回手掌中心；而缺乏视觉感知的策略则倾向于执行几乎固定的运动序列，无论物体的位置如何偏移或发生卡顿情况。</p><p class="source-paragraph" lang="en">We transfer the visuotactile policies to the real robot without any fine-tuning and test whether visual policies continue to provide benefits. The results are shown in Table III . Although visual policy might show comparable performance for simple geometry in simulation, the advantage of integrating vision and touch becomes more significant when deployed to the real world. These results highlight the low domain gap of our proposed tactile point cloud representation. A rudimentary concatenation of tactile signals and the extracted features of point clouds could increase the challenge for the policy to comprehend their underlying relationship. In contrast, our proposed visual-tactile synesthesia approach generally offers benefits. We also observe that visual policies tend to operate more cautiously, making occasional adjustments to nudge the object back to the palm center, while policies lacking visual perception tend to execute an almost fixed sequence of motion, irrespective of the object’s deviation or instances of it becoming stuck.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S5.SS5">
+<h3 class="ltx_title ltx_title_subsection">V-E 定性分析：PointNet 中间体的可视化</h3>
+<div class="ltx_para" id="S5.SS5.p1">
+<p class="ltx_p" id="S5.SS5.p1.1">在 PointNet 中，输入点云被输入到局部 MLP 中，该模块会提取每个点的特征，随后对特征各维度上的点进行最大池化操作。因此，PointNet 被训练为隐式地选择不超过 <math alttext="c_{out}" class="ltx_Math" display="inline" id="S5.SS5.p1.m1" intent=":literal"><semantics><msub><mi>c</mi><mrow><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">c_{out}</annotation></semantics></math> 个点用于表示学习，其中 <math alttext="c_{out}" class="ltx_Math" display="inline" id="S5.SS5.p1.m2" intent=":literal"><semantics><msub><mi>c</mi><mrow><mi>o</mi><mo lspace="0em" rspace="0em">​</mo><mi>u</mi><mo lspace="0em" rspace="0em">​</mo><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">c_{out}</annotation></semantics></math> 为 PointNet 的输出维度。我们在图 <a class="ltx_ref" href="#S5.F6" title="Fig. 6 ‣ V-A2 Evaluation Metric ‣ V-A Setup ‣ V Experiments ‣ Robot Synesthesia: In-Hand Manipulation with Visuotactile Sensing"><span class="ltx_text ltx_ref_tag">6</span></a> 中可视化了评估期间由策略选出的点。有趣的是，我们发现该策略平均使用了 42.7% 个基于触觉的点，其余点则主要来自手指与手掌的尖端或边缘。这表明点云编码器能够基于我们的视觉-触觉联觉设计提取具有意义的特征。</p><p class="source-paragraph" lang="en">In PointNet, the input point cloud is fed into a local MLP extracting features of each point before a Max Pooling layer over points in each dimension of the features.
+Thus, PointNet is trained to implicitly select no more than c o ​ u ​ t points for representation learning, where c o ​ u ​ t is the output dimension of PointNet.
+We visualize in Figure 6 the points selected by our policy during evaluation. Interestingly, we find that our policy uses 42.7% of tactile-based points on average and the rest points are mainly from the tips or edges of fingers and the palm. This indicates that the point cloud encoder can extract meaningful features based on our visual-tactile synesthesia design.</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S6">
+<h2 class="ltx_title ltx_title_section">VI 结论</h2>
+<div class="ltx_para" id="S6.p1">
+<p class="ltx_p" id="S6.p1.1">本文介绍了一种利用视觉触觉感知进行手持灵巧操控的系统。我们提出了一种基于点云的新型触觉表示方式，以及用于利用该表示的配对网络架构。实验结果表明，在模拟器中使用视觉与触觉输入训练出的策略能够有效迁移到真实环境中。该策略能够解决复杂任务，如双球旋转操作，并能泛化至新物体。未来的研究可能涉及以目标为条件的物体旋转任务，以及光学触觉传感器的整合工作。我们承诺公开我们的模拟环境与训练流程的代码。</p><p class="source-paragraph" lang="en">This paper introduces a system for in-hand dexterous manipulation utilizing visuotactile sensing. We propose a novel tactile representation based on point clouds, and a paired network architecture to leverage it. Our results show that the policy, which has been trained in a simulator using vision and touch input, effectively transfers to the real world. It can solve complex tasks such as double-ball rotation and generalize to novel objects. Future work may encompass goal-conditioned object rotation tasks and the integration of optical tactile sensors. We are committed to releasing the code for our simulation environment and training pipeline.</p>
+</div>
+</section>
+<section class="ltx_section" id="S7">
+<h2 class="ltx_title ltx_title_section">VII 致谢</h2>
+<div class="ltx_para" id="S7.p1">
+<p class="ltx_p" id="S7.p1.1">致谢：本研究部分得到了高通创新奖学金的支持，同时还获得了韩国贸易、工业与能源部（MOTIE）资助的技术创新计划（20018112，基于视觉与触觉感知的模仿学习技术用于自主操作与抓取技术开发）的资助。</p><p class="source-paragraph" lang="en">Acknowledgment: This work was supported, in part, by the Qualcomm Innovation Fellowship, and the Technology Innovation Program (20018112, Development of autonomous manipulation and gripping technology using imitation learning based on visual and tactile sensing) funded by the Ministry of Trade, Industry &amp; Energy (MOTIE), Korea.</p>
+</div>
+</section>
+<section class="ltx_bibliography" id="bib">
+<h2 class="ltx_title ltx_title_bibliography">参考文献</h2>
+<ul class="ltx_biblist">
+<li class="ltx_bibitem" id="bib.bib1"><span class="ltx_tag ltx_tag_bibitem">[1]</span>
+<span class="ltx_bibblock">
+J. Simner and V. U. Ludwig, “The color of touch: A case of tactile–visual
+synaesthesia,” <em class="ltx_emph ltx_font_italic" id="bib.bib1.2">Neurocase</em>, vol. 18, no. 2, pp. 167–180, 2012.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib2"><span class="ltx_tag ltx_tag_bibitem">[2]</span>
+<span class="ltx_bibblock">
+A. M. A. Davies and R. C. White, “A sensational illusion: vision-touch
+synaesthesia and the rubber hand paradigm,” <em class="ltx_emph ltx_font_italic" id="bib.bib2.2">Cortex</em>, vol. 49, no. 3,
+pp. 806–818, 2013.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib3"><span class="ltx_tag ltx_tag_bibitem">[3]</span>
+<span class="ltx_bibblock">
+C. R. Qi, H. Su, K. Mo, and L. J. Guibas, “Pointnet: Deep learning on point
+sets for 3d classification and segmentation,” <em class="ltx_emph ltx_font_italic" id="bib.bib3.2">CoRR</em>, vol.
+abs/1612.00593, 2016.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib4"><span class="ltx_tag ltx_tag_bibitem">[4]</span>
+<span class="ltx_bibblock">
+A. M. Okamura, N. Smaby, and M. R. Cutkosky, “An overview of dexterous
+manipulation,” in <em class="ltx_emph ltx_font_italic" id="bib.bib4.2">IEEE International Conference on Robotics and
+Automation. Symposia Proceedings</em>, 2000.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib5"><span class="ltx_tag ltx_tag_bibitem">[5]</span>
+<span class="ltx_bibblock">
+N. Chavan-Dafle and A. Rodriguez, “Sampling-based planning of in-hand
+manipulation with external pushes,” in <em class="ltx_emph ltx_font_italic" id="bib.bib5.2">Robotics Research: The 18th
+International Symposium ISRR</em>. Springer, 2020, pp. 523–539.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib6"><span class="ltx_tag ltx_tag_bibitem">[6]</span>
+<span class="ltx_bibblock">
+O. M. Andrychowicz, B. Baker, M. Chociej, R. Jozefowicz, B. McGrew,
+J. Pachocki, A. Petron, M. Plappert, G. Powell, A. Ray <em class="ltx_emph ltx_font_italic" id="bib.bib6.2">et al.</em>,
+“Learning dexterous in-hand manipulation,” <em class="ltx_emph ltx_font_italic" id="bib.bib6.3">The International Journal
+of Robotics Research (IJRR)</em>, vol. 39, no. 1, pp. 3–20, 2020.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib7"><span class="ltx_tag ltx_tag_bibitem">[7]</span>
+<span class="ltx_bibblock">
+Y. Qin, W. Yang, B. Huang, K. Van Wyk, H. Su, X. Wang, Y.-W. Chao, and D. Fox,
+“Anyteleop: A general vision-based dexterous robot arm-hand teleoperation
+system,” <em class="ltx_emph ltx_font_italic" id="bib.bib7.2">arXiv preprint arXiv:2307.04577</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib8"><span class="ltx_tag ltx_tag_bibitem">[8]</span>
+<span class="ltx_bibblock">
+K. Shaw and D. Pathak, “Leap hand: Low-cost, efficient, and anthropomorphic
+hand for robot learning,” <em class="ltx_emph ltx_font_italic" id="bib.bib8.2">Submission, ICRA</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib9"><span class="ltx_tag ltx_tag_bibitem">[9]</span>
+<span class="ltx_bibblock">
+J. Ye, J. Wang, B. Huang, Y. Qin, and X. Wang, “Learning continuous grasping
+function with a dexterous hand from human demonstrations,” in <em class="ltx_emph ltx_font_italic" id="bib.bib9.2">IEEE/RSJ
+International Conference on Intelligent Robots and Systems (IROS)</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib10"><span class="ltx_tag ltx_tag_bibitem">[10]</span>
+<span class="ltx_bibblock">
+M. Cherif and K. K. Gupta, “Planning quasi-static fingertip manipulations for
+reconfiguring objects,” <em class="ltx_emph ltx_font_italic" id="bib.bib10.2">IEEE Transactions on Robotics and Automation</em>,
+vol. 15, no. 5, pp. 837–848, 1999.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib11"><span class="ltx_tag ltx_tag_bibitem">[11]</span>
+<span class="ltx_bibblock">
+J. Shi, J. Z. Woodruff, P. B. Umbanhowar, and K. M. Lynch, “Dynamic in-hand
+sliding manipulation,” <em class="ltx_emph ltx_font_italic" id="bib.bib11.2">IEEE Transactions on Robotics</em>, vol. 33, no. 4,
+pp. 778–795, 2017.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib12"><span class="ltx_tag ltx_tag_bibitem">[12]</span>
+<span class="ltx_bibblock">
+L. Han, Y.-S. Guan, Z. Li, Q. Shi, and J. C. Trinkle, “Dextrous manipulation
+with rolling contacts,” in <em class="ltx_emph ltx_font_italic" id="bib.bib12.2">International Conference on Robotics and
+Automation (ICRA)</em>, 1997.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib13"><span class="ltx_tag ltx_tag_bibitem">[13]</span>
+<span class="ltx_bibblock">
+L. Han and J. Trinkle, “Dextrous manipulation by rolling and finger gaiting,”
+in <em class="ltx_emph ltx_font_italic" id="bib.bib13.2">IEEE International Conference on Robotics and Automation (ICRA)</em>,
+1998.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib14"><span class="ltx_tag ltx_tag_bibitem">[14]</span>
+<span class="ltx_bibblock">
+A. Bicchi and R. Sorrentino, “Dexterous manipulation through rolling,” in
+<em class="ltx_emph ltx_font_italic" id="bib.bib14.2">Proceedings of 1995 IEEE International Conference on Robotics and
+Automation</em>, vol. 1, 1995, pp. 452–457 vol.1.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib15"><span class="ltx_tag ltx_tag_bibitem">[15]</span>
+<span class="ltx_bibblock">
+Z. Doulgeri and L. Droukas, “On rolling contact motion by robotic fingers via
+prescribed performance control,” in <em class="ltx_emph ltx_font_italic" id="bib.bib15.2">IEEE International Conference on
+Robotics and Automation (ICRA)</em>, 2013.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib16"><span class="ltx_tag ltx_tag_bibitem">[16]</span>
+<span class="ltx_bibblock">
+M. Lepert, C. Pan, S. Yuan, R. Antonova, and J. Bohg, “In-hand manipulation of
+unknown objects with tactile sensing for insertion,” in <em class="ltx_emph ltx_font_italic" id="bib.bib16.2">Embracing
+Contacts-Workshop at ICRA 2023</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib17"><span class="ltx_tag ltx_tag_bibitem">[17]</span>
+<span class="ltx_bibblock">
+Y. Aiyama, M. Inaba, and H. Inoue, “Pivoting: A new method of graspless
+manipulation of object by robot fingers,” in <em class="ltx_emph ltx_font_italic" id="bib.bib17.2">IEEE/RSJ International
+Conference on Intelligent Robots and Systems (IROS)</em>, 1993.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib18"><span class="ltx_tag ltx_tag_bibitem">[18]</span>
+<span class="ltx_bibblock">
+E. Yoshida, P. Blazevic, and V. Hugel, “Pivoting manipulation of a large
+object: A study of application using humanoid platform,” in
+<em class="ltx_emph ltx_font_italic" id="bib.bib18.2">Proceedings of the 2005 IEEE International Conference on Robotics and
+Automation</em>. IEEE, 2005, pp.
+1040–1045.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib19"><span class="ltx_tag ltx_tag_bibitem">[19]</span>
+<span class="ltx_bibblock">
+P. Tournassoud, T. Lozano-Pérez, and E. Mazer, “Regrasping,” in
+<em class="ltx_emph ltx_font_italic" id="bib.bib19.2">IEEE International Conference on Robotics and Automation (ICRA)</em>, 1987.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib20"><span class="ltx_tag ltx_tag_bibitem">[20]</span>
+<span class="ltx_bibblock">
+P. Vinayavekhin, S. Kudoh, and K. Ikeuchi, “Towards an automatic robot
+regrasping movement based on human demonstration using tangle topology,” in
+<em class="ltx_emph ltx_font_italic" id="bib.bib20.2">2011 IEEE International Conference on Robotics and Automation</em>. IEEE, 2011, pp. 3332–3339.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib21"><span class="ltx_tag ltx_tag_bibitem">[21]</span>
+<span class="ltx_bibblock">
+A. A. Cole, P. Hsu, and S. S. Sastry, “Dynamic control of sliding by robot
+hands for regrasping,” <em class="ltx_emph ltx_font_italic" id="bib.bib21.2">IEEE Transactions on robotics and automation</em>,
+vol. 8, no. 1, pp. 42–52, 1992.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib22"><span class="ltx_tag ltx_tag_bibitem">[22]</span>
+<span class="ltx_bibblock">
+V. Kumar, Y. Tassa, T. Erez, and E. Todorov, “Real-time behaviour synthesis
+for dynamic hand-manipulation,” in <em class="ltx_emph ltx_font_italic" id="bib.bib22.2">2014 IEEE International Conference
+on Robotics and Automation (ICRA)</em>. IEEE, 2014, pp. 6808–6815.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib23"><span class="ltx_tag ltx_tag_bibitem">[23]</span>
+<span class="ltx_bibblock">
+Y. Bai and C. K. Liu, “Dexterous manipulation using both palm and fingers,”
+in <em class="ltx_emph ltx_font_italic" id="bib.bib23.2">2014 IEEE International Conference on Robotics and Automation
+(ICRA)</em>, 2014, pp. 1560–1565.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib24"><span class="ltx_tag ltx_tag_bibitem">[24]</span>
+<span class="ltx_bibblock">
+T. Chen, J. Xu, and P. Agrawal, “A system for general in-hand object
+re-orientation,” in <em class="ltx_emph ltx_font_italic" id="bib.bib24.2">Conference on Robot Learning (CoRL)</em>, 2022, pp.
+297–307.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib25"><span class="ltx_tag ltx_tag_bibitem">[25]</span>
+<span class="ltx_bibblock">
+Y. Qin, B. Huang, Z.-H. Yin, H. Su, and X. Wang, “Dexpoint: Generalizable
+point cloud reinforcement learning for sim-to-real dexterous manipulation,”
+in <em class="ltx_emph ltx_font_italic" id="bib.bib25.2">Conference on Robot Learning (CoRL)</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib26"><span class="ltx_tag ltx_tag_bibitem">[26]</span>
+<span class="ltx_bibblock">
+G. Khandate, M. Haas-Heger, and M. Ciocarlie, “On the feasibility of learning
+finger-gaiting in-hand manipulation with intrinsic sensing,” in
+<em class="ltx_emph ltx_font_italic" id="bib.bib26.2">International Conference on Robotics and Automation (ICRA)</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib27"><span class="ltx_tag ltx_tag_bibitem">[27]</span>
+<span class="ltx_bibblock">
+C. Bao, H. Xu, Y. Qin, and X. Wang, “Dexart: Benchmarking generalizable
+dexterous manipulation with articulated objects,” in <em class="ltx_emph ltx_font_italic" id="bib.bib27.2">Proceedings of
+the IEEE/CVF Conference on Computer Vision and Pattern Recognition</em>, 2023,
+pp. 21 190–21 200.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib28"><span class="ltx_tag ltx_tag_bibitem">[28]</span>
+<span class="ltx_bibblock">
+B. Huang, Y. Chen, T. Wang, Y. Qin, Y. Yang, N. Atanasov, and X. Wang,
+“Dynamic handover: Throw and catch with bimanual hands,” in <em class="ltx_emph ltx_font_italic" id="bib.bib28.2">7th
+Annual Conference on Robot Learning</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib29"><span class="ltx_tag ltx_tag_bibitem">[29]</span>
+<span class="ltx_bibblock">
+Y. Qin, Y.-H. Wu, S. Liu, H. Jiang, R. Yang, Y. Fu, and X. Wang, “Dexmv:
+Imitation learning for dexterous manipulation from human videos,” in
+<em class="ltx_emph ltx_font_italic" id="bib.bib29.2">European Conference on Computer Vision (ECCV)</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib30"><span class="ltx_tag ltx_tag_bibitem">[30]</span>
+<span class="ltx_bibblock">
+A. Rajeswaran, V. Kumar, A. Gupta, G. Vezzani, J. Schulman, E. Todorov, and
+S. Levine, “Learning complex dexterous manipulation with deep reinforcement
+learning and demonstrations,” in <em class="ltx_emph ltx_font_italic" id="bib.bib30.2">Robotics: Science and Systems (RSS)</em>,
+2018.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib31"><span class="ltx_tag ltx_tag_bibitem">[31]</span>
+<span class="ltx_bibblock">
+S. P. Arunachalam, S. Silwal, B. Evans, and L. Pinto, “Dexterous imitation
+made easy: A learning-based framework for efficient dexterous manipulation,”
+<em class="ltx_emph ltx_font_italic" id="bib.bib31.2">arXiv preprint arXiv:2203.13251</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib32"><span class="ltx_tag ltx_tag_bibitem">[32]</span>
+<span class="ltx_bibblock">
+Y. Qin, H. Su, and X. Wang, “From one hand to multiple hands: Imitation
+learning for dexterous manipulation from single-camera teleoperation,”
+<em class="ltx_emph ltx_font_italic" id="bib.bib32.2">IEEE Robotics and Automation Letters</em>, vol. 7, no. 4, pp.
+10 873–10 881, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib33"><span class="ltx_tag ltx_tag_bibitem">[33]</span>
+<span class="ltx_bibblock">
+Y.-H. Wu, J. Wang, and X. Wang, “Learning generalizable dexterous manipulation
+from human grasp affordance,” in <em class="ltx_emph ltx_font_italic" id="bib.bib33.2">Conference on Robot Learning (CoRL)</em>,
+2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib34"><span class="ltx_tag ltx_tag_bibitem">[34]</span>
+<span class="ltx_bibblock">
+X. Liu, D. Pathak, and K. M. Kitani, “Herd: Continuous human-to-robot
+evolution for learning from human demonstration,” <em class="ltx_emph ltx_font_italic" id="bib.bib34.2">arXiv preprint
+arXiv:2212.04359</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib35"><span class="ltx_tag ltx_tag_bibitem">[35]</span>
+<span class="ltx_bibblock">
+A. Patel, A. Wang, I. Radosavovic, and J. Malik, “Learning to imitate object
+interactions from internet videos,” <em class="ltx_emph ltx_font_italic" id="bib.bib35.2">arXiv preprint arXiv:2211.13225</em>,
+2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib36"><span class="ltx_tag ltx_tag_bibitem">[36]</span>
+<span class="ltx_bibblock">
+S. P. Arunachalam, I. Güzey, S. Chintala, and L. Pinto, “Holo-dex:
+Teaching dexterity with immersive mixed reality,” <em class="ltx_emph ltx_font_italic" id="bib.bib36.2">arXiv preprint
+arXiv:2210.06463</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib37"><span class="ltx_tag ltx_tag_bibitem">[37]</span>
+<span class="ltx_bibblock">
+A. Sivakumar, K. Shaw, and D. Pathak, “Robotic telekinesis: Learning a robotic
+hand imitator by watching humans on youtube,” <em class="ltx_emph ltx_font_italic" id="bib.bib37.2">arXiv preprint
+arXiv:2202.10448</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib38"><span class="ltx_tag ltx_tag_bibitem">[38]</span>
+<span class="ltx_bibblock">
+A. Bhatt, A. Sieler, S. Puhlmann, and O. Brock, “Surprisingly robust in-hand
+manipulation: An empirical study,” in <em class="ltx_emph ltx_font_italic" id="bib.bib38.2">Robotics: Science and
+Systems (RSS)</em>, 2021.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib39"><span class="ltx_tag ltx_tag_bibitem">[39]</span>
+<span class="ltx_bibblock">
+A. Nagabandi, K. Konolige, S. Levine, and V. Kumar, “Deep dynamics models for
+learning dexterous manipulation,” in <em class="ltx_emph ltx_font_italic" id="bib.bib39.2">Conference on Robot
+Learning</em>. PMLR, 2020, pp. 1101–1112.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib40"><span class="ltx_tag ltx_tag_bibitem">[40]</span>
+<span class="ltx_bibblock">
+A. S. Morgan, K. Hang, B. Wen, K. Bekris, and A. M. Dollar, “Complex in-hand
+manipulation via compliance-enabled finger gaiting and multi-modal
+planning,” <em class="ltx_emph ltx_font_italic" id="bib.bib40.2">IEEE Robotics and Automation Letters</em>, vol. 7, no. 2, pp.
+4821–4828, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib41"><span class="ltx_tag ltx_tag_bibitem">[41]</span>
+<span class="ltx_bibblock">
+H. Qi, A. Kumar, R. Calandra, Y. Ma, and J. Malik, “In-hand object rotation
+via rapid motor adaptation,” in <em class="ltx_emph ltx_font_italic" id="bib.bib41.2">Conference on Robot Learning</em>. PMLR, 2023, pp. 1722–1732.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib42"><span class="ltx_tag ltx_tag_bibitem">[42]</span>
+<span class="ltx_bibblock">
+Z.-H. Yin, B. Huang, Y. Qin, Q. Chen, and X. Wang, “Rotating without seeing:
+Towards in-hand dexterity through touch,” <em class="ltx_emph ltx_font_italic" id="bib.bib42.2">Robotics: Science and
+Systems</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib43"><span class="ltx_tag ltx_tag_bibitem">[43]</span>
+<span class="ltx_bibblock">
+L. Röstel, J. Pitz, L. Sievers, and B. Bäuml, “Estimator-coupled
+reinforcement learning for robust purely tactile in-hand manipulation,” in
+<em class="ltx_emph ltx_font_italic" id="bib.bib43.2">2023 IEEE-RAS 22nd International Conference on Humanoid Robots
+(Humanoids)</em>. IEEE, 2023, pp. 1–8.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib44"><span class="ltx_tag ltx_tag_bibitem">[44]</span>
+<span class="ltx_bibblock">
+T. Chen, M. Tippur, S. Wu, V. Kumar, E. Adelson, and P. Agrawal, “Visual
+dexterity: In-hand dexterous manipulation from depth,” in <em class="ltx_emph ltx_font_italic" id="bib.bib44.2">Icml
+workshop on new frontiers in learning, control, and dynamical systems</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib45"><span class="ltx_tag ltx_tag_bibitem">[45]</span>
+<span class="ltx_bibblock">
+I. Guzey, B. Evans, S. Chintala, and L. Pinto, “Dexterity from touch:
+Self-supervised pre-training of tactile representations with robotic play,”
+<em class="ltx_emph ltx_font_italic" id="bib.bib45.2">arXiv preprint arXiv:2303.12076</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib46"><span class="ltx_tag ltx_tag_bibitem">[46]</span>
+<span class="ltx_bibblock">
+H. Qi, B. Yi, S. Suresh, M. Lambeta, Y. Ma, R. Calandra, and J. Malik,
+“General in-hand object rotation with vision and touch,” in <em class="ltx_emph ltx_font_italic" id="bib.bib46.2">7th
+Annual Conference on Robot Learning</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib47"><span class="ltx_tag ltx_tag_bibitem">[47]</span>
+<span class="ltx_bibblock">
+P. Jenmalm and R. S. Johansson, “Visual and somatosensory information about
+object shape control manipulative fingertip forces,” <em class="ltx_emph ltx_font_italic" id="bib.bib47.2">Journal of
+Neuroscience</em>, vol. 17, no. 11, pp. 4486–4499, 1997.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib48"><span class="ltx_tag ltx_tag_bibitem">[48]</span>
+<span class="ltx_bibblock">
+Y. Chen, A. Sipos, M. Van der Merwe, and N. Fazeli, “Visuo-tactile
+transformers for manipulation,” <em class="ltx_emph ltx_font_italic" id="bib.bib48.2">arXiv preprint arXiv:2210.00121</em>,
+2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib49"><span class="ltx_tag ltx_tag_bibitem">[49]</span>
+<span class="ltx_bibblock">
+P. Falco, S. Lu, A. Cirillo, C. Natale, S. Pirozzi, and D. Lee, “Cross-modal
+visuo-tactile object recognition using robotic active exploration,” in
+<em class="ltx_emph ltx_font_italic" id="bib.bib49.2">2017 IEEE International Conference on Robotics and Automation
+(ICRA)</em>. IEEE, 2017, pp. 5273–5280.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib50"><span class="ltx_tag ltx_tag_bibitem">[50]</span>
+<span class="ltx_bibblock">
+S. Wang, J. Wu, X. Sun, W. Yuan, W. T. Freeman, J. B. Tenenbaum, and E. H.
+Adelson, “3d shape perception from monocular vision, touch, and shape
+priors,” in <em class="ltx_emph ltx_font_italic" id="bib.bib50.2">2018 IEEE/RSJ International Conference on Intelligent
+Robots and Systems (IROS)</em>. IEEE,
+2018, pp. 1606–1613.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib51"><span class="ltx_tag ltx_tag_bibitem">[51]</span>
+<span class="ltx_bibblock">
+A. Billard and D. Kragic, “Trends and challenges in robot manipulation,”
+<em class="ltx_emph ltx_font_italic" id="bib.bib51.2">Science</em>, vol. 364, no. 6446, p. eaat8414, 2019.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib52"><span class="ltx_tag ltx_tag_bibitem">[52]</span>
+<span class="ltx_bibblock">
+R. Calandra, A. Owens, D. Jayaraman, J. Lin, W. Yuan, J. Malik, E. H. Adelson,
+and S. Levine, “More than a feeling: Learning to grasp and regrasp using
+vision and touch,” <em class="ltx_emph ltx_font_italic" id="bib.bib52.2">IEEE Robotics and Automation Letters</em>, vol. 3,
+no. 4, pp. 3300–3307, 2018.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib53"><span class="ltx_tag ltx_tag_bibitem">[53]</span>
+<span class="ltx_bibblock">
+M. A. Lee, Y. Zhu, K. Srinivasan, P. Shah, S. Savarese, L. Fei-Fei, A. Garg,
+and J. Bohg, “Making sense of vision and touch: Self-supervised learning of
+multimodal representations for contact-rich tasks,” in <em class="ltx_emph ltx_font_italic" id="bib.bib53.2">2019
+International Conference on Robotics and Automation (ICRA)</em>. IEEE, 2019, pp. 8943–8950.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib54"><span class="ltx_tag ltx_tag_bibitem">[54]</span>
+<span class="ltx_bibblock">
+R. Bischoff and V. Graefe, “Integrating vision, touch and natural language in
+the control of a situation-oriented behavior-based humanoid robot,” in
+<em class="ltx_emph ltx_font_italic" id="bib.bib54.2">IEEE SMC’99 Conference Proceedings. 1999 IEEE International Conference
+on Systems, Man, and Cybernetics (Cat. No. 99CH37028)</em>, vol. 2. IEEE, 1999, pp. 999–1004.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib55"><span class="ltx_tag ltx_tag_bibitem">[55]</span>
+<span class="ltx_bibblock">
+I. Guzey, Y. Dai, B. Evans, S. Chintala, and L. Pinto, “See to touch: Learning
+tactile dexterity through visual incentives,” <em class="ltx_emph ltx_font_italic" id="bib.bib55.2">arXiv preprint
+arXiv:2309.12300</em>, 2023.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib56"><span class="ltx_tag ltx_tag_bibitem">[56]</span>
+<span class="ltx_bibblock">
+A. Petrovskaya and O. Khatib, “Global localization of objects via touch,”
+<em class="ltx_emph ltx_font_italic" id="bib.bib56.2">IEEE Transactions on Robotics</em>, vol. 27, no. 3, pp. 569–585, 2011.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib57"><span class="ltx_tag ltx_tag_bibitem">[57]</span>
+<span class="ltx_bibblock">
+D. Driess, P. Englert, and M. Toussaint, “Active learning with query paths for
+tactile object shape exploration,” in <em class="ltx_emph ltx_font_italic" id="bib.bib57.2">IEEE/RSJ International
+Conference on Intelligent Robots and Systems (IROS)</em>, 2017.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib58"><span class="ltx_tag ltx_tag_bibitem">[58]</span>
+<span class="ltx_bibblock">
+J. Liang, A. Handa, K. Van Wyk, V. Makoviychuk, O. Kroemer, and D. Fox,
+“In-hand object pose tracking via contact feedback and gpu-accelerated
+robotic simulation,” in <em class="ltx_emph ltx_font_italic" id="bib.bib58.2">IEEE International Conference on Robotics and
+Automation (ICRA)</em>. IEEE, 2020, pp.
+6203–6209.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib59"><span class="ltx_tag ltx_tag_bibitem">[59]</span>
+<span class="ltx_bibblock">
+M. Lambeta, P.-W. Chou, S. Tian, B. Yang, B. Maloon, V. R. Most, D. Stroud,
+R. Santos, A. Byagowi, G. Kammerer <em class="ltx_emph ltx_font_italic" id="bib.bib59.2">et al.</em>, “Digit: A novel design for
+a low-cost compact high-resolution tactile sensor with application to in-hand
+manipulation,” <em class="ltx_emph ltx_font_italic" id="bib.bib59.3">IEEE Robotics and Automation Letters</em>, vol. 5, no. 3,
+pp. 3838–3845, 2020.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib60"><span class="ltx_tag ltx_tag_bibitem">[60]</span>
+<span class="ltx_bibblock">
+W. Yuan, S. Dong, and E. H. Adelson, “Gelsight: High-resolution robot tactile
+sensors for estimating geometry and force,” <em class="ltx_emph ltx_font_italic" id="bib.bib60.2">Sensors</em>, vol. 17, no. 12,
+p. 2762, 2017.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib61"><span class="ltx_tag ltx_tag_bibitem">[61]</span>
+<span class="ltx_bibblock">
+J. Hansen, F. Hogan, D. Rivkin, D. Meger, M. Jenkin, and G. Dudek,
+“Visuotactile-rl: learning multimodal manipulation policies with deep
+reinforcement learning,” in <em class="ltx_emph ltx_font_italic" id="bib.bib61.2">2022 International Conference on Robotics
+and Automation (ICRA)</em>. IEEE, 2022,
+pp. 8298–8304.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib62"><span class="ltx_tag ltx_tag_bibitem">[62]</span>
+<span class="ltx_bibblock">
+V. Makoviychuk, L. Wawrzyniak, Y. Guo, M. Lu, K. Storey, M. Macklin,
+D. Hoeller, N. Rudin, A. Allshire, A. Handa <em class="ltx_emph ltx_font_italic" id="bib.bib62.2">et al.</em>, “Isaac gym: High
+performance gpu-based physics simulation for robot learning,” <em class="ltx_emph ltx_font_italic" id="bib.bib62.3">arXiv
+preprint arXiv:2108.10470</em>, 2021.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib63"><span class="ltx_tag ltx_tag_bibitem">[63]</span>
+<span class="ltx_bibblock">
+M. Liu, X. Li, Z. Ling, Y. Li, and H. Su, “Frame mining: a free lunch for
+learning robotic manipulation from 3d point clouds,” <em class="ltx_emph ltx_font_italic" id="bib.bib63.2">arXiv preprint
+arXiv:2210.07442</em>, 2022.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib64"><span class="ltx_tag ltx_tag_bibitem">[64]</span>
+<span class="ltx_bibblock">
+J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov, “Proximal
+policy optimization algorithms,” <em class="ltx_emph ltx_font_italic" id="bib.bib64.2">arXiv preprint arXiv:1707.06347</em>,
+2017.
+
+</span></li>
+<li class="ltx_bibitem" id="bib.bib65"><span class="ltx_tag ltx_tag_bibitem">[65]</span>
+<span class="ltx_bibblock">
+S. Ross, G. J. Gordon, and J. A. Bagnell, “No-regret reductions for imitation
+learning and structured prediction,” <em class="ltx_emph ltx_font_italic" id="bib.bib65.2">CoRR</em>, vol. abs/1011.0686, 2010.
+
+</span></li>
+</ul>
+</section>
+</article></main>
+</html>
